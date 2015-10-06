@@ -1,0 +1,107 @@
+{%- set nova = pillar.nova.compute %}
+{%- from "nova/map.jinja" import compute with context %}
+[DEFAULT]
+logdir = /var/log/nova
+state_path = /var/lib/nova
+lock_path = /var/lib/nova/tmp
+volumes_dir = /etc/nova/volumes
+dhcpbridge = /usr/bin/nova-dhcpbridge
+dhcpbridge_flagfile = /etc/nova/nova.conf
+force_dhcp_release = True
+injected_network_template = /usr/share/nova/interfaces.template
+libvirt_nonblocking = True
+libvirt_use_virtio_for_bridges=True
+libvirt_inject_partition = -1
+sql_connection = {{ nova.database.engine }}://{{ nova.database.user }}:{{ nova.database.password }}@{{ nova.database.host }}/{{ nova.database.name }}
+compute_driver = libvirt.LibvirtDriver
+libvirt_type=kvm
+rootwrap_config = /etc/nova/rootwrap.conf
+auth_strategy = keystone
+firewall_driver=nova.virt.firewall.NoopFirewallDriver
+enabled_apis = ec2,osapi_compute,metadata
+my_ip= {{ compute.bind.vnc_address }}
+
+logdir=/var/log/nova
+iscsi_helper=tgtadm
+connection_type=libvirt
+root_helper=sudo nova-rootwrap /etc/nova/rootwrap.conf
+ec2_private_dns_show_ip=True
+api_paste_config=/etc/nova/api-paste.ini
+volumes_path=/var/lib/nova/volumes
+
+network_api_class = nova.network.neutronv2.api.API
+
+#NoVNC
+vnc_enabled=true
+my_ip={{ compute.bind.vnc_address }}
+
+vncserver_proxyclient_address={{ compute.bind.vnc_address }}
+novncproxy_base_url={{ compute.vncproxy_url }}/vnc_auto.html
+novncproxy_port={{ nova.bind.vnc_port }}
+
+{%- if compute.cache is defined %}
+memcached_servers={%- for member in compute.cache.members %}{% if loop.index == 1 %}{{ member }}:11211{% endif %},{{ member }}:11211{%- endfor %}
+{%- endif %}
+
+
+#Neutron
+neutron_admin_username={{ pillar.neutron.switch.identity.user }}
+neutron_admin_password={{ pillar.neutron.switch.identity.password }}
+neutron_admin_tenant_name={{ pillar.neutron.switch.identity.tenant }}
+neutron_admin_auth_url=http://{{ pillar.neutron.switch.identity.host }}:{{ pillar.neutron.switch.identity.port }}/v2.0
+neutron_url=http://{{ compute.network.host }}:{{ compute.network.port }}
+
+linuxnet_interface_driver = nova.network.linux_net.LinuxOVSInterfaceDriver
+firewall_driver = nova.virt.firewall.NoopFirewallDriver
+security_group_api = neutron
+rpc_backend = nova.rpc.impl_kombu
+
+#RabbitMQ
+rabbit_host = {{ compute.message_queue.host }}
+rabbit_port = {{ compute.message_queue.port }}
+rabbit_hosts={{ compute.message_queue.host }}:{{ compute.message_queue.port }}
+rabbit_userid = {{ compute.message_queue.user }}
+rabbit_password = {{ compute.message_queue.password }}
+rabbit_virtual_host = {{ compute.message_queue.virtual_host }}
+
+glance_host = {{ compute.image.host }}
+
+{%- if compute.image.use_cow is defined %}
+use_cow_images = {{ compute.image.use_cow }}
+{%- endif %}
+
+live_migration_flag=VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE
+live_migration_retry_count=30
+
+{% if pillar.ceilometer is defined %}
+
+instance_usage_audit = True
+instance_usage_audit_period = hour
+notify_on_state_change = vm_and_task_state
+notification_driver = messagingv2
+
+{% endif %}
+
+{%- if compute.notification is defined %}
+notification_driver = {{ compute.notification.driver }}
+notification_topics = {{ compute.notification.topics }}
+
+{%- if compute.notification.notify_on %}
+{%- for key, value in compute.notification.notify_on.iteritems() %}
+notify_on_{{ key }} = {{ value }}
+{%- endfor %}
+{%- endif %}
+
+{%- endif %}
+
+[keystone_authtoken]
+signing_dirname=/tmp/keystone-signing-nova
+admin_tenant_name = {{ compute.identity.tenant }}
+admin_user = {{ compute.identity.user }}
+admin_password = {{ compute.identity.password }}
+auth_host = {{ compute.identity.host }}
+auth_port = {{ compute.identity.port }}
+auth_protocol=http
+auth_uri=http://{{ compute.identity.host }}:5000
+
+

@@ -1,0 +1,2 @@
+nova/*             /usr/share/salt-formulas/env/nova/
+metadata/service/*      /usr/share/salt-formulas/reclass/service/nova/

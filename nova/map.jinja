@@ -1,0 +1,34 @@
+{% set compute_bind_defaults = {
+    'vnc_address': '10.0.0.10',
+    'vnc_port': '6080',
+    'vnc_name': 'cloud.domain.com',
+    'vnc_protocol': 'http',
+} %}
+
+{% set controller = salt['grains.filter_by']({
+    'Debian': {
+        'pkgs': ['nova-novncproxy', 'novnc', 'nova-api', 'nova-ajax-console-proxy', 'nova-cert', 'nova-conductor', 'nova-consoleauth', 'nova-doc', 'nova-scheduler', 'python-novaclient', 'python-memcache'],
+        'services': ['nova-api', 'nova-cert', 'nova-consoleauth', 'nova-scheduler', 'nova-conductor', 'nova-novncproxy'],
+        'debug': false,
+    },
+    'RedHat': {
+        'pkgs': ['openstack-nova-novncproxy', 'python-nova', 'openstack-nova-api', 'openstack-nova-console', 'openstack-nova-scheduler', 'python-novaclient', 'openstack-nova-common', 'openstack-nova-conductor', 'openstack-nova-cert'],
+        'services': ['openstack-nova-api', 'openstack-nova-cert', 'openstack-nova-consoleauth', 'openstack-nova-scheduler', 'openstack-nova-conductor', 'openstack-nova-novncproxy'],
+        'debug': false,
+    },
+}, merge=salt['pillar.get']('nova:controller')) %}
+
+{% set compute = salt['grains.filter_by']({
+    'Debian': {
+        'pkgs': ['nova-compute-kvm', 'python-novaclient', 'pm-utils', 'sysfsutils', 'sg3-utils', 'libvirt-bin', 'python-memcache', 'qemu-kvm','python-guestfs'],
+        'services': ['nova-compute', 'libvirt-bin'],
+        'bind': compute_bind_defaults,
+        'debug': false,
+    },
+    'RedHat': {
+        'pkgs': ['openstack-nova-compute', 'python-novaclient', 'python-nova', 'sysfsutils', 'sg3_utils'],
+        'services': ['messagebus', 'openstack-nova-compute', 'libvirtd'],
+        'bind': compute_bind_defaults,
+        'debug': false,
+    },
+}, merge=salt['pillar.get']('nova:compute')) %}
