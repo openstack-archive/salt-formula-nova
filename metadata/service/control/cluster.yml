@@ -11,6 +11,7 @@ parameters:
       version: ${_param:nova_version}
       vncproxy_url: ${_param:nova_vncproxy_url}
       security_group: false
+      dhcp_domain: novalocal
       logging:
       - engine: syslog
         facility: local0

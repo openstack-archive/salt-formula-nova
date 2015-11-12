@@ -12,6 +12,7 @@ lock_path = /var/lib/nova/tmp
 volumes_dir = /etc/nova/volumes
 dhcpbridge = /usr/bin/nova-dhcpbridge
 dhcpbridge_flagfile = /etc/nova/nova.conf
+dhcp_domain = {{ controller.dhcp_domain }}
 force_dhcp_release = True
 injected_network_template = /usr/share/nova/interfaces.template
 libvirt_nonblocking = True
