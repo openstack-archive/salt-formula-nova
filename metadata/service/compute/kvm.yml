@@ -39,3 +39,6 @@ parameters:
         engine: neutron
         host: ${linux:network:host:vip:address}
         port: 9696
+      logging:
+        heka:
+          enabled: true

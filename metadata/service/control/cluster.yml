@@ -12,9 +12,11 @@ parameters:
       vncproxy_url: ${_param:nova_vncproxy_url}
       security_group: false
       dhcp_domain: novalocal
-      logging:
+     logging:
       - engine: syslog
         facility: local0
+        heka:
+          enabled: true
       bind:
         private_address: ${_param:cluster_local_address}
         public_address: ${_param:cluster_vip_address}

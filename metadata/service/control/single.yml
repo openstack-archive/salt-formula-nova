@@ -15,6 +15,8 @@ parameters:
       logging:
       - engine: syslog
         facility: local0
+        heka:
+          enabled: true
       bind:
         private_address: ${_param:single_address}
         public_address: ${_param:single_address}
@@ -53,6 +55,6 @@ parameters:
         password: metadataPass
       cache:
         engine: memcached
-        members: 
+        members:
         - host: ${_param:single_address}
           port: 11211
