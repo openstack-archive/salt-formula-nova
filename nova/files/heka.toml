@@ -7,7 +7,7 @@ priority = ["^Index"]
 decoder = openstack
 {%- endif %}
 
-{%- if pilllar.nova.controller is defined %}
+{%- if pillar.nova.controller is defined %}
 [logstreamer nova_scheduler]
 type = "LogstreamerInput"
 log_directory = "/var/log/nova"
