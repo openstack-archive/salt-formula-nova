@@ -19,4 +19,5 @@ decoder = "openstack"
 [openstack]
 type = "SandboxDecoder"
 filename = "lua_modules/decoders/openstack.lua"
+module_directory = "/usr/share/heka/lua_modules;/usr/share/heka/lua_modules/common"
 
