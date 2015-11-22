@@ -4,7 +4,7 @@ type = "LogstreamerInput"
 log_directory = "/var/log/nova"
 file_match = 'nova-compute\.log\.?(?P<Index>\d+)?(.gz)?'
 priority = ["^Index"]
-decoder = openstack
+decoder = "openstack"
 {%- endif %}
 
 {%- if pillar.nova.controller is defined %}
@@ -13,10 +13,10 @@ type = "LogstreamerInput"
 log_directory = "/var/log/nova"
 file_match = 'nova-scheduler\.log\.?(?P<Index>\d+)?(.gz)?'
 priority = ["^Index"]
-decoder = openstack
+decoder = "openstack"
 {%- endif %}
 
 [openstack]
 type = "SandboxDecoder"
-file_name = "lua_modules/openstack.lua"
+filename = "lua_modules/decoders/openstack.lua"
 
