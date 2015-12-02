@@ -14,6 +14,7 @@ log_directory = "/var/log/nova"
 file_match = 'nova-scheduler\.log\.?(?P<Index>\d+)?(.gz)?'
 priority = ["^Index"]
 decoder = "openstack"
+oldest_duration: "7d"
 
 [logstreamer_nova_conductor]
 type = "LogstreamerInput"
@@ -21,6 +22,7 @@ log_directory = "/var/log/nova"
 log_directory = 'nova-conductor\.log\.?(?P<Index>\d+)?(.gz)?'
 priority = ["^Index"]
 decoder = "openstack"
+oldest_duration: "7d"
 
 [logstreamer_nova_consoleauth]
 type = "LogstreamerInput"
@@ -28,6 +30,7 @@ log_directory = "/var/log/nova"
 log_directory = 'nova-consoleauth\.log\.?(?P<Index>\d+)?(.gz)?'
 priority = ["^Index"]
 decoder = "openstack"
+oldest_duration: "7d"
 
 [logstreamer_nova_cert]
 type = "LogstreamerInput"
@@ -35,6 +38,7 @@ log_directory = "/var/log/nova"
 log_directory = 'nova-cert\.log\.?(?P<Index>\d+)?(.gz)?'
 priority = ["^Index"]
 decoder = "openstack"
+oldest_duration: "7d"
 {%- endif %}
 
 [openstack]
