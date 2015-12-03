@@ -1,0 +1,5 @@
+plugin:
+  nova_compute_libvirt:
+    plugin: interface
+    interval: 60
+    template: nova/files/collectd_libvirt.conf
