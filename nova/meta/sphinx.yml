@@ -1,0 +1,15 @@
+doc:
+  name: Nova
+  description: OpenStack Nova provides a cloud computing fabric controller, supporting a wide variety of virtualization technologies, including KVM, Xen, LXC, VMware, and more.
+  role:
+  {%- if pillar.nova.compute is defined %}
+  {%- from "nova/map.jinja" import compute with context %}
+    compute:
+      name: compute
+      param: {}
+  {%- endif %}
+  {%- if pillar.nova.controller is defined %}
+    controller:
+      name: controller
+      param: {}
+  {%- endif %}
