@@ -1,5 +1,5 @@
 parameters:
-  salt:
+  nova:
     _support:
       collectd:
         enabled: true
