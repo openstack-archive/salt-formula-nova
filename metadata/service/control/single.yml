@@ -1,5 +1,7 @@
 applications:
 - nova
+classes:
+- service.nova.support
 parameters:
   _param:
     nova_vncproxy_url: http://${_param:single_address}:6080
