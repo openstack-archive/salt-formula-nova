@@ -1,5 +1,13 @@
 plugin:
+{%- if pillar.nova.compute is defined %}
   nova_compute_libvirt:
     plugin: interface
     interval: 60
     template: nova/files/collectd_libvirt.conf
+{%- endif %}
+{%- if pillar.nova.controller is defined %}
+  nova_controller_nova:
+    plugin: nova
+    interval: 60
+    template: nova/files/collectd_nova.conf
+{%- endif %}

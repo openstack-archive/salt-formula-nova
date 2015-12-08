@@ -1,5 +1,4 @@
-{% from "nova/map.jinja" import compute with context %}
-
+{%- from "nova/map.jinja" import compute with context %}
 {%- if compute.enabled %}
 
 nova_compute_packages:
