@@ -6,7 +6,9 @@ doc:
   {%- from "nova/map.jinja" import compute with context %}
     compute:
       name: compute
-      param: {}
+      param:
+        virtualization:
+          value: {{ compute.virtualization }}
   {%- endif %}
   {%- if pillar.nova.controller is defined %}
     controller:

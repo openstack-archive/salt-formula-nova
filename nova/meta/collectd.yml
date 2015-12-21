@@ -5,7 +5,7 @@ plugin:
     interval: 60
     template: nova/files/collectd_libvirt.conf
 {%- endif %}
-{%- if pillar.nova.controller is defined %}
+{%- if pillar.nova.controller-do-not-run is defined %}
   nova_controller_nova:
     plugin: nova
     interval: 60
