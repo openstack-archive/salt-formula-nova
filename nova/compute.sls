@@ -40,6 +40,11 @@ group_nova:
 
 {%- if compute.user is defined %}
 
+user_nova:
+  user.present:
+  - name: nova
+  - shell: /bin/bash
+
 nova_auth_keys:
   ssh_auth.present:
   - user: nova
