@@ -40,18 +40,13 @@ group_nova:
 
 {%- if compute.user is defined %}
 
-user_nova:
-  user.present:
-  - name: nova
-  - shell: /bin/bash
-
 nova_auth_keys:
   ssh_auth.present:
   - user: nova
   - names:
     - {{ compute.user.public_key }}
 
-user_nova:
+user_nova_bash:
   user.present:
   - name: nova
   - home: /var/lib/nova
@@ -61,6 +56,14 @@ user_nova:
   file.managed:
   - user: nova
   - contents_pillar: nova:compute:user:private_key
+  - mode: 400
+  - require:
+    - pkg: nova_compute_packages
+
+/var/lib/nova/.ssh/config:
+  file.managed:
+  - user: nova
+  - contents: StrictHostKeyChecking no
   - mode: 400
   - require:
     - pkg: nova_compute_packages
