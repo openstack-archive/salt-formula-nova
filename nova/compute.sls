@@ -51,6 +51,12 @@ nova_auth_keys:
   - names:
     - {{ compute.user.public_key }}
 
+user_nova:
+  user.present:
+  - name: nova
+  - home: /var/lib/nova
+  - shell: /bin/bash
+
 /var/lib/nova/.ssh/id_rsa:
   file.managed:
   - user: nova
