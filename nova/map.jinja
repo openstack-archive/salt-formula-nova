@@ -24,11 +24,13 @@
         'services': ['nova-compute', 'libvirt-bin'],
         'bind': compute_bind_defaults,
         'debug': false,
+        'heal_instance_info_cache_interval': '60',
     },
     'RedHat': {
         'pkgs': ['openstack-nova-compute', 'python-novaclient', 'python-nova', 'sysfsutils', 'sg3_utils'],
         'services': ['messagebus', 'openstack-nova-compute', 'libvirtd'],
         'bind': compute_bind_defaults,
         'debug': false,
+        'heal_instance_info_cache_interval': '60',
     },
 }, merge=salt['pillar.get']('nova:compute')) %}
