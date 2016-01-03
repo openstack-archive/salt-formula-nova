@@ -51,6 +51,8 @@ vncserver_proxyclient_address={{ compute.bind.vnc_address }}
 novncproxy_base_url={{ compute.vncproxy_url }}/vnc_auto.html
 novncproxy_port={{ compute.bind.vnc_port }}
 
+heal_instance_info_cache_interval = {{ compute.heal_instance_info_cache_interval }}
+
 {%- if compute.cache is defined %}
 memcached_servers={%- for member in compute.cache.members %}{{ member.host }}:11211{% if not loop.last %},{% endif %}{%- endfor %}
 {%- endif %}

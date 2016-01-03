@@ -52,6 +52,8 @@ neutron_url_timeout = 300
 network_api_class = nova_contrail_vif.contrailvif.ContrailNetworkAPI
 compute_driver = libvirt.LibvirtDriver
 
+heal_instance_info_cache_interval = {{ compute.heal_instance_info_cache_interval }}
+
 #NoVNC
 vnc_enabled=true
 vncserver_enabled = true

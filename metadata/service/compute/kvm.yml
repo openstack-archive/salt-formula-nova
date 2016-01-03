@@ -8,6 +8,7 @@ parameters:
       enabled: true
       version: ${_param:nova_version}
       virtualization: kvm
+      heal_instance_info_cache_interval: 60
       bind:
         vnc_address: ${linux:network:host:local:address}
         vnc_port: 6080
