@@ -5,43 +5,50 @@ classes:
 parameters:
   nova:
     compute:
-      enabled: true
       version: ${_param:nova_version}
+      enabled: true
       virtualization: kvm
       heal_instance_info_cache_interval: 60
+      vncproxy_url: http://${_param:cluster_vip_address}:6080
       bind:
-        vnc_address: ${linux:network:host:local:address}
+        vnc_address: ${_param:cluster_local_address}
         vnc_port: 6080
-        vnc_name: ${linux:network:host:public:address}
+        vnc_name: 0.0.0.0
       database:
         engine: mysql
-        host: ${linux:network:host:vip:address}
+        host: ${_param:cluster_vip_address}
         port: 3306
         name: nova
         user: nova
-        password: ${_secret:mysql_nova_password}
+        password: ${_param:mysql_nova_password}
       identity:
         engine: keystone
-        host: ${linux:network:host:vip:address}
+        host: ${_param:cluster_vip_address}
         port: 35357
         user: nova
-        password: ${_secret:keystone_nova_password}
+        password: ${_param:keystone_nova_password}
         tenant: service
       message_queue:
         engine: rabbitmq
-        host: ${linux:network:host:vip:address}
+        host: ${_param:cluster_vip_address}
         port: 5672
         user: openstack
-        password: ${_secret:rabbitmq_openstack_password}
+        password: ${_param:rabbitmq_openstack_password}
         virtual_host: '/openstack'
       image:
         engine: glance
-        host: ${linux:network:host:vip:address}
+        host: ${_param:cluster_vip_address}
         port: 9292
       network:
         engine: neutron
-        host: ${linux:network:host:vip:address}
+        host: ${_param:cluster_vip_address}
         port: 9696
-      logging:
-        heka:
-          enabled: true
+      cache:
+        engine: memcached
+        members:
+        - host: ${_param:cluster_node01_address}
+          port: 11211
+        - host: ${_param:cluster_node02_address}
+          port: 11211
+        - host: ${_param:cluster_node03_address}
+          port: 11211
