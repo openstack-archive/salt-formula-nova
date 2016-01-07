@@ -51,6 +51,8 @@ user_nova_bash:
   - name: nova
   - home: /var/lib/nova
   - shell: /bin/bash
+  - groups:
+    - libvirtd
 
 /var/lib/nova/.ssh/id_rsa:
   file.managed:
