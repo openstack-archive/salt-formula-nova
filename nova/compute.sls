@@ -68,24 +68,6 @@ user_nova_bash:
   - require:
     - pkg: nova_compute_packages
 
-{# Find other compute nodes, add their host keys into known_hosts #}
-{%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}
-{%- if 'nova.compute' in node_grains.get('roles', []) %}
-
-{%- for key_type, key_fingerprint in node_grains.get('ssh_fingerprints', {}).iteritems() %}
-nova_known_hosts_{{ key_type }}_{{ node_name }}:
-  ssh_known_hosts.present:
-  - user: nova
-  - name: {{ node_grains.ipv4.1 }}
-  - enc: {{ key_type }}
-  - fingerprint: {{ key_fingerprint }}
-  - require:
-    - file: /var/lib/nova/.ssh/id_rsa
-{%- endfor %}
-
-{%- endif %}
-{%- endfor %}
-
 {%- endif %}
 
 {%- if pillar.nova.controller is not defined %}
