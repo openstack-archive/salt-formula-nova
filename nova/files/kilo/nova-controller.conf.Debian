@@ -50,7 +50,7 @@ my_ip={{ controller.bind.private_address }}
 
 
 neutron_auth_strategy = keystone
-neutron_admin_auth_url = http://{{ controller.identity.host }}:35357/v2.0
+neutron_admin_auth_url = http://{{ controller.identity.host }}:35357/v{% if controller.identity.get('version', 2) == 2 %}2.0{% else %}3{% endif %}
 {% if pillar.neutron is defined %}
 neutron_admin_password={{ pillar.neutron.server.identity.password }}
 neutron_admin_tenant_name={{ pillar.neutron.server.identity.tenant }}
@@ -125,6 +125,8 @@ rabbit_virtual_host = {{ controller.message_queue.virtual_host }}
 rabbit_retry_interval = 1
 rabbit_retry_backoff = 2
 
+{%- if controller.identity.get('version', 2) == 2 %}
+
 [keystone_authtoken]
 signing_dirname=/tmp/keystone-signing-nova
 signing_dir=/tmp/keystone-signing-nova
@@ -135,6 +137,26 @@ auth_host = {{ controller.identity.host }}
 auth_port = {{ controller.identity.port }}
 auth_protocol=http
 auth_uri=http://{{ controller.identity.host }}:5000
+
+{%- else %}
+
+[keystone_authtoken]
+signing_dirname=/tmp/keystone-signing-nova
+identity_uri = http://{{ controller.identity.host }}:35357/v3
+revocation_cache_time = 10
+auth_section = generic_password
+
+[generic_password]
+auth_plugin = password
+user_domain_id = {{ controller.identity.get('domain', 'default') }}
+project_domain_id = {{ controller.identity.get('domain', 'default') }}
+project_name = {{ controller.identity.tenant }}
+username = {{ controller.identity.user }}
+password = {{ controller.identity.password }}
+auth_uri=http://{{ controller.identity.host }}:5000/v3
+auth_url=http://{{ controller.identity.host }}:35357/v3
+
+{%- endif %}
 
 [conductor]
 workers = 8
@@ -158,7 +180,7 @@ host = {{ controller.glance.host }}
 
 [neutron]
 auth_strategy = keystone
-admin_auth_url = http://{{ controller.identity.host }}:35357/v2.0
+admin_auth_url = http://{{ controller.identity.host }}:35357/v{% if controller.identity.get('version', 2) == 2 %}2.0{% else %}3{% endif %}
 {% if pillar.neutron is defined %}
 admin_password={{ pillar.neutron.server.identity.password }}
 admin_tenant_name={{ pillar.neutron.server.identity.tenant }}

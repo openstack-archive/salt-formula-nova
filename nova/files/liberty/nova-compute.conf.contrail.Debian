@@ -34,7 +34,7 @@ live_migration_retry_count=30
 neutron_admin_username={{ compute.network.user }}
 neutron_admin_password={{ compute.network.password }}
 neutron_admin_tenant_name={{ compute.identity.tenant }}
-neutron_admin_auth_url=http://{{ compute.identity.host }}:{{ compute.identity.port }}/v2.0
+neutron_admin_auth_url=http://{{ compute.identity.host }}:{{ compute.identity.port }}/v{% if compute.identity.get('version', 2) == 2 %}2.0{% else %}3{% endif %}
 neutron_url=http://{{ compute.network.host }}:{{ compute.network.port }}
 #neutron_url = http://10.0.102.35:9696/
 
@@ -108,6 +108,8 @@ notify_on_{{ key }} = {{ value }}
 
 {%- endif %}
 
+{%- if compute.identity.get('version', 2) == 2 %}
+
 [keystone_authtoken]
 signing_dirname=/tmp/keystone-signing-nova
 admin_tenant_name = {{ compute.identity.tenant }}
@@ -117,6 +119,26 @@ auth_host = {{ compute.identity.host }}
 auth_port = {{ compute.identity.port }}
 auth_protocol=http
 auth_uri=http://{{ compute.identity.host }}:5000
+
+{%- else %}
+
+[keystone_authtoken]
+signing_dirname=/tmp/keystone-signing-nova
+identity_uri = http://{{ compute.identity.host }}:35357/v3
+revocation_cache_time = 10
+auth_section = generic_password
+
+[generic_password]
+auth_plugin = password
+user_domain_id = {{ compute.identity.get('domain', 'default') }}
+project_domain_id = {{ compute.identity.get('domain', 'default') }}
+project_name = {{ compute.identity.tenant }}
+username = {{ compute.identity.user }}
+password = {{ compute.identity.password }}
+auth_uri=http://{{ compute.identity.host }}:5000/v3
+auth_url=http://{{ compute.identity.host }}:35357/v3
+
+{%- endif %}
 
 [oslo_messaging_rabbit]
 
@@ -136,7 +158,7 @@ auth_strategy = keystone
 admin_username={{ compute.network.user }}
 admin_password={{ compute.network.password }}
 admin_tenant_name={{ compute.identity.tenant }}
-admin_auth_url=http://{{ compute.identity.host }}:{{ compute.identity.port }}/v2.0
+admin_auth_url=http://{{ compute.identity.host }}:{{ compute.identity.port }}/v{% if compute.identity.get('version', 2) == 2 %}2.0{% else %}3{% endif %}
 url=http://{{ compute.network.host }}:{{ compute.network.port }}
 
 [cinder]
