@@ -21,6 +21,10 @@ enabled_apis=ec2,osapi_compute,metadata
 use_cow_images = {{ compute.image.use_cow }}
 {%- endif %}
 
+{%- if compute.reserved_host_memory_mb is defined %}
+reserved_host_memory_mb = {{ compute.reserved_host_memory_mb }}
+{%- endif %}
+
 allow_resize_to_same_host=True
 
 live_migration_flag=VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE
