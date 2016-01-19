@@ -5,6 +5,20 @@ nova_compute_packages:
   pkg.installed:
   - names: {{ compute.pkgs }}
 
+/var/log/nova:
+  file.directory:
+  {%- if compute.log_dir_perms is defined %}
+  - mode: {{ compute.log_dir_perms }}
+  {%- else %}
+  - mode: 750
+  {%- endif %}
+  - user: nova
+  - group: nova
+  - require:
+     - pkg: nova_compute_packages
+  - require_in:
+     - service: nova_compute_services
+
 {%- if not salt['user.info']('nova') %}
 user_nova:
   user.present:
