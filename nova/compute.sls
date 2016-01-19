@@ -15,7 +15,7 @@ nova_compute_packages:
   - user: nova
   - group: nova
   - require:
-     - pgk: nova_compute_packages
+     - pkg: nova_compute_packages
   - require_in:
      - service: nova_compute_services
 
