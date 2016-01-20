@@ -21,6 +21,14 @@ libvirt_inject_partition = -1
 vif_plugging_is_fatal = False
 vif_plugging_timeout = 0
 
+{%- if controller.cpu_allocation_ratio is defined %}
+cpu_allocation_ratio = {{ controller.cpu_allocation_ratio }}
+{%- endif %}
+
+{%- if controller.ram_allocation_ratio is defined %}
+ram_allocation_ratio = {{ controller.ram_allocation_ratio }}
+{%- endif %}
+
 allow_resize_to_same_host = True
 
 logdir=/var/log/nova
