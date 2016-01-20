@@ -19,6 +19,17 @@ nova_compute_packages:
   - require_in:
      - service: nova_compute_services
 
+{%- if compute.vm_swappiness is defined %}
+vm.swappiness:
+  sysctl.present:
+  - value: {{ compute.vm_swappiness }}
+  - require:
+    - pkg: nova_compute_packages
+  - require_in:
+    - service: nova_compute_services
+{%- endif %}
+
+
 {%- if not salt['user.info']('nova') %}
 user_nova:
   user.present:
