@@ -20,6 +20,9 @@ libvirt_use_virtio_for_bridges=True
 libvirt_inject_partition = -1
 vif_plugging_is_fatal = False
 vif_plugging_timeout = 0
+cpu_allocation_ratio = {{ controller.cpu_allocation_ratio }}
+ram_allocation_ratio = {{ controller.ram_allocation_ratio }}
+scheduler_default_filters = {{ controller.scheduler_default_filters }}
 
 allow_resize_to_same_host = True
 

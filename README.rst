@@ -1,6 +1,6 @@
 
 ==============
-OpenStack Nova 
+OpenStack Nova
 ==============
 
 OpenStack Nova provides a cloud computing fabric controller, supporting a wide variety of virtualization technologies, including KVM, Xen, LXC, VMware, and more. In addition to its native API, it includes compatibility with the commonly encountered Amazon EC2 and S3 APIs.
@@ -20,6 +20,8 @@ Nova services on the controller node
         version: juno
         enabled: true
         security_group: true
+        cpu_allocation_ratio: 8.0
+        ram_allocation_ratio: 1.0
         bind:
           public_address: 10.0.0.122
           public_name: openstack.domain.com
