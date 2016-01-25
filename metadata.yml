@@ -8,4 +8,6 @@ tests:
 - name: control_single
 dependencies:
 - name: keystone
-  version_range: ">= 0.1"
+  source: "https://github.com/tcpcloud/salt-formula-keystone"
+  source_type: git
+  version: ">= 0.1"
