@@ -1,13 +1,8 @@
 name: "nova"
 version: "0.2"
 source: "https://github.com/tcpcloud/salt-formula-nova"
-tests:
-- name: compute_cluster
-- name: compute_single
-- name: control_cluster
-- name: control_single
 dependencies:
 - name: keystone
-  source: "https://github.com/tcpcloud/salt-formula-keystone"
-  source_type: git
-  version: ">= 0.1"
+  source: "https://github.com/tcpcloud/salt-formula-keystone.git"
+- name: linux
+  source: "https://github.com/tcpcloud/salt-formula-linux.git"
