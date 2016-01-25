@@ -1,0 +1,11 @@
+name: "nova"
+version: "0.2"
+source: "https://github.com/tcpcloud/salt-formula-nova"
+tests:
+- name: compute_cluster
+- name: compute_single
+- name: control_cluster
+- name: control_single
+dependencies:
+- name: keystone
+  version_range: ">= 0.1"
