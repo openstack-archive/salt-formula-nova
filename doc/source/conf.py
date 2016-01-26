@@ -35,8 +35,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'ansible-role-diskimage-builder'
-copyright = u'2013, OpenStack Foundation'
+project = u'salt-formula-nova'
+copyright = u'2015, OpenStack Foundation'
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 add_function_parentheses = True
