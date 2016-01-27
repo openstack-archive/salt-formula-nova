@@ -30,7 +30,7 @@ doc:
           value: {{ compute.glance.host }}:{{ compute.glance.port }}
         message_queue_ip:
           name: "Message queue"
-          value: {{ compute.message_queue.user }}@{{ compute.message_queue.host }}:{{ compute.message_queue.port }}/{{ compute.message_queue.vhost }}
+          value: {{ compute.message_queue.user }}@{{ compute.message_queue.host }}:{{ compute.message_queue.port }}/{{ compute.message_queue.virtual_host }}
         identity_host:
           name: "Identity host ip"
           value: {{ compute.identity.user }}@{{ compute.identity.host }}:{{ compute.identity.port }}
@@ -84,7 +84,7 @@ doc:
           value: {{ controller.glance.host }}:{{ controller.glance.port }}
         message_queue_ip:
           name: "Message queue"
-          value: {{ controller.message_queue.user }}@{{ controller.message_queue.host }}:{{ controller.message_queue.port }}
+          value: {{ controller.message_queue.user }}@{{ controller.message_queue.host }}:{{ controller.message_queue.port }}/{{ controller.message_queue.virtual_host }}
         identity_host:
           name: "Identity host ip"
           value: {{ controller.identity.user }}@{{ controller.identity.host }}:{{ controller.identity.port }}
