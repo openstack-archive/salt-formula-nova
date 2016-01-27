@@ -51,6 +51,7 @@ doc:
             {%- endfor %}
   {%- endif %}
   {%- if pillar.nova.controller is defined %}
+  {% from "nova/map.jinja" import controller with context %}
     controller:
       name: controller
       param:
