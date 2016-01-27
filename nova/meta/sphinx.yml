@@ -75,10 +75,10 @@ doc:
           value: {{ controller.scheduler_default_filters|replace(',', ' ') }}
         database_host:
           name: "Database"
-          value: {{ controller.glance.user }}@{{ controller.database.host }}:{{ controller.glance.port }}
+          value: {{ controller.database.user }}@{{ controller.database.host }}:{{ controller.database.port }}
         network_host:
           name: "Network service"
-          value: {{ controller.network.host }}:{{ controller.glance.port }}
+          value: {{ controller.network.host }}:{{ controller.network.port }}
         glance_host:
           name: "Glance service"
           value: {{ controller.glance.host }}:{{ controller.glance.port }}
