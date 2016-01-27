@@ -94,6 +94,7 @@ doc:
         packages:
           value: |
             {%- for pkg in controller.pkgs %}
-            * {{ pkg }}: {{ salt['cmd.run']("dpkg -l | grep "+pkg+" | awk '{print \$3}'")}}
+            {%- set pkg_version = "dpkg -l "+pkg+" | grep "+pkg+" | awk '{print $3}'" %}
+            * {{ pkg }}: {{ salt['cmd.run'](pkg_version) }}
             {%- endfor %}
   {%- endif %}
