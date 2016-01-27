@@ -55,25 +55,25 @@ doc:
   {% from "nova/map.jinja" import controller with context %}
     controller:
       name: controller
+      endpoint:
+        nova_api:
+          name: nova-api
+          type: nova-api
+          address: {{ controller.bind.private_address }}:8774
+          protocol: tcp
+        nova_metadata:
+          name: nova-metadata
+          type: nova-metadata
+          address: {{ controller.bind.private_address }}:8775
+          protocol: tcp
+        nova_ec2_api:
+          name: nova-ec2-api
+          type: nova-ec2-api
+          address: {{ controller.bind.private_address }}:8773
+          protocol: tcp
       param:
         bind:
           value: {{ controller.bind.private_address }}
-        endpoint:
-          nova_api:
-            name: nova-api
-            type: nova-api
-            address: {{ controller.bind.private_address }}:8774
-            protocol: tcp
-          nova_metadata:
-            name: nova-metadata
-            type: nova-metadata
-            address: {{ controller.bind.private_address }}:8775
-            protocol: tcp
-          nova_ec2_api:
-            name: nova-ec2-api
-            type: nova-ec2-api
-            address: {{ controller.bind.private_address }}:8773
-            protocol: tcp
         version:
           name: "Version"
           value: {{ controller.version }}
