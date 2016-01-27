@@ -7,11 +7,82 @@ doc:
     compute:
       name: compute
       param:
+        version:
+          name: "Version"
+          value: {{ compute.version }}
         virtualization:
+          name: "Virtualization type"
           value: {{ compute.virtualization }}
+        vncproxy_url:
+          name: "VNC proxy URL"
+          value: {{ compute.vncproxy_url }}
+        reserved_host_memory_mb:
+          name: "Reserved Host Memmory"
+          value: {{ compute.reserved_host_memory_mb }}
+        database_host:
+          name: "Database host ip"
+          value: {{ compute.database.host }}
+        network_host:
+          name: "Network host ip"
+          value: {{ compute.network.host }}
+        glance_host:
+          name: "Glance image host ip"
+          value: {{ compute.glance.host }}
+        message_queue_ip:
+          name: "Message queue ip"
+          value: {{ compute.message_queue.host }}
+        identity_host:
+          name: "Identity host ip"
+          value: {{ compute.identity.host }}
+        {%- if compute.vm_swappiness is defined %}
+        vm_swappiness:
+          name: "VM SWAPpiness in sysctl.conf"
+          value: {{ compute.vm_swappiness }}
+        {%- endif %}
+        {%- if compute.ceph is defined %}
+        ceph:
+          name: "Ceph is configured"
+          value: "True"
+        {%- endif %}
   {%- endif %}
   {%- if pillar.nova.controller is defined %}
     controller:
       name: controller
-      param: {}
+      param:
+        version:
+          name: "Version"
+          value: {{ controller.version }}
+        networking:
+          name: "Networking plugin"
+          value: {{ controller.networking }}
+        ram_allocation_ratio:
+          name: "RAM allocation ration"
+          value: {{ controller.ram_allocation_ratio }}
+        cpu_allocation_ratio:
+          name: "CPU allocation ration"
+          value: {{ controller.cpu_allocation_ratio }}
+        dhcp_domain:
+          name: "DHCP domain"
+          value: {{ controller.dhcp_domain }}
+        scheduler_default_filters:
+          name: "Scheduler default filters"
+          value: {{ controller.scheduler_default_filters }}
+        database_host:
+          name: "Database host ip"
+          value: {{ controller.database.host }}
+        network_host:
+          name: "Network host ip"
+          value: {{ controller.network.host }}
+        glance_host:
+          name: "Glance image host ip"
+          value: {{ controller.glance.host }}
+        message_queue_ip:
+          name: "Message queue ip"
+          value: {{ controller.message_queue.host }}
+        identity_host:
+          name: "Identity host ip"
+          value: {{ controller.identity.host }}
+        vncproxy_url:
+          name: "VNC proxy URL"
+          value: {{ controller.vncproxy_url }}
   {%- endif %}
