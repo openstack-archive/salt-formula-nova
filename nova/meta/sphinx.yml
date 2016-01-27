@@ -20,20 +20,20 @@ doc:
           name: "Reserved Host Memmory"
           value: {{ compute.reserved_host_memory_mb }}
         database_host:
-          name: "Database host ip"
-          value: {{ compute.database.host }}
+          name: "Database"
+          value: {{ compute.database.user }}@{{ compute.database.host }}:{{ compute.database.port }}
         network_host:
-          name: "Network host ip"
-          value: {{ compute.network.host }}
+          name: "Network service"
+          value: {{ compute.network.host }}:{{ compute.network.port }}
         glance_host:
-          name: "Glance image host ip"
-          value: {{ compute.glance.host }}
+          name: "Image service"
+          value: {{ compute.glance.host }}:{{ compute.glance.port }}
         message_queue_ip:
-          name: "Message queue ip"
-          value: {{ compute.message_queue.host }}
+          name: "Message queue"
+          value: {{ compute.message_queue.user }}@{{ compute.message_queue.host }}:{{ compute.message_queue.port }}
         identity_host:
           name: "Identity host ip"
-          value: {{ compute.identity.host }}
+          value: {{ compute.identity.user }}@{{ compute.identity.host }}:{{ compute.identity.port }}
         {%- if compute.vm_swappiness is defined %}
         vm_swappiness:
           name: "VM SWAPpiness in sysctl.conf"
@@ -72,22 +72,22 @@ doc:
           value: {{ controller.dhcp_domain }}
         scheduler_default_filters:
           name: "Scheduler default filters"
-          value: {{ controller.scheduler_default_filters }}
+          value: {{ controller.scheduler_default_filters|replace(',', ' ') }}
         database_host:
-          name: "Database host ip"
-          value: {{ controller.database.host }}
+          name: "Database"
+          value: {{ controller.glance.user }}@{{ controller.database.host }}:{{ controller.glance.port }}
         network_host:
-          name: "Network host ip"
-          value: {{ controller.network.host }}
+          name: "Network service"
+          value: {{ controller.network.host }}:{{ controller.glance.port }}
         glance_host:
-          name: "Glance image host ip"
-          value: {{ controller.glance.host }}
+          name: "Glance service"
+          value: {{ controller.glance.host }}:{{ controller.glance.port }}
         message_queue_ip:
-          name: "Message queue ip"
-          value: {{ controller.message_queue.host }}
+          name: "Message queue"
+          value: {{ controller.message_queue.user }}@{{ controller.message_queue.host }}:{{ controller.message_queue.port }}
         identity_host:
           name: "Identity host ip"
-          value: {{ controller.identity.host }}
+          value: {{ controller.identity.user }}@{{ controller.identity.host }}:{{ controller.identity.port }}
         vncproxy_url:
           name: "VNC proxy URL"
           value: {{ controller.vncproxy_url }}
