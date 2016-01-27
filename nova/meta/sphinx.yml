@@ -59,18 +59,18 @@ doc:
         nova_api:
           name: nova-api
           type: nova-api
-          address: {{ controller.bind.private_address }}:8774
-          protocol: tcp
+          address: http://{{ controller.bind.private_address }}:8774
+          protocol: http
         nova_metadata:
           name: nova-metadata
           type: nova-metadata
-          address: {{ controller.bind.private_address }}:8775
-          protocol: tcp
+          address: http://{{ controller.bind.private_address }}:8775
+          protocol: http
         nova_ec2_api:
           name: nova-ec2-api
           type: nova-ec2-api
-          address: {{ controller.bind.private_address }}:8773
-          protocol: tcp
+          address: http://{{ controller.bind.private_address }}:8773
+          protocol: http
       param:
         bind:
           value: {{ controller.bind.private_address }}
