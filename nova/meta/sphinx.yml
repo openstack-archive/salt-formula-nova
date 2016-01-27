@@ -44,6 +44,11 @@ doc:
           name: "Ceph is configured"
           value: "True"
         {%- endif %}
+        packages:
+          value: |
+            {%- for pkg in compute.pkgs %}
+            * {{ pkg }}: {{ salt['cmd.run']("dpkg -l | grep "+pkg+" | awk '{print \$3}'")}}
+            {%- endfor %}
   {%- endif %}
   {%- if pillar.nova.controller is defined %}
     controller:
@@ -85,4 +90,9 @@ doc:
         vncproxy_url:
           name: "VNC proxy URL"
           value: {{ controller.vncproxy_url }}
+        packages:
+          value: |
+            {%- for pkg in controller.pkgs %}
+            * {{ pkg }}: {{ salt['cmd.run']("dpkg -l | grep "+pkg+" | awk '{print \$3}'")}}
+            {%- endfor %}
   {%- endif %}
