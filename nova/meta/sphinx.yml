@@ -27,7 +27,7 @@ doc:
           value: {{ compute.network.host }}:{{ compute.network.port }}
         glance_host:
           name: "Image service"
-          value: {{ compute.glance.host }}:{{ compute.glance.port }}
+          value: {{ compute.image.host }}:{{ compute.image.port }}
         message_queue_ip:
           name: "Message queue"
           value: {{ compute.message_queue.user }}@{{ compute.message_queue.host }}:{{ compute.message_queue.port }}{{ compute.message_queue.virtual_host }}
