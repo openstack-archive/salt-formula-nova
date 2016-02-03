@@ -1,7 +1,7 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: salt-formula-nova
 Upstream-Contact: Jakub Pavlik <jakub.pavlik@tcpcloud.eu>
-Source: https://github.com/tcpcloud/salt-formula-nova
+Source: https://github.com/openstack/salt-formula-nova
 
 Files: *
 Copyright: 2014-2015 tcp cloud
