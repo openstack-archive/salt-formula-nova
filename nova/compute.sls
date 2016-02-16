@@ -99,26 +99,12 @@ user_nova_bash:
 
 {%- if pillar.nova.controller is not defined %}
 
-{%- if compute.get('networking', 'default') == "contrail" %}
-
-
-/etc/nova/nova.conf:
-  file.managed:
-  - source: salt://nova/files/{{ compute.version }}/nova-compute.conf.contrail.{{ grains.os_family }}
-  - template: jinja
-  - require:
-    - pkg: nova_compute_packages
-
-{%- else %}
-
 /etc/nova/nova.conf:
   file.managed:
   - source: salt://nova/files/{{ compute.version }}/nova-compute.conf.{{ grains.os_family }}
   - template: jinja
   - require:
     - pkg: nova_compute_packages
-
-{%- endif %}
 
 nova_compute_services:
   service.running:
@@ -156,9 +142,9 @@ ceph_virsh_secret_set_value:
 
 {% endif %}
 
-/etc/default/libvirt-bin:
+{{ compute.libvirt_bin }}:
   file.managed:
-  - source: salt://nova/files/{{ compute.version }}/libvirt-bin
+  - source: salt://nova/files/{{ compute.version }}/libvirt.{{ grains.os_family }}
   - template: jinja
   - require:
     - pkg: nova_compute_packages
@@ -170,7 +156,7 @@ ceph_virsh_secret_set_value:
   - require:
     - pkg: nova_compute_packages
 
-/etc/libvirt/libvirtd.conf:
+/etc/libvirt/{{ compute.libvirt_config }}:
   file.managed:
   - source: salt://nova/files/{{ compute.version }}/libvirtd.conf.{{ grains.os_family }}
   - template: jinja
@@ -184,15 +170,15 @@ virsh net-undefine default:
     - pkg: nova_compute_packages
   - onlyif: "virsh net-list | grep default"
 
-libvirt-bin:
+{{ compute.libvirt_service }}:
   service.running:
   - enable: true
   - require:
     - pkg: nova_compute_packages
     - cmd: virsh net-undefine default
   - watch:
-    - file: /etc/libvirt/libvirtd.conf
-    - file: /etc/default/libvirt-bin
+    - file: /etc/libvirt/{{ compute.libvirt_config }}
+    - file: {{ compute.libvirt_bin }}
 
 {%- endif %}
 

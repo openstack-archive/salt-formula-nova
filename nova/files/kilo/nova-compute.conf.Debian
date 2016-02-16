@@ -65,7 +65,6 @@ security_group_api = neutron
 heal_instance_info_cache_interval = 0
 libvirt_cpu_mode = host-passthrough
 image_cache_manager_interval = 0
-libvirt_vif_driver = nova_contrail_vif.contrailvif.VRouterVIFDriver
 firewall_driver = nova.virt.firewall.NoopFirewallDriver
 glance_port = 9292
 glance_num_retries = 10

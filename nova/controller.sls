@@ -27,7 +27,7 @@ group_nova:
       - user: user_nova
 {%- endif %}
 
-{%- if controller.get('networking', 'default') == "contrail" %}
+{%- if controller.get('networking', 'default') == "contrail" and controller.version == "juno" %}
 
 contrail_nova_packages:
   pkg.installed:
@@ -35,23 +35,14 @@ contrail_nova_packages:
     - contrail-nova-driver
     - contrail-nova-networkapi
 
-/etc/nova/nova.conf:
-  file.managed:
-  - source: salt://nova/files/{{ controller.version }}/nova-controller.conf.{{ grains.os_family }}
-  - template: jinja
-  - require:
-    - pkg: nova_controller_packages
-
-{%- else %}
-
-/etc/nova/nova.conf:
-  file.managed:
-  - source: salt://nova/files/{{ controller.version }}/nova-controller.conf.{{ grains.os_family }}
-  - template: jinja
-  - require:
-    - pkg: nova_controller_packages
-
 {%- endif %}
+
+/etc/nova/nova.conf:
+  file.managed:
+  - source: salt://nova/files/{{ controller.version }}/nova-controller.conf.{{ grains.os_family }}
+  - template: jinja
+  - require:
+    - pkg: nova_controller_packages
 
 /etc/nova/api-paste.ini:
   file.managed:

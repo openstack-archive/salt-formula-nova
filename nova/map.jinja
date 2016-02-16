@@ -22,6 +22,9 @@
     'Debian': {
         'pkgs': ['nova-compute-kvm', 'python-novaclient', 'pm-utils', 'sysfsutils', 'sg3-utils', 'libvirt-bin', 'python-memcache', 'qemu-kvm','python-guestfs'],
         'services': ['nova-compute', 'libvirt-bin'],
+        'libvirt_config': 'libvirtd.conf',
+        'libvirt_bin': '/etc/default/libvirt-bin',
+        'libvirt_service': 'libvirt-bin',
         'bind': compute_bind_defaults,
         'debug': false,
         'heal_instance_info_cache_interval': '60',
@@ -29,6 +32,9 @@
     'RedHat': {
         'pkgs': ['openstack-nova-compute', 'python-novaclient', 'python-nova', 'sysfsutils', 'sg3_utils'],
         'services': ['messagebus', 'openstack-nova-compute', 'libvirtd'],
+        'libvirt_config': 'libvirt.conf',
+        'libvirt_bin': '/etc/sysconfig/libvirtd',
+        'libvirt_service': 'libvirtd',
         'bind': compute_bind_defaults,
         'debug': false,
         'heal_instance_info_cache_interval': '60',

@@ -1,4 +1,5 @@
 {%- from "nova/map.jinja" import compute with context %}
+
 [DEFAULT]
 dhcpbridge_flagfile=/etc/nova/nova.conf
 dhcpbridge=/usr/bin/nova-dhcpbridge
@@ -16,11 +17,15 @@ api_paste_config=/etc/nova/api-paste.ini
 volumes_path=/var/lib/nova/volumes
 enabled_apis=ec2,osapi_compute,metadata
 
-allow_resize_to_same_host=True
+{%- if compute.image.use_cow is defined %}
+use_cow_images = {{ compute.image.use_cow }}
+{%- endif %}
 
 {%- if compute.reserved_host_memory_mb is defined %}
 reserved_host_memory_mb = {{ compute.reserved_host_memory_mb }}
 {%- endif %}
+
+allow_resize_to_same_host=True
 
 live_migration_flag=VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE
 live_migration_retry_count=30
@@ -29,7 +34,7 @@ live_migration_retry_count=30
 neutron_admin_username={{ compute.network.user }}
 neutron_admin_password={{ compute.network.password }}
 neutron_admin_tenant_name={{ compute.identity.tenant }}
-neutron_admin_auth_url=http://{{ compute.identity.host }}:{{ compute.identity.port }}/v2.0
+neutron_admin_auth_url=http://{{ compute.identity.host }}:{{ compute.identity.port }}/v{% if compute.identity.get('version', 2) == 2 %}2.0{% else %}3{% endif %}
 neutron_url=http://{{ compute.network.host }}:{{ compute.network.port }}
 #neutron_url = http://10.0.102.35:9696/
 
@@ -38,25 +43,9 @@ auth_strategy = keystone
 libvirt_nonblocking = True
 libvirt_inject_partition = -1
 
-#RabbitMQ
-rabbit_host = {{ compute.message_queue.host }}
-rabbit_port = {{ compute.message_queue.port }}
-rabbit_hosts={{ compute.message_queue.host }}:{{ compute.message_queue.port }}
-rabbit_userid = {{ compute.message_queue.user }}
-rabbit_password = {{ compute.message_queue.password }}
-rabbit_virtual_host = {{ compute.message_queue.virtual_host }}
-
-glance_host = {{ compute.image.host }}
-
-{%- if compute.image.use_cow is defined %}
-use_cow_images = {{ compute.image.use_cow }}
-{%- endif %}
-
 neutron_url_timeout = 300
-network_api_class = nova_contrail_vif.contrailvif.ContrailNetworkAPI
+network_api_class=nova.network.neutronv2.api.API
 compute_driver = libvirt.LibvirtDriver
-
-heal_instance_info_cache_interval = {{ compute.heal_instance_info_cache_interval }}
 
 #NoVNC
 vnc_enabled=true
@@ -66,6 +55,8 @@ vncserver_proxyclient_address={{ compute.bind.vnc_address }}
 novncproxy_base_url={{ compute.vncproxy_url }}/vnc_auto.html
 novncproxy_port={{ compute.bind.vnc_port }}
 
+heal_instance_info_cache_interval = {{ compute.heal_instance_info_cache_interval }}
+
 {%- if compute.cache is defined %}
 memcached_servers={%- for member in compute.cache.members %}{{ member.host }}:11211{% if not loop.last %},{% endif %}{%- endfor %}
 {%- endif %}
@@ -74,7 +65,6 @@ security_group_api = neutron
 heal_instance_info_cache_interval = 0
 libvirt_cpu_mode = host-passthrough
 image_cache_manager_interval = 0
-libvirt_vif_driver = nova_contrail_vif.contrailvif.VRouterVIFDriver
 firewall_driver = nova.virt.firewall.NoopFirewallDriver
 glance_port = 9292
 glance_num_retries = 10
@@ -99,7 +89,6 @@ service_down_time = 90
 instance_usage_audit = True
 instance_usage_audit_period = hour
 notify_on_state_change = vm_and_task_state
-notification_driver = messagingv2
 
 {% endif %}
 
@@ -118,6 +107,8 @@ notify_on_{{ key }} = {{ value }}
 
 {%- endif %}
 
+{%- if compute.identity.get('version', 2) == 2 %}
+
 [keystone_authtoken]
 signing_dirname=/tmp/keystone-signing-nova
 admin_tenant_name = {{ compute.identity.tenant }}
@@ -127,3 +118,47 @@ auth_host = {{ compute.identity.host }}
 auth_port = {{ compute.identity.port }}
 auth_protocol=http
 auth_uri=http://{{ compute.identity.host }}:5000
+
+{%- else %}
+
+[keystone_authtoken]
+signing_dirname=/tmp/keystone-signing-nova
+identity_uri = http://{{ compute.identity.host }}:35357/v3
+revocation_cache_time = 10
+auth_section = generic_password
+
+[generic_password]
+auth_plugin = password
+user_domain_id = {{ compute.identity.get('domain', 'default') }}
+project_domain_id = {{ compute.identity.get('domain', 'default') }}
+project_name = {{ compute.identity.tenant }}
+username = {{ compute.identity.user }}
+password = {{ compute.identity.password }}
+auth_uri=http://{{ compute.identity.host }}:5000/v3
+auth_url=http://{{ compute.identity.host }}:35357/v3
+
+{%- endif %}
+
+[oslo_messaging_rabbit]
+
+rabbit_host = {{ compute.message_queue.host }}
+rabbit_port = {{ compute.message_queue.port }}
+rabbit_hosts={{ compute.message_queue.host }}:{{ compute.message_queue.port }}
+rabbit_userid = {{ compute.message_queue.user }}
+rabbit_password = {{ compute.message_queue.password }}
+rabbit_virtual_host = {{ compute.message_queue.virtual_host }}
+
+[glance]
+
+host = {{ compute.image.host }}
+
+[neutron]
+auth_strategy = keystone
+admin_username={{ compute.network.user }}
+admin_password={{ compute.network.password }}
+admin_tenant_name={{ compute.identity.tenant }}
+admin_auth_url=http://{{ compute.identity.host }}:{{ compute.identity.port }}/v{% if compute.identity.get('version', 2) == 2 %}2.0{% else %}3{% endif %}
+url=http://{{ compute.network.host }}:{{ compute.network.port }}
+
+[cinder]
+os_region_name = RegionOne
