@@ -1,47 +1,13 @@
-{%- if pillar.nova.compute is defined %}
-[logstreamer_nova_compute]
+[logstreamer_nova]
 type = "LogstreamerInput"
 log_directory = "/var/log/nova"
-file_match = 'nova-compute\.log\.?(?P<Index>\d+)?(.gz)?'
+file_match = '(?P<Service>.+)\.log\.?(?P<Seq>\d*)$'
+differentiator = ["'nova','_','Service'"]
 priority = ["^Index"]
 decoder = "openstack"
-{%- endif %}
-
-{%- if pillar.nova.controller is defined %}
-[logstreamer nova_scheduler]
-type = "LogstreamerInput"
-log_directory = "/var/log/nova"
-file_match = 'nova-scheduler\.log\.?(?P<Index>\d+)?(.gz)?'
-priority = ["^Index"]
-decoder = "openstack"
-oldest_duration: "7d"
-
-[logstreamer_nova_conductor]
-type = "LogstreamerInput"
-log_directory = "/var/log/nova"
-log_directory = 'nova-conductor\.log\.?(?P<Index>\d+)?(.gz)?'
-priority = ["^Index"]
-decoder = "openstack"
-oldest_duration: "7d"
-
-[logstreamer_nova_consoleauth]
-type = "LogstreamerInput"
-log_directory = "/var/log/nova"
-log_directory = 'nova-consoleauth\.log\.?(?P<Index>\d+)?(.gz)?'
-priority = ["^Index"]
-decoder = "openstack"
-oldest_duration: "7d"
-
-[logstreamer_nova_cert]
-type = "LogstreamerInput"
-log_directory = "/var/log/nova"
-log_directory = 'nova-cert\.log\.?(?P<Index>\d+)?(.gz)?'
-priority = ["^Index"]
-decoder = "openstack"
-oldest_duration: "7d"
-{%- endif %}
 
 [openstack]
 type = "SandboxDecoder"
 filename = "lua_modules/decoders/openstack.lua"
 module_directory = "/usr/share/heka/lua_modules;/usr/share/heka/lua_modules/common"
+
