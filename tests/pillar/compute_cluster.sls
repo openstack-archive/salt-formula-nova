@@ -18,6 +18,7 @@ nova:
       password: password
     identity:
       engine: keystone
+      region: RegionOne
       host: 127.0.0.1
       port: 35357
       user: nova
@@ -36,6 +37,7 @@ nova:
       port: 9292
     network:
       engine: neutron
+      region: RegionOne
       host: 127.0.0.1
       port: 9696
     cache:

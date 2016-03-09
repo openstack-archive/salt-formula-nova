@@ -54,10 +54,12 @@ neutron_admin_auth_url = http://{{ controller.identity.host }}:35357/v{% if cont
 neutron_admin_password={{ pillar.neutron.server.identity.password }}
 neutron_admin_tenant_name={{ pillar.neutron.server.identity.tenant }}
 neutron_admin_username={{ pillar.neutron.server.identity.user }}
+neutron_region_name={{ pillar.neutron.server.identity.region }}
 {%- else %}
 neutron_admin_password={{ controller.network.password }}
 neutron_admin_tenant_name={{ controller.network.tenant }}
 neutron_admin_username={{ controller.network.user }}
+neutron_region_name={{ controller.network.region }}
 {%- endif %}
 neutron_url=http://{{ controller.network.host }}:{{ controller.network.port }}
 
@@ -184,14 +186,16 @@ admin_auth_url = http://{{ controller.identity.host }}:35357/v{% if controller.i
 admin_password={{ pillar.neutron.server.identity.password }}
 admin_tenant_name={{ pillar.neutron.server.identity.tenant }}
 admin_username={{ pillar.neutron.server.identity.user }}
+region_name= {{ pillar.neutron.server.identity.region }}
 {%- else %}
 admin_password={{ controller.network.password }}
 admin_tenant_name={{ controller.network.tenant }}
 admin_username={{ controller.network.user }}
+region_name= {{ controller.network.region }}
 {%- endif %}
 url=http://{{ controller.network.host }}:{{ controller.network.port }}
 
 service_metadata_proxy=True
 
 [cinder]
-os_region_name = RegionOne
+os_region_name = {{ controller.identity.region }}

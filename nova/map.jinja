@@ -27,6 +27,12 @@
         'libvirt_service': 'libvirt-bin',
         'bind': compute_bind_defaults,
         'debug': false,
+        'identity': {
+            'region': 'RegionOne'
+        },
+        'network': {
+            'region': 'RegionOne'
+        },
         'heal_instance_info_cache_interval': '60',
     },
     'RedHat': {
@@ -37,6 +43,12 @@
         'libvirt_service': 'libvirtd',
         'bind': compute_bind_defaults,
         'debug': false,
+        'identity': {
+            'region': 'RegionOne'
+        },
+        'network': {
+            'region': 'RegionOne'
+        },
         'heal_instance_info_cache_interval': '60',
     },
 }, merge=salt['pillar.get']('nova:compute')) %}

@@ -36,6 +36,7 @@ neutron_admin_password={{ compute.network.password }}
 neutron_admin_tenant_name={{ compute.identity.tenant }}
 neutron_admin_auth_url = http://{{ compute.identity.host }}:35357/v{% if compute.identity.get('version', 2) == 2 %}2.0{% else %}3{% endif %}
 neutron_url=http://{{ compute.network.host }}:{{ compute.network.port }}
+neutron_region_name= {{ compute.network.region }}
 #neutron_url = http://10.0.102.35:9696/
 
 
@@ -159,6 +160,7 @@ admin_password={{ compute.network.password }}
 admin_tenant_name={{ compute.identity.tenant }}
 admin_auth_url=http://{{ compute.identity.host }}:{{ compute.identity.port }}/v{% if compute.identity.get('version', 2) == 2 %}2.0{% else %}3{% endif %}
 url=http://{{ compute.network.host }}:{{ compute.network.port }}
+region_name= {{ compute.network.region }}
 
 [cinder]
-os_region_name = RegionOne
+os_region_name = {{ compute.identity.region }}

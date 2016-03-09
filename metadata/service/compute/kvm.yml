@@ -23,6 +23,7 @@ parameters:
         password: ${_param:mysql_nova_password}
       identity:
         engine: keystone
+        region: RegionOne
         host: ${_param:cluster_vip_address}
         port: 35357
         user: nova
@@ -41,6 +42,7 @@ parameters:
         port: 9292
       network:
         engine: neutron
+        region: RegionOne
         host: ${_param:cluster_vip_address}
         port: 9696
       cache:
