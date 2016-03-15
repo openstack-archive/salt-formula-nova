@@ -86,6 +86,9 @@ doc:
         cpu_allocation_ratio:
           name: "CPU allocation ration"
           value: {{ controller.cpu_allocation_ratio }}
+        disk_allocation_ratio:
+          name: "Disk allocation ration"
+          value: {{ controller.disk_allocation_ratio }}
         dhcp_domain:
           name: "DHCP domain"
           value: {{ controller.dhcp_domain }}
