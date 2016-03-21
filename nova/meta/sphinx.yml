@@ -81,11 +81,14 @@ doc:
           name: "Networking plugin"
           value: {{ controller.networking }}
         ram_allocation_ratio:
-          name: "RAM allocation ration"
+          name: "RAM allocation ratio"
           value: {{ controller.ram_allocation_ratio }}
         cpu_allocation_ratio:
-          name: "CPU allocation ration"
+          name: "CPU allocation ratio"
           value: {{ controller.cpu_allocation_ratio }}
+        disk_allocation_ratio:
+          name: "Disk allocation ratio"
+          value: {{ controller.disk_allocation_ratio }}
         dhcp_domain:
           name: "DHCP domain"
           value: {{ controller.dhcp_domain }}

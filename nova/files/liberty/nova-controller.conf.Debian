@@ -21,6 +21,7 @@ vif_plugging_is_fatal = False
 vif_plugging_timeout = 0
 cpu_allocation_ratio = {{ controller.cpu_allocation_ratio }}
 ram_allocation_ratio = {{ controller.ram_allocation_ratio }}
+disk_allocation_ratio = {{ controller.disk_allocation_ratio }}
 scheduler_default_filters = {{ controller.scheduler_default_filters }}
 
 allow_resize_to_same_host = True
