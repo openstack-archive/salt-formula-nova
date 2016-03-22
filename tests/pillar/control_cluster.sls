@@ -10,6 +10,7 @@ nova:
     cpu_allocation_ratio: 16.0
     ram_allocation_ratio: 1.5
     disk_allocation_ratio: 1.0
+    workers: 8
     bind:
       private_address: 127.0.0.1
       public_address: 127.0.0.1

@@ -23,6 +23,7 @@ Nova services on the controller node
         cpu_allocation_ratio: 8.0
         ram_allocation_ratio: 1.0
         disk_allocation_ratio: 1.0
+        workers: 8
         bind:
           public_address: 10.0.0.122
           public_name: openstack.domain.com

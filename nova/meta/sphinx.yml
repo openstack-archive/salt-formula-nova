@@ -89,6 +89,9 @@ doc:
         disk_allocation_ratio:
           name: "Disk allocation ratio"
           value: {{ controller.disk_allocation_ratio }}
+        workers:
+          name: "Number of osapi and conductor workers"
+          value: {{ controller.workers }}
         dhcp_domain:
           name: "DHCP domain"
           value: {{ controller.dhcp_domain }}
