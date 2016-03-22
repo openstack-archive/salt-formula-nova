@@ -18,6 +18,7 @@ parameters:
       cpu_allocation_ratio: 16.0
       ram_allocation_ratio: 1.5
       disk_allocation_ratio: 1.0
+      workers: 1
       logging:
       - engine: syslog
         facility: local0
