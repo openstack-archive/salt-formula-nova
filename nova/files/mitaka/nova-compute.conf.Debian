@@ -1,0 +1,139 @@
+{%- from "nova/map.jinja" import compute with context %}
+
+[DEFAULT]
+dhcpbridge_flagfile=/etc/nova/nova.conf
+dhcpbridge=/usr/bin/nova-dhcpbridge
+logdir=/var/log/nova
+state_path=/var/lib/nova
+force_dhcp_release=True
+iscsi_helper=tgtadm
+connection_type=libvirt
+root_helper=sudo nova-rootwrap /etc/nova/rootwrap.conf
+verbose=True
+api_paste_config=/etc/nova/api-paste.ini
+volumes_path=/var/lib/nova/volumes
+enabled_apis=osapi_compute,metadata
+
+use_neutron = True
+
+{%- if compute.image.use_cow is defined %}
+use_cow_images = {{ compute.image.use_cow }}
+{%- endif %}
+
+{%- if compute.reserved_host_memory_mb is defined %}
+reserved_host_memory_mb = {{ compute.reserved_host_memory_mb }}
+{%- endif %}
+
+allow_resize_to_same_host=True
+
+live_migration_flag=VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE
+live_migration_retry_count=30
+
+auth_strategy = keystone
+libvirt_nonblocking = True
+
+neutron_url_timeout = 300
+compute_driver = libvirt.LibvirtDriver
+
+heal_instance_info_cache_interval = {{ compute.heal_instance_info_cache_interval }}
+
+heal_instance_info_cache_interval = 0
+image_cache_manager_interval = 0
+firewall_driver = nova.virt.firewall.NoopFirewallDriver
+glance_port = 9292
+glance_num_retries = 10
+
+
+rpc_cast_timeout = 30
+rpc_response_timeout = 3600
+executor_thread_pool_size = 70
+report_interval = 5
+
+block_device_allocate_retries=600
+block_device_allocate_retries_interval=10
+
+resume_guests_state_on_host_boot = True
+service_down_time = 90
+
+{% if pillar.ceilometer is defined %}
+
+instance_usage_audit = True
+instance_usage_audit_period = hour
+notify_on_state_change = vm_and_task_state
+
+{% endif %}
+
+[oslo_concurrency]
+lock_path = /var/lib/nova/tmp
+
+[oslo_messaging_notifications]
+{%- if compute.notification is defined %}
+driver = messagingv2
+{%- endif %}
+
+[vnc]
+enabled = true
+novncproxy_base_url={{ compute.vncproxy_url }}/vnc_auto.html
+novncproxy_port={{ compute.bind.vnc_port }}
+vncserver_listen=0.0.0.0
+vncserver_proxyclient_address={{ compute.bind.vnc_address }}
+
+[spice]
+enabled = false
+html5proxy_base_url = {{ compute.vncproxy_url }}/spice_auto.html
+
+[cache]
+{%- if compute.cache is defined %}
+enabled = true
+memcached_servers={%- for member in compute.cache.members %}{{ member.host }}:11211{% if not loop.last %},{% endif %}{%- endfor %}
+{%- endif %}
+
+[libvirt]
+inject_partition = -1
+use_usb_tablet = True
+cpu_mode = host-passthrough
+virt_type = kvm
+use_virtio_for_bridges = True
+
+[keystone_authtoken]
+signing_dirname=/tmp/keystone-signing-nova
+revocation_cache_time = 10
+auth_type = password
+user_domain_id = {{ compute.identity.get('domain', 'default') }}
+project_domain_id = {{ compute.identity.get('domain', 'default') }}
+project_name = {{ compute.identity.tenant }}
+username = {{ compute.identity.user }}
+password = {{ compute.identity.password }}
+auth_uri=http://{{ compute.identity.host }}:5000
+auth_url=http://{{ compute.identity.host }}:35357
+{%- if compute.cache is defined %}
+memcached_servers={%- for member in compute.cache.members %}{{ member.host }}:11211{% if not loop.last %},{% endif %}{%- endfor %}
+{%- endif %}
+
+[oslo_messaging_rabbit]
+
+rabbit_host = {{ compute.message_queue.host }}
+rabbit_port = {{ compute.message_queue.port }}
+rabbit_hosts={{ compute.message_queue.host }}:{{ compute.message_queue.port }}
+rabbit_userid = {{ compute.message_queue.user }}
+rabbit_password = {{ compute.message_queue.password }}
+rabbit_virtual_host = {{ compute.message_queue.virtual_host }}
+rpc_conn_pool_size = 300
+rabbit_retry_interval = 1
+rabbit_retry_backoff = 2
+
+[glance]
+
+host = {{ compute.image.host }}
+
+[neutron]
+auth_strategy = keystone
+admin_username={{ compute.network.user }}
+admin_password={{ compute.network.password }}
+admin_tenant_name={{ compute.identity.tenant }}
+admin_auth_url=http://{{ compute.identity.host }}:{{ compute.identity.port }}/v{% if compute.identity.get('version', 2) == 2 %}2.0{% else %}3{% endif %}
+url=http://{{ compute.network.host }}:{{ compute.network.port }}
+region_name= {{ compute.network.region }}
+
+[cinder]
+os_region_name = {{ compute.identity.region }}

@@ -53,7 +53,11 @@ contrail_nova_packages:
 
 nova_controller_syncdb:
   cmd.run:
-  - name: nova-manage db sync
+  - names:
+    - nova-manage db sync
+    {%- if controller.version == "mitaka" %}
+    - nova-manage api_db sync
+    {%- endif %}
   - require:
     - file: /etc/nova/nova.conf
 
@@ -65,8 +69,6 @@ nova_controller_services:
     - cmd: nova_controller_syncdb
   - watch:
     - file: /etc/nova/nova.conf
-    {%- if controller.version != "icehouse" %}
     - file: /etc/nova/api-paste.ini
-    {%- endif %}
 
 {%- endif %}
