@@ -63,6 +63,7 @@ Nova services on the controller node
         metadata:
           password: password
 
+
 Nova services from custom package repository
 
 .. code-block:: yaml
@@ -74,6 +75,26 @@ Nova services from custom package repository
           engine: pkg
           address: http://...
       ....
+
+
+Client-side RabbitMQ HA setup
+
+.. code-block:: yaml
+
+   nova:
+     controller:
+       ....
+       message_queue:
+         engine: rabbitmq
+         members:
+           - host: 10.0.16.1
+           - host: 10.0.16.2
+           - host: 10.0.16.3
+         user: openstack
+         password: pwd
+         virtual_host: '/openstack'
+      ....
+
 
 Compute nodes
 -------------
@@ -133,6 +154,7 @@ Nova controller services on compute node
           max_files: 4096
           max_processes: 4096
 
+
 Nova services on compute node with OpenContrail
 
 .. code-block:: yaml
@@ -142,6 +164,7 @@ Nova services on compute node with OpenContrail
         enabled: true
         ...
         networking: contrail
+
 
 Nova services on compute node with memcached caching
 
@@ -158,6 +181,27 @@ Nova services on compute node with memcached caching
             port: 11211
           - host: 127.0.0.1
             port: 11211
+
+
+Client-side RabbitMQ HA setup
+
+.. code-block:: yaml
+
+   nova:
+     controller:
+       ....
+       message_queue:
+         engine: rabbitmq
+         members:
+           - host: 10.0.16.1
+           - host: 10.0.16.2
+           - host: 10.0.16.3
+         user: openstack
+         password: pwd
+         virtual_host: '/openstack'
+      ....
+
+
 
 Read more
 =========

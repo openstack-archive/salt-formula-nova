@@ -111,10 +111,16 @@ memcached_servers={%- for member in compute.cache.members %}{{ member.host }}:11
 {%- endif %}
 
 [oslo_messaging_rabbit]
-
+{%- if compute.message_queue.members is defined %}
+rabbit_hosts = {% for member in compute.message_queue.members -%}
+                   {{ member.host }}:{{ member.get('port', 5672) }}
+                   {%- if not loop.last -%},{%- endif -%}
+               {%- endfor -%}
+{%- else %}
 rabbit_host = {{ compute.message_queue.host }}
 rabbit_port = {{ compute.message_queue.port }}
-rabbit_hosts={{ compute.message_queue.host }}:{{ compute.message_queue.port }}
+{%- endif %}
+
 rabbit_userid = {{ compute.message_queue.user }}
 rabbit_password = {{ compute.message_queue.password }}
 rabbit_virtual_host = {{ compute.message_queue.virtual_host }}
