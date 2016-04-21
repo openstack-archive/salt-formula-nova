@@ -51,7 +51,6 @@ parameters:
         user: openstack
         password: ${_param:rabbitmq_openstack_password}
         virtual_host: '/openstack'
-        ha_queues: true
       glance:
         host: ${_param:cluster_vip_address}
         port: 9292

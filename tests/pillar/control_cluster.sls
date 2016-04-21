@@ -40,7 +40,6 @@ nova:
       user: openstack
       password: password
       virtual_host: '/openstack'
-      ha_queues: true
     glance:
       host: 
       port: 9292
