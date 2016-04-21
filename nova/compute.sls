@@ -142,12 +142,16 @@ ceph_virsh_secret_set_value:
 
 {% endif %}
 
+{%- if compute.libvirt_bin is defined %}
 {{ compute.libvirt_bin }}:
   file.managed:
   - source: salt://nova/files/{{ compute.version }}/libvirt.{{ grains.os_family }}
   - template: jinja
   - require:
     - pkg: nova_compute_packages
+  - watch_in:
+    - service: {{ compute_libvirt_service }}
+{%- endif %}
 
 /etc/libvirt/qemu.conf:
   file.managed:
@@ -178,7 +182,6 @@ virsh net-undefine default:
     - cmd: virsh net-undefine default
   - watch:
     - file: /etc/libvirt/{{ compute.libvirt_config }}
-    - file: {{ compute.libvirt_bin }}
 
 {%- endif %}
 

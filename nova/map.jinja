@@ -21,10 +21,9 @@
 {% set compute = salt['grains.filter_by']({
     'Debian': {
         'pkgs': ['nova-compute-kvm', 'python-novaclient', 'pm-utils', 'sysfsutils', 'sg3-utils', 'libvirt-bin', 'python-memcache', 'qemu-kvm','python-guestfs'],
-        'services': ['nova-compute', 'libvirt-bin'],
+        'services': ['nova-compute'],
         'libvirt_config': 'libvirtd.conf',
-        'libvirt_bin': '/etc/default/libvirt-bin',
-        'libvirt_service': 'libvirt-bin',
+        'libvirt_service': 'libvirtd',
         'bind': compute_bind_defaults,
         'debug': false,
         'identity': {
@@ -51,4 +50,9 @@
         },
         'heal_instance_info_cache_interval': '60',
     },
-}, merge=salt['pillar.get']('nova:compute')) %}
+}, merge=salt['grains.filter_by']({
+    'trusty': {
+        'libvirt_bin': '/etc/default/libvirt-bin',
+        'libvirt_service': 'libvirt-bin',
+    },
+}, grain='oscodename', merge=salt['pillar.get']('nova:compute'))) %}
