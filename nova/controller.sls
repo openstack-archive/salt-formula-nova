@@ -2,6 +2,18 @@
 
 {%- if controller.enabled %}
 
+{%- if grains.os_family == 'Debian' %}
+nova_consoleproxy_debconf:
+  debconf.set:
+  - name: nova-consoleproxy
+  - data:
+      'nova-consoleproxy/daemon_type':
+        type: 'string'
+        value: 'novnc'
+  - require_in:
+    - pkg: nova_controller_packages
+{%- endif %}
+
 nova_controller_packages:
   pkg.installed:
   - names: {{ controller.pkgs }}
