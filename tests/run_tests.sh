@@ -64,6 +64,7 @@ setup_salt() {
 file_client: local
 cachedir: ${SALT_CACHE_DIR}
 verify_env: False
+minion_id_caching: False
 
 file_roots:
   base:
