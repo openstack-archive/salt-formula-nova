@@ -1,0 +1,11 @@
+orchestrate:
+  compute:
+    priority: 570
+    require:
+    - salt: nova.controller
+  controller:
+    priority: 560
+    batch: 1
+    require:
+    - salt: keystone.server
+
