@@ -151,3 +151,9 @@ db_retry_interval = 1
 connection_debug = 10
 pool_timeout = 120
 connection = {{ controller.database.engine }}://{{ controller.database.user }}:{{ controller.database.password }}@{{ controller.database.host }}/{{ controller.database.name }}
+
+[cinder]
+catalog_info=volumev2:cinderv2:internalURL
+
+[vnc]
+keymap = {{ controller.vnc_keymap }}

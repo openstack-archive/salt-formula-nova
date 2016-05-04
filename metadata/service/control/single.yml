@@ -13,6 +13,7 @@ parameters:
       version: ${_param:nova_version}
       security_group: false
       vncproxy_url: ${_param:nova_vncproxy_url}
+      vnc_keymap: en-gb
       dhcp_domain: novalocal
       scheduler_default_filters: "DifferentHostFilter,RetryFilter,AvailabilityZoneFilter,RamFilter,CoreFilter,DiskFilter,ComputeFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,ServerGroupAntiAffinityFilter,ServerGroupAffinityFilter"
       cpu_allocation_ratio: 16.0

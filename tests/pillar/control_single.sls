@@ -5,6 +5,7 @@ nova:
     version: liberty
     security_group: false
     vncproxy_url: 127.0.0.1
+    vnc_keymap: en-gb
     dhcp_domain: novalocal
     scheduler_default_filters: "DifferentHostFilter,RetryFilter,AvailabilityZoneFilter,RamFilter,CoreFilter,DiskFilter,ComputeFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,ServerGroupAntiAffinityFilter,ServerGroupAffinityFilter"
     cpu_allocation_ratio: 16.0

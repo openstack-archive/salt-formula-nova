@@ -5,6 +5,7 @@ nova:
     virtualization: kvm
     heal_instance_info_cache_interval: 60
     vncproxy_url: openstack:6080
+    vnc_keymap: en-gb
     bind:
       vnc_address: 127.0.0.1
       vnc_port: 6080
@@ -51,3 +52,9 @@ nova:
         port: 11211
       - host: 127.0.2.1
         port: 11211
+    ceph:
+      ephemeral: yes
+      pool: nova
+      user: nova
+      secret_uuid: 1e6ae7e3-8d40-4815-a3ce-bfdab19c3258
+
