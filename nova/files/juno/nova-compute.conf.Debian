@@ -22,7 +22,11 @@ allow_resize_to_same_host=True
 reserved_host_memory_mb = {{ compute.reserved_host_memory_mb }}
 {%- endif %}
 
+{%- if compute.ceph is defined %}
+live_migration_flag="VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE,VIR_MIGRATE_PERSIST_DEST,VIR_MIGRATE_TUNNELLED"
+{%- else %}
 live_migration_flag=VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE
+{%- endif %}
 live_migration_retry_count=30
 
 #Neutron

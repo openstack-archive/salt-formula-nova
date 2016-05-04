@@ -44,6 +44,7 @@ parameters:
         user: nova
         password: ${_param:keystone_nova_password}
         tenant: service
+        url: internalURL
       message_queue:
         engine: rabbitmq
         host: ${_param:single_address}
