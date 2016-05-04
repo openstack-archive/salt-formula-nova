@@ -1,13 +1,1 @@
-[DEFAULT]
-compute_driver=libvirt.LibvirtDriver
-{%- if compute.ceph.ephemeral is defined %}
-[libvirt]
-images_type=rbd
-images_rbd_pool={{ compute.ceph.pool }}
-images_rbd_ceph_conf=/etc/ceph/ceph.conf
-rbd_user={{ compute.ceph.user }}
-rbd_secret_uuid={{ compute.ceph.secret }}
-libvirt_inject_password=false
-libvirt_inject_key=false
-libvirt_inject_partition=-2
-{%- endif %}
+nova-compute.conf.libvirt.Debian
