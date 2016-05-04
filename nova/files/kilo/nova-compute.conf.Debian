@@ -16,6 +16,8 @@ ec2_private_dns_show_ip=False
 api_paste_config=/etc/nova/api-paste.ini
 volumes_path=/var/lib/nova/volumes
 enabled_apis=ec2,osapi_compute,metadata
+vnc_keymap = {{ compute.get('keymap', 'en-us') }}
+
 
 {%- if compute.image.use_cow is defined %}
 use_cow_images = {{ compute.image.use_cow }}
@@ -27,7 +29,11 @@ reserved_host_memory_mb = {{ compute.reserved_host_memory_mb }}
 
 allow_resize_to_same_host=True
 
+{%- if compute.ceph.ephemeral is defined %}
+live_migration_flag="VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE,VIR_MIGRATE_PERSIST_DEST,VIR_MIGRATE_TUNNELLED"
+{%- else %}
 live_migration_flag=VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE
+{%- endif %}
 live_migration_retry_count=30
 
 #Neutron
@@ -170,3 +176,16 @@ region_name= {{ compute.network.region }}
 
 [cinder]
 os_region_name = {{ compute.identity.region }}
+catalog_info=volumev2:cinderv2:internalURL
+
+{%- if compute.ceph.ephemeral is defined %}
+[libvirt]
+images_type=rbd
+images_rbd_pool={{ compute.ceph.pool }}
+images_rbd_ceph_conf=/etc/ceph/ceph.conf
+rbd_user={{ compute.ceph.user }}
+rbd_secret_uuid={{ compute.ceph.secret_uuid }}
+libvirt_inject_password=false
+libvirt_inject_key=false
+libvirt_inject_partition=-2
+{%- endif %}
