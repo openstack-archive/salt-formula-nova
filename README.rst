@@ -154,7 +154,6 @@ Nova controller services on compute node
           max_files: 4096
           max_processes: 4096
 
-
 Nova services on compute node with OpenContrail
 
 .. code-block:: yaml
@@ -201,6 +200,42 @@ Client-side RabbitMQ HA setup
          virtual_host: '/openstack'
       ....
 
+Nova with ephemeral configured with Ceph
+
+.. code-block:: yaml
+
+    nova:
+      compute:
+        enabled: true
+        ...
+        ceph:
+          ephemeral: yes
+          pool: nova
+          user: nova
+          secret: 03006edd-d957-40a3-ac4c-26cd254b3731
+
+        
+Nova services configured to use Cinder internalURL
+
+.. code-block:: yaml
+
+    nova:
+      controller:
+        enabled: true
+        ...
+        identity:
+          ...
+          url: internalURL
+
+.. code-block:: yaml
+
+    nova:
+      compute:
+        enabled: true
+        ...
+        identity:
+          ...
+          url: internalURL
 
 
 Read more

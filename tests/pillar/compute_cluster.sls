@@ -24,6 +24,7 @@ nova:
       user: nova
       password: password
       tenant: service
+      url: internalURL
     message_queue:
       engine: rabbitmq
       members:
@@ -51,3 +52,9 @@ nova:
         port: 11211
       - host: 127.0.2.1
         port: 11211
+    ceph:
+      ephemeral: yes
+      pool: nova
+      user: nova
+      secret: 03006edd-d957-40a3-ac4c-26cd254b3731
+

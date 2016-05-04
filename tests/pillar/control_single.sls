@@ -31,6 +31,7 @@ nova:
       user: nova
       password: password
       tenant: service
+      url: internalURL
     message_queue:
       engine: rabbitmq
       host: 127.0.0.1
