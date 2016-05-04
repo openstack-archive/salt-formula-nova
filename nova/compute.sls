@@ -106,6 +106,13 @@ user_nova_bash:
   - require:
     - pkg: nova_compute_packages
 
+/etc/nova/nova-compute.conf:
+  file.managed:
+  - source: salt://nova/files/{{ compute.version }}/nova-compute.conf.libvirt.{{ grains.os_family }}
+  - template: jinja
+  - require:
+    - pkg: nova_compute_packages
+
 nova_compute_services:
   service.running:
   - enable: true

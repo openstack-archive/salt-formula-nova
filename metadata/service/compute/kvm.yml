@@ -29,6 +29,7 @@ parameters:
         user: nova
         password: ${_param:keystone_nova_password}
         tenant: service
+        url: internalURL
       message_queue:
         engine: rabbitmq
         host: ${_param:cluster_vip_address}
@@ -54,3 +55,8 @@ parameters:
           port: 11211
         - host: ${_param:cluster_node03_address}
           port: 11211
+      ceph:
+        ephemeral:
+        pool:
+        user:
+        secret:
