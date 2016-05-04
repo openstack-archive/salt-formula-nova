@@ -22,7 +22,11 @@ allow_resize_to_same_host=True
 reserved_host_memory_mb = {{ compute.reserved_host_memory_mb }}
 {%- endif %}
 
+{%- if compute.ceph.ephemeral is defined %}
+live_migration_flag="VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE,VIR_MIGRATE_PERSIST_DEST,VIR_MIGRATE_TUNNELLED"
+{%- else %}
 live_migration_flag=VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE
+{%- endif %}
 live_migration_retry_count=30
 
 #Neutron
@@ -127,3 +131,18 @@ auth_host = {{ compute.identity.host }}
 auth_port = {{ compute.identity.port }}
 auth_protocol=http
 auth_uri=http://{{ compute.identity.host }}:5000
+
+{%- if compute.ceph.ephemeral is defined %}
+[libvirt]
+images_type=rbd
+images_rbd_pool={{ compute.ceph.rbd_pool }}
+images_rbd_ceph_conf=/etc/ceph/ceph.conf
+rbd_user={{ compute.ceph.rbd_user }}
+rbd_secret_uuid={{ compute.ceph.secret_uuid }}
+libvirt_inject_password=false
+libvirt_inject_key=false
+libvirt_inject_partition=-2
+{%- endif %}
+
+[cinder]
+catalog_info=volumev2:cinderv2:internalURL

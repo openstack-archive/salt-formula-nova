@@ -5,6 +5,7 @@ nova:
     virtualization: kvm
     heal_instance_info_cache_interval: 60
     vncproxy_url: openstack:6080
+    vnc_keymap: en-gb
     bind:
       vnc_address: 127.0.0.1
       vnc_port: 6080

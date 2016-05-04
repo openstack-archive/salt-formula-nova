@@ -207,3 +207,7 @@ service_metadata_proxy=True
 
 [cinder]
 os_region_name = {{ controller.identity.region }}
+catalog_info=volumev2:cinderv2:internalURL
+
+[vnc]
+keymap = {{ controller.get('vnc_keymap', 'en-us') }}
