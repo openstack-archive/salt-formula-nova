@@ -10,6 +10,7 @@ parameters:
       virtualization: kvm
       heal_instance_info_cache_interval: 60
       vncproxy_url: http://${_param:cluster_vip_address}:6080
+      vnc_keymap: en-gb
       bind:
         vnc_address: ${_param:cluster_local_address}
         vnc_port: 6080
@@ -29,6 +30,7 @@ parameters:
         user: nova
         password: ${_param:keystone_nova_password}
         tenant: service
+        url: internalURL
       message_queue:
         engine: rabbitmq
         host: ${_param:cluster_vip_address}
@@ -54,3 +56,8 @@ parameters:
           port: 11211
         - host: ${_param:cluster_node03_address}
           port: 11211
+      ceph:
+        ephemeral: yes
+        pool: nova
+        user: nova
+        secret_uuid: 1e6ae7e3-8d40-4815-a3ce-bfdab19c3258

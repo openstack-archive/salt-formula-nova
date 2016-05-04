@@ -157,7 +157,6 @@ Nova controller services on compute node
           max_files: 4096
           max_processes: 4096
 
-
 Nova services on compute node with OpenContrail
 
 .. code-block:: yaml
@@ -204,8 +203,25 @@ Client-side RabbitMQ HA setup
          virtual_host: '/openstack'
       ....
 
+
+Nova with ephemeral configured with Ceph
+
+.. code-block:: yaml
+
+    nova:
+      compute:
+        enabled: true
+        ...
+        ceph:
+          ephemeral: yes
+          pool: nova
+          user: nova
+          secret_uuid: 03006edd-d957-40a3-ac4c-26cd254b3731
+
+
 Documentation and Bugs
 ============================
+=======
 
 To learn how to deploy OpenStack Salt, consult the documentation available
 online at:
