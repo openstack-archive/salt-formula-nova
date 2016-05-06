@@ -166,17 +166,19 @@ connection = {{ controller.database.engine }}+pymysql://{{ controller.database.u
 host = {{ controller.glance.host }}
 
 [neutron]
-auth_strategy = keystone
-admin_auth_url = http://{{ controller.identity.host }}:35357/v{% if controller.identity.get('version', 2) == 2 %}2.0{% else %}3{% endif %}
+auth_type = password
+project_domain_name = default
+user_domain_name = default
+auth_url = http://{{ controller.identity.host }}:35357
 {% if pillar.neutron is defined %}
-admin_password={{ pillar.neutron.server.identity.password }}
-admin_tenant_name={{ pillar.neutron.server.identity.tenant }}
-admin_username={{ pillar.neutron.server.identity.user }}
+password={{ pillar.neutron.server.identity.password }}
+project_name={{ pillar.neutron.server.identity.tenant }}
+username={{ pillar.neutron.server.identity.user }}
 region_name= {{ pillar.neutron.server.identity.region }}
 {%- else %}
-admin_password={{ controller.network.password }}
-admin_tenant_name={{ controller.network.tenant }}
-admin_username={{ controller.network.user }}
+password={{ controller.network.password }}
+project_name={{ controller.network.tenant }}
+username={{ controller.network.user }}
 region_name= {{ controller.network.region }}
 {%- endif %}
 url=http://{{ controller.network.host }}:{{ controller.network.port }}

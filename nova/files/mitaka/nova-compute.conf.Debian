@@ -133,13 +133,15 @@ rabbit_retry_backoff = 2
 host = {{ compute.image.host }}
 
 [neutron]
-auth_strategy = keystone
-admin_username={{ compute.network.user }}
-admin_password={{ compute.network.password }}
-admin_tenant_name={{ compute.identity.tenant }}
-admin_auth_url=http://{{ compute.identity.host }}:{{ compute.identity.port }}/v{% if compute.identity.get('version', 2) == 2 %}2.0{% else %}3{% endif %}
+username={{ compute.network.user }}
+password={{ compute.network.password }}
+project_name={{ compute.identity.tenant }}
+auth_url=http://{{ compute.identity.host }}:{{ compute.identity.port }}
 url=http://{{ compute.network.host }}:{{ compute.network.port }}
 region_name= {{ compute.network.region }}
+auth_type = password
+project_domain_name = default
+user_domain_name = default
 
 [cinder]
 os_region_name = {{ compute.identity.region }}
