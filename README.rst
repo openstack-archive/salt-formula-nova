@@ -201,7 +201,24 @@ Client-side RabbitMQ HA setup
          virtual_host: '/openstack'
       ....
 
+Documentation and Bugs
+============================
 
+To learn how to deploy OpenStack Salt, consult the documentation available online at:
+
+    http://docs.openstack.org
+
+In the unfortunate event that bugs are discovered, they should be reported to the appropriate bug tracker. If you obtained the software from a 3rd party operating system vendor, it is often wise to use their own bug tracker for reporting problems. In all other cases use the master OpenStack bug tracker, available at:
+
+    http://bugs.launchpad.net/openstack-salt
+
+Developers wishing to work on the OpenStack Salt project should always base their work on the latest formulas code, available from the master GIT repository at:
+
+    https://git.openstack.org/cgit/openstack/salt-formula-nova
+
+Developers should also join the discussion on the mailing list, at:
+
+    http://lists.openstack.org/cgi-bin/mailman/listinfo/openstack-dev
 
 Read more
 =========
