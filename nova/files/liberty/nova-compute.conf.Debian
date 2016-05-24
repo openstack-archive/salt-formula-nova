@@ -27,7 +27,7 @@ reserved_host_memory_mb = {{ compute.reserved_host_memory_mb }}
 
 allow_resize_to_same_host=True
 
-{%- if compute.ceph.ephemeral is defined %}
+{%- if compute.get('ceph', {}).ephemeral is defined %}
 live_migration_flag="VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE,VIR_MIGRATE_PERSIST_DEST,VIR_MIGRATE_TUNNELLED"
 {%- else %}
 live_migration_flag=VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE
@@ -176,7 +176,7 @@ region_name= {{ compute.network.region }}
 os_region_name = {{ compute.identity.region }}
 catalog_info=volumev2:cinderv2:internalURL
 
-{%- if compute.ceph.ephemeral is defined %}
+{%- if compute.get('ceph', {}).ephemeral is defined %}
 [libvirt]
 images_type=rbd
 images_rbd_pool={{ compute.ceph.rbd_pool }}
