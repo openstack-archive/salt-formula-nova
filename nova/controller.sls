@@ -63,6 +63,8 @@ contrail_nova_packages:
   - require:
     - pkg: nova_controller_packages
 
+{%- if not grains.get('noservices', False) %}
+
 nova_controller_syncdb:
   cmd.run:
   - names:
@@ -82,5 +84,18 @@ nova_controller_services:
   - watch:
     - file: /etc/nova/nova.conf
     - file: /etc/nova/api-paste.ini
+
+{%- endif %}
+
+{%- if grains.get('virtual_subtype', None) == "Docker" %}
+
+nova_entrypoint:
+  file.managed:
+  - name: /entrypoint.sh
+  - template: jinja
+  - source: salt://nova/files/entrypoint.sh
+  - mode: 755
+
+{%- endif %}
 
 {%- endif %}
