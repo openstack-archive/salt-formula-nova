@@ -16,19 +16,10 @@ nova_compute_packages:
   - group: nova
   - require:
      - pkg: nova_compute_packages
+{%- if not grains.get('noservices', False) %}
   - require_in:
      - service: nova_compute_services
-
-{%- if compute.vm_swappiness is defined %}
-vm.swappiness:
-  sysctl.present:
-  - value: {{ compute.vm_swappiness }}
-  - require:
-    - pkg: nova_compute_packages
-  - require_in:
-    - service: nova_compute_services
 {%- endif %}
-
 
 {%- if not salt['user.info']('nova') %}
 user_nova:
@@ -106,12 +97,37 @@ user_nova_bash:
   - require:
     - pkg: nova_compute_packages
 
+{%- if not grains.get('noservices', False) %}
+
+{%- if compute.vm_swappiness is defined %}
+vm.swappiness:
+  sysctl.present:
+  - value: {{ compute.vm_swappiness }}
+  - require:
+    - pkg: nova_compute_packages
+  - require_in:
+    - service: nova_compute_services
+{%- endif %}
+
 nova_compute_services:
   service.running:
   - enable: true
   - names: {{ compute.services }}
   - watch:
     - file: /etc/nova/nova.conf
+
+{%- endif %}
+
+{%- if grains.get('virtual_subtype', None) == "Docker" %}
+
+nova_compute_entrypoint:
+  file.managed:
+  - name: /entrypoint.sh
+  - template: jinja
+  - source: salt://nova/files/entrypoint.sh.compute
+  - mode: 755
+
+{%- endif %}
 
 {%- if compute.virtualization == 'kvm' %}
 
@@ -141,6 +157,8 @@ ceph_virsh_secret_set_value:
     - cmd: ceph_virsh_secret_define
 
 {% endif %}
+
+{%- if not grains.get('noservices', False) %}
 
 {%- if compute.libvirt_bin is defined %}
 {{ compute.libvirt_bin }}:
@@ -182,6 +200,8 @@ virsh net-undefine default:
     - cmd: virsh net-undefine default
   - watch:
     - file: /etc/libvirt/{{ compute.libvirt_config }}
+
+{%- endif %}
 
 {%- endif %}
 
