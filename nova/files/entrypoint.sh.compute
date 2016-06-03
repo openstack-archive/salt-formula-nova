@@ -1,0 +1,22 @@
+{%- from "nova/map.jinja" import compute with context -%}
+#!/bin/bash -e
+
+cat /srv/salt/pillar/nova-compute.sls | envsubst > /tmp/nova-compute.sls
+mv /tmp/nova-compute.sls /srv/salt/pillar/nova-compute.sls
+
+#Hack for prevent libvirt start
+mv /etc/init.d/libvirt-bin /etc/init.d/libvirt-bin.orig && \
+echo "#!/bin/sh\nexit 0" > /etc/init.d/libvirt-bin && \
+chmod +x /etc/init.d/libvirt-bin
+
+salt-call --local --retcode-passthrough state.highstate
+
+{% for service in compute.services %}
+service {{ service }} stop || true
+{% endfor %}
+
+su nova --shell=/bin/sh -c '/usr/bin/nova-compute --config-file=/etc/nova/nova.conf'
+
+{#-
+vim: syntax=jinja
+-#}
