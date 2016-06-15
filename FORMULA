@@ -1,0 +1,8 @@
+name: nova
+os: Debian, RedHat
+os_family: Debian, RedHat
+version: 201606
+release: 1
+summary: Formula for installing and configuring nova
+description: Formula for installing and configuring nova
+top_level_dir: nova
