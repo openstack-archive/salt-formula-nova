@@ -18,7 +18,7 @@ SALT_PILLAR_DIR=${SALT_PILLAR_DIR:-${BUILDDIR}/pillar_root}
 SALT_CONFIG_DIR=${SALT_CONFIG_DIR:-${BUILDDIR}/salt}
 SALT_CACHE_DIR=${SALT_CACHE_DIR:-${SALT_CONFIG_DIR}/cache}
 
-SALT_OPTS="${SALT_OPTS} --retcode-passthrough --local -c ${SALT_CONFIG_DIR}"
+SALT_OPTS="${SALT_OPTS} --retcode-passthrough --local -c ${SALT_CONFIG_DIR} --log-file=/dev/null"
 
 if [ "x${SALT_VERSION}" != "x" ]; then
     PIP_SALT_VERSION="==${SALT_VERSION}"
