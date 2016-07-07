@@ -48,6 +48,9 @@ nova:
       host: 127.0.0.1
       port: 9696
       mtu: 1500
+      password: password
+      user: nova
+      tenant: service
     metadata:
       password: password
     cache:
