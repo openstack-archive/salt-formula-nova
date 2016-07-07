@@ -1,3 +1,11 @@
 tests/build/
 *.swp
 *.pyc
+
+.kitchen
+bootstrap.sh
+.kitchen/
+.kitchen.local.yml
+.kitchen
+.kitchen
+.kitchen

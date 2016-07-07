@@ -1,1 +1,2 @@
 python-yaml
+boto  #>=2.35.0
