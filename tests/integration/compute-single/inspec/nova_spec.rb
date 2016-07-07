@@ -1,0 +1,1 @@
+../../helpers/inspec/nova_spec.rb
