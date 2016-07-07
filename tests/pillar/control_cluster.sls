@@ -42,7 +42,7 @@ nova:
       password: password
       virtual_host: '/openstack'
     glance:
-      host: 
+      host:
       port: 9292
     network:
       engine: neutron
@@ -50,5 +50,8 @@ nova:
       host: 127.0.0.1
       port: 9696
       mtu: 1500
+      user: nova
+      password: password
+      tenant: service
     metadata:
       password: metadata
