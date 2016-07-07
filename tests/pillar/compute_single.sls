@@ -41,6 +41,9 @@ nova:
       region: RegionOne
       host: 127.0.0.1
       port: 9696
+      user: nova
+      password: password
+      tenant: service
     cache:
       engine: memcached
       members:

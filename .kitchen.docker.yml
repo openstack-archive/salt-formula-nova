@@ -1,0 +1,29 @@
+---
+driver:
+  name: docker
+  #socket: tcp://127.0.0.1:2376
+  hostname: nova.ci.local
+  use_sudo: false
+
+
+provisioner:
+  name: salt_solo
+  salt_install: bootstrap
+  salt_bootstrap_url: https://bootstrap.saltstack.com
+  salt_version: latest
+  formula: nova
+  log_level: info
+  state_top:
+    base:
+      "*":
+        - nova
+  pillars:
+    top.sls:
+      base:
+        "*":
+          - nova
+  grains:
+    noservices: True
+
+
+# vim: ft=yaml sw=2 ts=2 sts=2 tw=125
