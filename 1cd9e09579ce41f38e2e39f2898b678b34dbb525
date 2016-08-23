@@ -1,0 +1,9 @@
+Code-Review+1: Konstantin Baikov <konstantin.baikov@gmail.com>
+Code-Review+2: Ales Komarek <ales.komarek@tcpcloud.eu>
+Workflow+1: Ales Komarek <ales.komarek@tcpcloud.eu>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Tue, 23 Aug 2016 09:36:18 +0000
+Reviewed-on: https://review.openstack.org/355032
+Project: openstack/salt-formula-nova
+Branch: refs/heads/master
