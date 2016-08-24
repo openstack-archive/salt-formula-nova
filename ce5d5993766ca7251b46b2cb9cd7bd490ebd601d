@@ -1,0 +1,9 @@
+Code-Review+2: Filip Pytloun <filip@pytloun.cz>
+Workflow+1: Filip Pytloun <filip@pytloun.cz>
+Code-Review+1: Konstantin Baikov <konstantin.baikov@gmail.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Wed, 24 Aug 2016 16:08:23 +0000
+Reviewed-on: https://review.openstack.org/359946
+Project: openstack/salt-formula-nova
+Branch: refs/heads/master
