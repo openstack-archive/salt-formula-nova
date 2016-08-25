@@ -94,7 +94,9 @@ osapi_compute_listen={{ controller.bind.private_address }}
 metadata_listen={{ controller.bind.private_address }}
 glance_host = {{ controller.glance.host }}
 #metadata_host = {{ controller.glance.host }}
-osapi_compute_workers=8
+osapi_compute_workers = {{ controller.get('osapi_compute_workers', '4') }}
+ec2_workers = {{ controller.get('ec2_workers', '4') }}
+metadata_workers = {{ controller.get('metadata_workers', '4') }}
 
 #NoVNC
 vnc_enabled=true
@@ -137,7 +139,7 @@ auth_protocol=http
 auth_uri=http://{{ controller.identity.host }}:5000
 
 [conductor]
-workers = 8
+workers = {{ controller.get('conductor_workers', '4') }}
 
 [database]
 idle_timeout = 180
