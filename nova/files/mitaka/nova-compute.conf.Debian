@@ -20,9 +20,7 @@ use_neutron = True
 use_cow_images = {{ compute.image.use_cow }}
 {%- endif %}
 
-{%- if compute.reserved_host_memory_mb is defined %}
-reserved_host_memory_mb = {{ compute.reserved_host_memory_mb }}
-{%- endif %}
+reserved_host_memory_mb = {{ compute.get('reserved_host_memory_mb', '512') }}
 
 allow_resize_to_same_host=True
 
@@ -41,7 +39,6 @@ compute_driver = libvirt.LibvirtDriver
 
 heal_instance_info_cache_interval = {{ compute.heal_instance_info_cache_interval }}
 
-heal_instance_info_cache_interval = 0
 image_cache_manager_interval = 0
 firewall_driver = nova.virt.firewall.NoopFirewallDriver
 glance_port = 9292
@@ -51,7 +48,7 @@ glance_num_retries = 10
 rpc_cast_timeout = 30
 rpc_response_timeout = 3600
 executor_thread_pool_size = 70
-report_interval = 5
+report_interval = {{ compute.get('report_interval', '60') }}
 
 block_device_allocate_retries=600
 block_device_allocate_retries_interval=10
@@ -143,9 +140,11 @@ project_name={{ compute.identity.tenant }}
 auth_url=http://{{ compute.identity.host }}:{{ compute.identity.port }}
 url=http://{{ compute.network.host }}:{{ compute.network.port }}
 region_name= {{ compute.network.region }}
+extension_sync_interval={{ compute.network.get('extension_sync_interval', '600') }}
 auth_type = password
 project_domain_name = default
 user_domain_name = default
+timeout=30
 
 [cinder]
 os_region_name = {{ compute.identity.region }}

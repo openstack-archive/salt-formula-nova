@@ -27,6 +27,7 @@ Nova services on the controller node
         ram_allocation_ratio: 1.0
         disk_allocation_ratio: 1.0
         workers: 8
+        report_interval: 60
         bind:
           public_address: 10.0.0.122
           public_name: openstack.domain.com
@@ -56,6 +57,7 @@ Nova services on the controller node
           engine: neutron
           host: 127.0.0.1
           port: 9696
+          extension_sync_interval: 600
           identity:
             engine: keystone
             host: 127.0.0.1

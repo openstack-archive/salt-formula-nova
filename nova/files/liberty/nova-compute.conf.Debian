@@ -21,9 +21,7 @@ enabled_apis=ec2,osapi_compute,metadata
 use_cow_images = {{ compute.image.use_cow }}
 {%- endif %}
 
-{%- if compute.reserved_host_memory_mb is defined %}
-reserved_host_memory_mb = {{ compute.reserved_host_memory_mb }}
-{%- endif %}
+reserved_host_memory_mb = {{ compute.get('reserved_host_memory_mb', '512') }}
 
 allow_resize_to_same_host=True
 
@@ -67,7 +65,6 @@ memcached_servers={%- for member in compute.cache.members %}{{ member.host }}:11
 {%- endif %}
 
 security_group_api = neutron
-heal_instance_info_cache_interval = 0
 libvirt_cpu_mode = host-passthrough
 image_cache_manager_interval = 0
 firewall_driver = nova.virt.firewall.NoopFirewallDriver
@@ -81,7 +78,7 @@ rpc_cast_timeout = 30
 rpc_conn_pool_size = 300
 rpc_response_timeout = 3600
 rpc_thread_pool_size = 70
-report_interval = 5
+report_interval = {{ compute.get('report_interval', '60') }}
 
 block_device_allocate_retries=600
 block_device_allocate_retries_interval=10
@@ -166,11 +163,13 @@ host = {{ compute.image.host }}
 [neutron]
 auth_strategy = keystone
 admin_username={{ compute.network.user }}
+extension_sync_interval={{ compute.network.get('extension_sync_interval', '600') }}
 admin_password={{ compute.network.password }}
 admin_tenant_name={{ compute.identity.tenant }}
 admin_auth_url=http://{{ compute.identity.host }}:{{ compute.identity.port }}/v{% if compute.identity.get('version', 2) == 2 %}2.0{% else %}3{% endif %}
 url=http://{{ compute.network.host }}:{{ compute.network.port }}
 region_name= {{ compute.network.region }}
+timeout=30
 
 [cinder]
 os_region_name = {{ compute.identity.region }}
