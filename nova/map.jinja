@@ -16,7 +16,7 @@
         'services': ['openstack-nova-api', 'openstack-nova-cert', 'openstack-nova-consoleauth', 'openstack-nova-scheduler', 'openstack-nova-conductor', 'openstack-nova-novncproxy'],
         'debug': false,
     },
-}, merge=salt['pillar.get']('nova:controller')) %}
+}, merge=pillar.nova.get('controller', {})) %}
 
 {% set compute = salt['grains.filter_by']({
     'Debian': {
@@ -55,4 +55,4 @@
         'libvirt_bin': '/etc/default/libvirt-bin',
         'libvirt_service': 'libvirt-bin',
     },
-}, grain='oscodename', merge=salt['pillar.get']('nova:compute'))) %}
+}, grain='oscodename', merge=pillar.nova.get('compute', {}))) %}
