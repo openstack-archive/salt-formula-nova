@@ -1,0 +1,26 @@
+config:
+  {%- if pillar.nova.controller is defined %}
+  {%- from "nova/map.jinja" import controller with context %}
+  nova.conf:
+    source: "salt://nova/files/{{ controller.version }}/nova-controller.conf.{{ grains.os_family|default('Debian') }}"
+    template: jinja
+  api-paste.ini:
+    source: "salt://nova/files/{{ controller.version }}/api-paste.ini.{{ grains.os_family|default('Debian') }}"
+    template: jinja
+  {%- elif pillar.nova.compute is defined %}
+  {%- from "nova/map.jinja" import compute with context %}
+  nova.conf:
+    source: "salt://nova/files/{{ compute.version }}/nova-compute.conf.{{ grains.os_family|default('Debian') }}"
+    template: jinja
+  {%- if compute.ceph is defined %}
+  secret.xml:
+    source: "salt://nova/files/secret.xml }}"
+    template: jinja
+  {%- endif %}
+  qemu.conf:
+    source: "salt://nova/files/{{ compute.version }}/qemu.conf.{{ grains.os_family|default('Debian') }}"
+    template: jinja
+  libvirtd.conf:
+    source: "salt://nova/files/{{ compute.version }}/libvirtd.conf.{{ grains.os_family|default('Debian') }}"
+    template: jinja
+  {%- endif %}
