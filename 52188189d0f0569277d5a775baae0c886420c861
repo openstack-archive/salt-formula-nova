@@ -1,0 +1,8 @@
+Code-Review+2: Ales Komarek <ales.komarek@tcpcloud.eu>
+Workflow+1: Ales Komarek <ales.komarek@tcpcloud.eu>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Fri, 23 Sep 2016 12:16:27 +0000
+Reviewed-on: https://review.openstack.org/374992
+Project: openstack/salt-formula-nova
+Branch: refs/heads/master
