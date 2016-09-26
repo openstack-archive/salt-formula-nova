@@ -49,6 +49,7 @@ libvirt_inject_partition = -1
 neutron_url_timeout = 300
 network_api_class=nova.network.neutronv2.api.API
 compute_driver = libvirt.LibvirtDriver
+libvirt_type = {{ compute.virt_type }}
 
 #NoVNC
 vnc_enabled=true

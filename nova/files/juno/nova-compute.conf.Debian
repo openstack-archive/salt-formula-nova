@@ -59,6 +59,7 @@ use_cow_images = {{ compute.image.use_cow }}
 neutron_url_timeout = 300
 network_api_class = nova_contrail_vif.contrailvif.ContrailNetworkAPI
 compute_driver = libvirt.LibvirtDriver
+libvirt_type = {{ compute.virt_type }}
 
 heal_instance_info_cache_interval = {{ compute.heal_instance_info_cache_interval }}
 
