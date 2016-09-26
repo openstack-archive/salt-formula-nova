@@ -41,7 +41,7 @@ network_api_class = nova.network.neutronv2.api.API
 {%- endif %}
 
 compute_driver = libvirt.LibvirtDriver
-libvirt_type=kvm
+libvirt_type = {{ controller.virt_type }}
 rootwrap_config = /etc/nova/rootwrap.conf
 auth_strategy = keystone
 firewall_driver=nova.virt.firewall.NoopFirewallDriver
