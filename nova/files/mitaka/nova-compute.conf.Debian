@@ -93,7 +93,7 @@ memcached_servers={%- for member in compute.cache.members %}{{ member.host }}:11
 inject_partition = -1
 use_usb_tablet = True
 cpu_mode = host-passthrough
-virt_type = kvm
+virt_type = {{ compute.virt_type }}
 use_virtio_for_bridges = True
 
 [keystone_authtoken]

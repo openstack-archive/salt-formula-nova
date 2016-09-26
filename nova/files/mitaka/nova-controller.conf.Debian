@@ -85,7 +85,7 @@ html5proxy_base_url = {{ controller.vncproxy_url }}/spice_auto.html
 inject_partition = -1
 use_usb_tablet = True
 cpu_mode = host-passthrough
-virt_type = kvm
+virt_type = {{ controller.virt_type }}
 use_virtio_for_bridges = True
 
 [oslo_concurrency]
