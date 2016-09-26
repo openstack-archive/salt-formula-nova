@@ -85,7 +85,11 @@ html5proxy_base_url = {{ controller.vncproxy_url }}/spice_auto.html
 inject_partition = -1
 use_usb_tablet = True
 cpu_mode = host-passthrough
+{%- if grains.virtual == 'VirtualBox' %}
+virt_type = qemu
+{%- else %}
 virt_type = kvm
+{%- endif %}
 use_virtio_for_bridges = True
 
 [oslo_concurrency]

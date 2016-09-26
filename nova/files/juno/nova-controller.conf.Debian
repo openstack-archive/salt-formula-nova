@@ -41,7 +41,12 @@ network_api_class = nova.network.neutronv2.api.API
 {%- endif %}
 
 compute_driver = libvirt.LibvirtDriver
-libvirt_type=kvm
+{%- if grains.virtual == 'VirtualBox' %}
+libvirt_type = qemu
+{%- else %}
+libvirt_type = kvm
+{%- endif %}
+
 rootwrap_config = /etc/nova/rootwrap.conf
 auth_strategy = keystone
 firewall_driver=nova.virt.firewall.NoopFirewallDriver

@@ -5,6 +5,12 @@
     'vnc_protocol': 'http',
 } %}
 
+{%- if salt['grains.get']('virtual') == 'VirtualBox' %}
+{%- set nova_compute_pkg = 'nova-compute-qemu' %}
+{%- else %}
+{%- set nova_compute_pkg = 'nova-compute-kvm' %}
+{%- endif %}
+
 {% set controller = salt['grains.filter_by']({
     'Debian': {
         'pkgs': ['nova-novncproxy', 'novnc', 'nova-api', 'nova-cert', 'nova-conductor', 'nova-consoleauth', 'nova-doc', 'nova-scheduler', 'python-novaclient', 'python-memcache', 'gettext-base'],
@@ -20,7 +26,7 @@
 
 {% set compute = salt['grains.filter_by']({
     'Debian': {
-        'pkgs': ['nova-compute-kvm', 'python-novaclient', 'pm-utils', 'sysfsutils', 'sg3-utils', 'libvirt-bin', 'python-memcache', 'qemu-kvm','python-guestfs', 'gettext-base'],
+        'pkgs': [nova_compute_pkg, 'python-novaclient', 'pm-utils', 'sysfsutils', 'sg3-utils', 'libvirt-bin', 'python-memcache', 'qemu-kvm','python-guestfs', 'gettext-base'],
         'services': ['nova-compute'],
         'libvirt_config': 'libvirtd.conf',
         'libvirt_service': 'libvirtd',
