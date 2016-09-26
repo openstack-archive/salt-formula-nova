@@ -5,22 +5,32 @@
     'vnc_protocol': 'http',
 } %}
 
+{%- if salt['grains.get']('virtual') == 'VirtualBox' %}
+{%- set nova_compute_pkg = 'nova-compute-qemu' %}
+{%- set nova_virt_type = 'qemu' %}
+{%- else %}
+{%- set nova_compute_pkg = 'nova-compute-kvm' %}
+{%- set nova_virt_type = 'kvm' %}
+{%- endif %}
+
 {% set controller = salt['grains.filter_by']({
     'Debian': {
         'pkgs': ['nova-novncproxy', 'novnc', 'nova-api', 'nova-cert', 'nova-conductor', 'nova-consoleauth', 'nova-doc', 'nova-scheduler', 'python-novaclient', 'python-memcache', 'gettext-base'],
         'services': ['nova-api', 'nova-cert', 'nova-consoleauth', 'nova-scheduler', 'nova-conductor', 'nova-novncproxy'],
         'debug': false,
+        'virt_type': nova_virt_type,
     },
     'RedHat': {
         'pkgs': ['openstack-nova-novncproxy', 'python-nova', 'openstack-nova-api', 'openstack-nova-console', 'openstack-nova-scheduler', 'python-novaclient', 'openstack-nova-common', 'openstack-nova-conductor', 'openstack-nova-cert'],
         'services': ['openstack-nova-api', 'openstack-nova-cert', 'openstack-nova-consoleauth', 'openstack-nova-scheduler', 'openstack-nova-conductor', 'openstack-nova-novncproxy'],
         'debug': false,
+        'virt_type': nova_virt_type,
     },
 }, merge=pillar.nova.get('controller', {})) %}
 
 {% set compute = salt['grains.filter_by']({
     'Debian': {
-        'pkgs': ['nova-compute-kvm', 'python-novaclient', 'pm-utils', 'sysfsutils', 'sg3-utils', 'libvirt-bin', 'python-memcache', 'qemu-kvm','python-guestfs', 'gettext-base'],
+        'pkgs': [nova_compute_pkg, 'python-novaclient', 'pm-utils', 'sysfsutils', 'sg3-utils', 'libvirt-bin', 'python-memcache', 'qemu-kvm','python-guestfs', 'gettext-base'],
         'services': ['nova-compute'],
         'libvirt_config': 'libvirtd.conf',
         'libvirt_service': 'libvirtd',
@@ -33,6 +43,7 @@
             'region': 'RegionOne'
         },
         'heal_instance_info_cache_interval': '60',
+        'virt_type': nova_virt_type,
     },
     'RedHat': {
         'pkgs': ['openstack-nova-compute', 'python-novaclient', 'python-nova', 'sysfsutils', 'sg3_utils'],
@@ -49,6 +60,7 @@
             'region': 'RegionOne'
         },
         'heal_instance_info_cache_interval': '60',
+        'virt_type': nova_virt_type,
     },
 }, merge=salt['grains.filter_by']({
     'trusty': {

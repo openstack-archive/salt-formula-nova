@@ -39,7 +39,7 @@ sql_connection = {{ controller.database.engine }}://{{ controller.database.user 
 network_api_class = nova.network.neutronv2.api.API
 
 compute_driver = libvirt.LibvirtDriver
-libvirt_type=kvm
+libvirt_type = {{ compute.virt_type }}
 rootwrap_config = /etc/nova/rootwrap.conf
 auth_strategy = keystone
 firewall_driver=nova.virt.firewall.NoopFirewallDriver
