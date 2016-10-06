@@ -1,3 +1,4 @@
+{%- from "nova/map.jinja" import controller with context %}
 check:
   local_nova_api_proc:
     command: "PATH=$PATH:/usr/lib64/nagios/plugins:/usr/lib/nagios/plugins check_procs -C nova-api -u nova -c 1:1024"
@@ -54,13 +55,13 @@ check:
     subscribers:
     - remote-network
   remote_openstack_nova_api:
-    command: "PATH=$PATH:/usr/local/bin oschecks-check_nova_api --os-auth-url 'http://:::openstack.host:::::::openstack.port:::/v2.0' --os-username :::openstack.user::: --os-password :::openstack.password::: --os-tenant-name :::openstack.tenant:::"
+    command: "PATH=$PATH:/usr/local/bin oschecks-check_nova_api --os-auth-url 'http://:::openstack.host:::::::openstack.port:::/v2.0' --os-username :::openstack.user::: --os-password :::openstack.password::: --os-tenant-name :::openstack.tenant::: --os-region-name {{ controller.identity.region }}"
     interval: 60
     occurrences: 1
     subscribers:
     - remote-network
   remote_nova_services:
-    command: "PATH=$PATH:/etc/sensu/plugins check_nova_services.sh -u :::openstack.user::: -p :::openstack.password::: -t :::openstack.tenant::: -h 'http://:::openstack.host:::::::openstack.port:::/v2.0'"
+    command: "PATH=$PATH:/etc/sensu/plugins check_nova_services.sh -u :::openstack.user::: -p :::openstack.password::: -t :::openstack.tenant::: -h 'http://:::openstack.host:::::::openstack.port:::/v2.0' -r {{ controller.identity.region }}"
     interval: 60
     occurrences: 1
     subscribers:
