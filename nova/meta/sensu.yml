@@ -57,7 +57,7 @@ check:
     subscribers:
     - local-nova-compute
   remote_openstack_nova_instance:
-    command: "PATH=$PATH:/usr/local/bin oschecks-check_nova_instance --auth_url='http://:::openstack.host:::::::openstack.port:::/v2.0' --username :::openstack.user::: --password :::openstack.password::: --tenant :::openstack.tenant:::"
+    command: "PATH=$PATH:/usr/local/bin oschecks-check_nova_instance --auth_url='http://:::openstack.host:::::::openstack.port:::/v2.0' --username :::openstack.user::: --password :::openstack.password::: --tenant :::openstack.tenant::: --region_name {{ region }}"
     interval: 300
     occurrences: 1
     subscribers:
