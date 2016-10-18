@@ -1,54 +1,86 @@
-input:
-  {%- if pillar.nova.compute is defined %}
-  nova_compute:
-    engine: logstreamer
-    log_directory: /var/log/nova
-    file_match: nova-compute\.log\.?(?P<Index>\d+)?(.gz)?
-    priority: ["^Index"]
-    decoder: multidecoder_openstack
-  libvirtd:
-    engine: logstreamer
-    log_directory: /var/log/libvirt
-    file_match: libvirtd\.log\.?(?P<Index>\d+)?(.gz)?
-    priority: ['^Index']
-    decoder: multidecoder_libvirtd
-  {%- endif %}
-  {%- if pillar.nova.controller is defined %}
-  nova_compute:
-    engine: logstreamer
-    log_directory: /var/log/nova
-    file_match: nova-api\.log\.?(?P<Index>\d+)?(.gz)?
-    priority: ["^Index"]
-    decoder: multidecoder_openstack
-  {%- endif %}
-decoder:
-  openstack:
-    engine: multidecoder
-    subs: [ 'Payloadregex_OpenStackLog','Payloadregex_OpenStackLogTrace' ]
-    cascade_strategy: first-wins
-    log_sub_errors: "false"
-  OpenStackLog:
-    engine: payloadregex
-    match_regex: ^(?P<timestamp>\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}.\d{3})\s(?P<pid>\d+)\s(?P<severity>\w+)\s(?P<programname>\D+)\s\[(?P<id>.+)\]\s(?P<payload>.*)
-    timestamp_layout: "2015-10-06 11:34:37.243"
-  OpenStackLogTrace:
-    engine: payloadregex
-    match_regex: ^(?P<timestamp>\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}.\d{3})\s(?P<pid>\d+)\s(?P<severity>TRACE)\s(?P<programname>.\S+)\s(?P<payload>.*)
-    timestamp_layout: "2015-10-06 11:34:37.243"
-  openstacksandbox:
-    engine: sandbox
-    file_name: "/etc/heka/plugins.d/decoders/openstack.lua"
-    module_directory: "/etc/heka/plugins.d/common;/usr/share/heka/lua_modules"
-  libvirtd:
-    engine: multidecoder
-    subs: [ 'Payloadregex_libvirtcommon', 'Payloadregex_libvirtaudit' ]
-    cascade_strategy: first-wins
-    log_sub_errors: "false"
-  libvirtcommon:
-    engine: payloadregex
-    match_regex: ^(?P<timestamp>\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}.\d{3}\+\d{4}):\s+(?P<pid>\d+):\s+(?P<severity>\w+)\s+:\s+(?P<qemutrace>\w+:\d+)\s+:\s+(?P<payload>.*)
-    timestamp_layout: "2015-09-01 15:56:14.675+0000"
-  libvirtaudit:
-    engine: payloadregex
-    match_regex: ^(?P<timestamp>\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}.\d{3}\+\d{4}):\s+(?P<pid>\d+):\s+(?P<severity>\w+)\s+:\s+(?P<message>.+):\s(?P<payload>.+)
-    timestamp_layout: "2015-09-01 15:56:14.675+0000"
+log_collector:
+  decoder:
+    openstack:
+      engine: sandbox
+      module_file: /usr/share/lma_collector/decoders/openstack_log.lua
+      module_dir: /usr/share/lma_collector_modules;/usr/share/heka/lua_modules
+    {%- if pillar.nova.compute is defined %}
+    nova_libvirt:
+      engine: sandbox
+      module_file: /usr/share/lma_collector/decoders/libvirt_log.lua
+      module_dir: /usr/share/lma_collector_modules;/usr/share/heka/lua_modules
+    {%- endif %}
+  splitter:
+    openstack:
+      engine: token
+      delimiter: '\n'
+  input:
+    nova_log_stream:
+      engine: logstreamer
+      log_directory: "/var/log/nova"
+      file_match: '(?P<Service>.+)\.log\.?(?P<Seq>\d*)$'
+      differentiator: ['libvirt']
+      decoder: "openstack_decoder"
+      splitter: "openstack_splitter"
+    {%- if pillar.nova.compute is defined %}
+    libvirt_log_stream:
+      engine: logstreamer
+      log_directory: "/var/log/libvirt"
+      file_match: 'libvirtd.log'
+      differentiator: ['nova', '_', 'Service']
+      decoder: "libvirt_decoder"
+      splitter: "TokenSplitter"
+    {%- endif %}
+metric_collector:
+  filter:
+    {%- if pillar.nova.compute is defined %}
+    nova_compute_status:
+      engine: sandbox
+      module_file: /usr/share/lma_collector/filters/afd.lua
+      module_dir: /usr/share/lma_collector_modules;/usr/share/heka/lua_modules
+      preserve_data: false
+      message_matcher: "(Type == 'metric' || Type == 'heka.sandbox.metric') && (Fields[name] == 'nova_check')"
+      ticker_interval: 10
+      config:
+        afd_type: 'service'
+        afd_file: 'lma_alarms_nova_compute_check'
+        afd_cluster_name: 'nova_compute'
+        afd_logical_name: 'check'
+        activate_alerting: true
+        enable_notification: false
+    {%- endif %}
+    {%- if pillar.nova.controller is defined %}
+    nova_api_status:
+      engine: sandbox
+      module_file: /usr/share/lma_collector/filters/afd.lua
+      module_dir: /usr/share/lma_collector_modules;/usr/share/heka/lua_modules
+      preserve_data: false
+      message_matcher: "(Type == 'metric' || Type == 'heka.sandbox.metric') && (Fields[name] == 'nova_check')"
+      ticker_interval: 10
+      config:
+        afd_type: 'service'
+        afd_file: 'lma_alarms_nova_api_check'
+        afd_cluster_name: 'nova_api'
+        afd_logical_name: 'check'
+        activate_alerting: true
+        enable_notification: false
+    {%- endif %}
+remote_collector:
+  input:
+    rabbitmq_nova_errors:
+      engine: amqp
+      host: 127.0.0.1
+      port: 5673
+      vhost: "/openstack"
+      user: openstack
+      password: password
+      exchange: "nova"
+      exchange_type: "topic"
+      exchange_durability: false
+      exchange_auto_delete: false
+      queue_auto_delete: false
+      queue: "lma_notifications.error"
+      routing_key: "lma_notifications.error"
+      decoder: "notification_decoder"
+      splitter: "NullSplitter"
+      can_exit: false
