@@ -1,14 +1,24 @@
 {%- if pillar.nova.compute is defined %}
 plugin:
   nova_compute_libvirt:
-    plugin: interface
-    interval: 60
+    plugin: libvirt
+    execution: local
     template: nova/files/collectd_libvirt.conf
+  collectd_libvirt_check:
+    plugin: python
+    execution: local
+    template: collectd/files/collectd_libvirt_check.conf
 {%- endif %}
 {%- if pillar.nova.controller is defined %}
-plugin: {}
-#  nova_controller_nova:
-#    plugin: nova
-#    interval: 60
-#    template: nova/files/collectd_nova.conf
+{% from "nova/map.jinja" import controller with context %}
+plugin:
+  nova_openstack_nova:
+    plugin: python
+    execution: local
+    template: collectd/files/collectd_openstack_nova.conf
+    host: {{ controller.bind.address }}
+    port: 5000
+    project: services
+    user: nova
+    password: {{ controller.identity.password }}
 {%- endif %}
