@@ -1,0 +1,53 @@
+parameters:
+  kubernetes:
+    control:
+      configmap:
+        nova-compute:
+          grains:
+            os_family: Debian
+          pillar:
+            nova:
+              compute:
+                version: ${_param:nova_version}
+                enabled: true
+                virtualization: kvm
+                vncproxy_url: http://${_param:nova_service_host}:6080
+                reserved_host_memory_mb: 32768
+                libvirt:
+                  uri: "qemu+tcp://localhost/system"
+                log_dir_perms: 755
+                bind:
+                  vnc_address: 0.0.0.0
+                  vnc_port: 6080
+                  vnc_name: 0.0.0.0
+                database:
+                  engine: mysql
+                  host: ${_param:cluster_vip_address}
+                  port: 3306
+                  name: nova
+                  user: nova
+                  password: ${_param:mysql_nova_password}
+                identity:
+                  engine: keystone
+                  host: ${_param:keystone_service_host}
+                  port: 35357
+                  user: nova
+                  password: ${_param:keystone_nova_password}
+                  tenant: service
+                message_queue:
+                  engine: rabbitmq
+                  host: ${_param:rabbitmq_service_host}
+                  user: openstack
+                  port: 5672
+                  password: ${_param:rabbitmq_openstack_password}
+                  virtual_host: '/openstack'
+                image:
+                  engine: glance
+                  host: ${_param:glance_service_host}
+                  port: 9292
+                network:
+                  engine: neutron
+                  user: neutron
+                  password: ${_param:keystone_neutron_password}
+                  host: ${_param:neutron_service_host}
+                  port: 9696
