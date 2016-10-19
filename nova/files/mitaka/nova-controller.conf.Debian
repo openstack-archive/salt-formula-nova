@@ -28,7 +28,7 @@ connection_type=libvirt
 root_helper=sudo nova-rootwrap /etc/nova/rootwrap.conf
 api_paste_config=/etc/nova/api-paste.ini
 
-compute_driver = libvirt.LibvirtDriver
+compute_driver = nova.virt.libvirt.LibvirtDriver
 rootwrap_config = /etc/nova/rootwrap.conf
 auth_strategy = keystone
 firewall_driver=nova.virt.firewall.NoopFirewallDriver

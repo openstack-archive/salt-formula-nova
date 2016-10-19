@@ -35,7 +35,7 @@ auth_strategy = keystone
 libvirt_nonblocking = True
 
 neutron_url_timeout = 300
-compute_driver = libvirt.LibvirtDriver
+compute_driver = nova.virt.libvirt.LibvirtDriver
 
 heal_instance_info_cache_interval = {{ compute.heal_instance_info_cache_interval }}
 
@@ -95,6 +95,10 @@ use_usb_tablet = True
 cpu_mode = host-passthrough
 virt_type = kvm
 use_virtio_for_bridges = True
+
+{%- if compute.get('libvirt_connection', 'socket') == 'tcp' %}
+connection_uri=qemu+tcp://localhost/system
+{%- endif %}
 
 [keystone_authtoken]
 signing_dirname=/tmp/keystone-signing-nova
