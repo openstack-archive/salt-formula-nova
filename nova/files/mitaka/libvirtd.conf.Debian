@@ -84,7 +84,13 @@ auth_tcp = "none"
 # without becoming root.
 #
 # This is restricted to 'root' by default.
+{%- if salt['group.info']('libvirtd') %}
 unix_sock_group = "libvirtd"
+{%- elif salt['group.info']('libvirt') %}
+unix_sock_group = "libvirt"
+{%- else %}
+#unix_sock_group = "libvirtd"
+{%- endif %}
 
 # Set the UNIX socket permissions for the R/O socket. This is used
 # for monitoring VM status only

@@ -46,6 +46,8 @@ user_nova:
   - groups:
     {%- if salt['group.info']('libvirtd') %}
     - libvirtd
+    {%- elif salt['group.info']('libvirt') %}
+    - libvirt
     {%- endif %}
     - nova
   - require_in:
