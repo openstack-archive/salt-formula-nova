@@ -1,54 +1,34 @@
-input:
-  {%- if pillar.nova.compute is defined %}
-  nova_compute:
-    engine: logstreamer
-    log_directory: /var/log/nova
-    file_match: nova-compute\.log\.?(?P<Index>\d+)?(.gz)?
-    priority: ["^Index"]
-    decoder: multidecoder_openstack
-  libvirtd:
-    engine: logstreamer
-    log_directory: /var/log/libvirt
-    file_match: libvirtd\.log\.?(?P<Index>\d+)?(.gz)?
-    priority: ['^Index']
-    decoder: multidecoder_libvirtd
-  {%- endif %}
-  {%- if pillar.nova.controller is defined %}
-  nova_compute:
-    engine: logstreamer
-    log_directory: /var/log/nova
-    file_match: nova-api\.log\.?(?P<Index>\d+)?(.gz)?
-    priority: ["^Index"]
-    decoder: multidecoder_openstack
-  {%- endif %}
-decoder:
-  openstack:
-    engine: multidecoder
-    subs: [ 'Payloadregex_OpenStackLog','Payloadregex_OpenStackLogTrace' ]
-    cascade_strategy: first-wins
-    log_sub_errors: "false"
-  OpenStackLog:
-    engine: payloadregex
-    match_regex: ^(?P<timestamp>\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}.\d{3})\s(?P<pid>\d+)\s(?P<severity>\w+)\s(?P<programname>\D+)\s\[(?P<id>.+)\]\s(?P<payload>.*)
-    timestamp_layout: "2015-10-06 11:34:37.243"
-  OpenStackLogTrace:
-    engine: payloadregex
-    match_regex: ^(?P<timestamp>\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}.\d{3})\s(?P<pid>\d+)\s(?P<severity>TRACE)\s(?P<programname>.\S+)\s(?P<payload>.*)
-    timestamp_layout: "2015-10-06 11:34:37.243"
-  openstacksandbox:
-    engine: sandbox
-    file_name: "/etc/heka/plugins.d/decoders/openstack.lua"
-    module_directory: "/etc/heka/plugins.d/common;/usr/share/heka/lua_modules"
-  libvirtd:
-    engine: multidecoder
-    subs: [ 'Payloadregex_libvirtcommon', 'Payloadregex_libvirtaudit' ]
-    cascade_strategy: first-wins
-    log_sub_errors: "false"
-  libvirtcommon:
-    engine: payloadregex
-    match_regex: ^(?P<timestamp>\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}.\d{3}\+\d{4}):\s+(?P<pid>\d+):\s+(?P<severity>\w+)\s+:\s+(?P<qemutrace>\w+:\d+)\s+:\s+(?P<payload>.*)
-    timestamp_layout: "2015-09-01 15:56:14.675+0000"
-  libvirtaudit:
-    engine: payloadregex
-    match_regex: ^(?P<timestamp>\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}.\d{3}\+\d{4}):\s+(?P<pid>\d+):\s+(?P<severity>\w+)\s+:\s+(?P<message>.+):\s(?P<payload>.+)
-    timestamp_layout: "2015-09-01 15:56:14.675+0000"
+log_collector:
+  decoder:
+    nova:
+      engine: sandbox
+      module_file: /usr/share/lma_collector/decoders/openstack_log.lua
+      module_dir: /usr/share/lma_collector/common;/usr/share/heka/lua_modules
+    {%- if pillar.nova.compute is defined %}
+    libvirt:
+      engine: sandbox
+      module_file: /usr/share/lma_collector/decoders/libvirt_log.lua
+      module_dir: /usr/share/lma_collector/common;/usr/share/heka/lua_modules
+    {%- endif %}
+  splitter:
+    nova:
+      engine: token
+      delimiter: '\n'
+  input:
+    nova_log:
+      engine: logstreamer
+      log_directory: "/var/log/nova"
+      file_match: '(?P<Service>.+)\.log\.?(?P<Seq>\d*)$'
+      differentiator: ['nova', '_', 'Service']
+      priority: ["^Seq"]
+      decoder: "nova_decoder"
+      splitter: "nova_splitter"
+    {%- if pillar.nova.compute is defined %}
+    libvirt_log:
+      engine: logstreamer
+      log_directory: "/var/log/libvirt"
+      file_match: 'libvirtd.log'
+      differentiator: ['libvirt']
+      decoder: "libvirt_decoder"
+      splitter: "TokenSplitter"
+    {%- endif %}
