@@ -17,8 +17,8 @@ log_collector:
   input:
     nova_log:
       engine: logstreamer
-      log_directory: "/var/log/nova"
-      file_match: '(?P<Service>.+)\.log\.?(?P<Seq>\d*)$'
+      log_directory: "/var/log"
+      file_match: 'nova/(?P<Service>.+)\.log\.?(?P<Seq>\d*)$'
       differentiator: ['nova', '_', 'Service']
       priority: ["^Seq"]
       decoder: "nova_decoder"
