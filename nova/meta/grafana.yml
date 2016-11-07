@@ -1,0 +1,3 @@
+dashboard:
+  nova:
+    template: nova/files/Nova.json
