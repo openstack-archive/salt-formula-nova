@@ -1,0 +1,10 @@
+Code-Review+1: Simon Pasquier <spasquier@mirantis.com>
+Code-Review+1: Guillaume Thouvenin <gthouvenin@mirantis.com>
+Code-Review+2: Ales Komarek <ales.komarek@tcpcloud.eu>
+Workflow+1: Ales Komarek <ales.komarek@tcpcloud.eu>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Mon, 07 Nov 2016 10:29:07 +0000
+Reviewed-on: https://review.openstack.org/393235
+Project: openstack/salt-formula-nova
+Branch: refs/heads/stacklight
