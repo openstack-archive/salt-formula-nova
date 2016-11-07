@@ -26,8 +26,8 @@ log_collector:
     {%- if pillar.nova.compute is defined %}
     libvirt_log:
       engine: logstreamer
-      log_directory: "/var/log/libvirt"
-      file_match: 'libvirtd.log'
+      log_directory: "/var/log"
+      file_match: 'libvirt/libvirtd.log'
       differentiator: ['libvirt']
       decoder: "libvirt_decoder"
       splitter: "TokenSplitter"
