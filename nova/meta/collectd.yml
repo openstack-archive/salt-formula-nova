@@ -9,6 +9,12 @@ local_plugin:
 {%- endif %}
 {%- if pillar.nova.controller is defined %}
 {% from "nova/map.jinja" import controller with context %}
+local_plugin:
+  collectd_check_local_endpoint:
+    endpoint:
+      nova-api:
+        expected_code: 200
+        url: "http://{{ controller.bind.private_address|replace('0.0.0.0', '127.0.0.1') }}:8774/"
 remote_plugin:
   nova_resources:
     plugin: python
