@@ -50,6 +50,23 @@ rpc_response_timeout = 3600
 executor_thread_pool_size = 70
 report_interval = {{ compute.get('report_interval', '60') }}
 
+{%- if compute.message_queue.members is defined %}
+rabbit_hosts = {% for member in compute.message_queue.members -%}
+                   {{ member.host }}:{{ member.get('port', 5672) }}
+                   {%- if not loop.last -%},{%- endif -%}
+               {%- endfor -%}
+{%- else %}
+rabbit_host = {{ compute.message_queue.host }}
+rabbit_port = {{ compute.message_queue.port }}
+{%- endif %}
+
+rabbit_userid = {{ compute.message_queue.user }}
+rabbit_password = {{ compute.message_queue.password }}
+rabbit_virtual_host = {{ compute.message_queue.virtual_host }}
+rpc_conn_pool_size = 300
+rabbit_retry_interval = 1
+rabbit_retry_backoff = 2
+
 block_device_allocate_retries=600
 block_device_allocate_retries_interval=10
 
