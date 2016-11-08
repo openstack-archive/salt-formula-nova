@@ -33,3 +33,122 @@ log_collector:
       decoder: "libvirt_decoder"
       splitter: "TokenSplitter"
     {%- endif %}
+metric_collector:
+  trigger:
+    {%- if pillar.nova.compute is defined %}
+    nova_total_free_vcpu_warning:
+      description: 'There is no VCPU available for new instances.'
+      severity: warning
+      no_data_policy: skip # the metric is only collected from the aggregator node
+      rules:
+      - metric: openstack_nova_total_free_vcpus
+        relational_operator: '=='
+        threshold: 10
+        window: 60
+        periods: 0
+        function: max
+    nova_total_free_memory_warning:
+      description: 'There is no memory available for new instances.'
+      severity: warning
+      no_data_policy: skip  # the metric is only collected from the aggregator node
+      rules:
+      - metric: openstack_nova_total_free_ram
+        relational_operator: '=='
+        threshold: 0
+        window: 60
+        periods: 0
+        function: max
+    nova_instance_creation_duration_warning:
+      description: "Instance creation takes too much time"
+      severity: warning
+      no_data_policy: okay
+      rules:
+      - metric: openstack_nova_instance_creation_time
+        relational_operator: '>'
+        threshold: 20
+        window: 600
+        periods: 0
+        function: avg
+    nova_free_disk_warning:
+      description: 'There is not enough free disk space for new instances.'
+      severity: warning
+      no_data_policy: skip
+      rules:
+      - metric: fs_space_percent_free
+        relational_operator: '<'
+        threshold: 10
+        window: 60
+        periods: 0
+        function: min
+        domain:
+          fs: '/var/lib/nova'
+    nova_free_disk_critical:
+      description: 'There is no free disk space for new instances.'
+      severity: critical
+      no_data_policy: skip
+      rules:
+      - metric: fs_space_percent_free
+        relational_operator: '<'
+        threshold: 5
+        window: 60
+        periods: 0
+        function: min
+        domain:
+          fs: '/var/lib/nova'
+    {%- endif %}
+    {%- if pillar.nova.controller is defined %}
+    nova_api_local_endpoint:
+      description: 'Nova API is locally down.'
+      severity: down
+      rules:
+      - metric: openstack_check_local_api
+        dimension:
+          service: nova-api
+        relational_operator: '=='
+        threshold: 0
+        window: 60
+        periods: 0
+        function: last
+    {%- endif %}
+  alarm:
+    {%- if pillar.nova.compute is defined %}
+    nova_total_compute_free_memory:
+      notifications: False
+      alerting: True
+      triggers:
+      - nova_total_free_memory_warning
+      dimension:
+        service: nova-compute
+    nova_total_compute_free_vcpu:
+      notifications: False
+      alerting: True
+      triggers:
+      - nova_total_free_vcpu_warning
+      dimension:
+        service: nova-compute
+    {%- endif %}
+    {%- if pillar.nova.controller is defined %}
+    nova_api_local_endpoint:
+      enable_notification: False
+      activate_alerting: True
+      triggers:
+      - nova_api_local_endpoint
+      dimension:
+        service: nova-control
+    {%- endif %}
+remote_collector:
+  trigger:
+    {%- if pillar.nova.controller is defined %}
+    nova_api_endpoint:
+      description: 'Nova API is down.'
+      severity: down
+      rules:
+      - metric: openstack_check_api
+        dimension:
+          service: nova-api
+        relational_operator: '=='
+        threshold: 0
+        window: 60
+        periods: 0
+        function: last
+    {%- endif %}
