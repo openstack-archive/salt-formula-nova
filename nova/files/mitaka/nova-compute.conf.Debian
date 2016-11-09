@@ -1,38 +1,36 @@
 {%- from "nova/map.jinja" import compute with context %}
 
 [DEFAULT]
-dhcpbridge_flagfile=/etc/nova/nova.conf
-dhcpbridge=/usr/bin/nova-dhcpbridge
 logdir=/var/log/nova
 state_path=/var/lib/nova
-force_dhcp_release=True
-iscsi_helper=tgtadm
 connection_type=libvirt
-root_helper=sudo nova-rootwrap /etc/nova/rootwrap.conf
+rootwrap_config=/etc/nova/rootwrap.conf
 verbose=True
 api_paste_config=/etc/nova/api-paste.ini
 volumes_path=/var/lib/nova/volumes
-enabled_apis=osapi_compute,metadata
-
+compute_manager=nova.compute.manager.ComputeManager
+network_device_mtu=65000
 use_neutron = True
+config_drive_format=vfat
+force_config_drive=True
+allow_resize_to_same_host=True
+security_group_api=neutron
+vif_plugging_is_fatal=True
+vif_plugging_timeout=300
+dhcp_domain={{ compute.get('dhcp_domain', 'novalocal') }}
 
 {%- if compute.image.use_cow is defined %}
 use_cow_images = {{ compute.image.use_cow }}
 {%- endif %}
 
+remove_unused_original_minimum_age_seconds=86400
+image_service=nova.image.glance.GlanceImageService
+
 reserved_host_memory_mb = {{ compute.get('reserved_host_memory_mb', '512') }}
 
 allow_resize_to_same_host=True
 
-{%- if compute.get('ceph', {}).ephemeral is defined %}
-live_migration_flag="VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE,VIR_MIGRATE_PERSIST_DEST,VIR_MIGRATE_TUNNELLED"
-{%- else %}
-live_migration_flag=VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE
-{%- endif %}
-live_migration_retry_count=30
-
 auth_strategy = keystone
-libvirt_nonblocking = True
 
 neutron_url_timeout = 300
 compute_driver = nova.virt.libvirt.LibvirtDriver
@@ -41,9 +39,6 @@ heal_instance_info_cache_interval = {{ compute.heal_instance_info_cache_interval
 
 image_cache_manager_interval = 0
 firewall_driver = nova.virt.firewall.NoopFirewallDriver
-glance_port = 9292
-glance_num_retries = 10
-
 
 rpc_cast_timeout = 30
 rpc_response_timeout = 3600
@@ -61,7 +56,8 @@ service_down_time = 90
 instance_usage_audit = True
 instance_usage_audit_period = hour
 notify_on_state_change = vm_and_task_state
-
+notification_topics=notifications
+instance_usage_audit_period=hour
 {% endif %}
 
 [oslo_concurrency]
@@ -78,6 +74,7 @@ novncproxy_base_url={{ compute.vncproxy_url }}/vnc_auto.html
 novncproxy_port={{ compute.bind.vnc_port }}
 vncserver_listen=0.0.0.0
 vncserver_proxyclient_address={{ compute.bind.vnc_address }}
+keymap = {{ compute.get('vnc_keymap', 'en-us') }}
 
 [spice]
 enabled = false
@@ -85,16 +82,33 @@ html5proxy_base_url = {{ compute.vncproxy_url }}/spice_auto.html
 
 [cache]
 {%- if compute.cache is defined %}
+backend = oslo_cache.memcache_pool
 enabled = true
 memcached_servers={%- for member in compute.cache.members %}{{ member.host }}:11211{% if not loop.last %},{% endif %}{%- endfor %}
 {%- endif %}
 
 [libvirt]
-inject_partition = -1
-use_usb_tablet = True
 cpu_mode = host-passthrough
 virt_type = kvm
-use_virtio_for_bridges = True
+inject_partition=-2
+inject_password=False
+disk_cachemodes="network=writeback,block=none"
+libvirt_inject_password=True
+block_migration_flag=VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE,VIR_MIGRATE_NON_SHARED_INC
+live_migration_flag=VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE,VIR_MIGRATE_PERSIST_DEST
+libvirt_inject_key=True
+inject_key=False
+vif_driver=nova.virt.libvirt.vif.LibvirtGenericVIFDriver
+
+{%- if compute.get('ceph', {}).ephemeral is defined %}
+images_type=rbd
+images_rbd_pool={{ compute.ceph.rbd_pool }}
+images_rbd_ceph_conf=/etc/ceph/ceph.conf
+rbd_user={{ compute.ceph.rbd_user }}
+rbd_secret_uuid={{ compute.ceph.secret_uuid }}
+libvirt_inject_password=false
+libvirt_inject_key=false
+{%- endif %}
 
 {%- if compute.get('libvirt', {}).uri is defined %}
 connection_uri={{ compute.libvirt.uri }}
@@ -134,8 +148,8 @@ rabbit_retry_interval = 1
 rabbit_retry_backoff = 2
 
 [glance]
-
-host = {{ compute.image.host }}
+api_servers={{ compute.image.host }}:9292
+host={{ compute.image.host }}
 
 [neutron]
 username={{ compute.network.user }}
@@ -154,17 +168,3 @@ timeout=30
 os_region_name = {{ compute.identity.region }}
 catalog_info=volumev2:cinderv2:internalURL
 
-{%- if compute.get('ceph', {}).ephemeral is defined %}
-[libvirt]
-images_type=rbd
-images_rbd_pool={{ compute.ceph.rbd_pool }}
-images_rbd_ceph_conf=/etc/ceph/ceph.conf
-rbd_user={{ compute.ceph.rbd_user }}
-rbd_secret_uuid={{ compute.ceph.secret_uuid }}
-libvirt_inject_password=false
-libvirt_inject_key=false
-libvirt_inject_partition=-2
-{%- endif %}
-
-[vnc]
-keymap = {{ compute.get('vnc_keymap', 'en-us') }}
