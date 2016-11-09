@@ -29,6 +29,13 @@ vm.swappiness:
     - service: nova_compute_services
 {%- endif %}
 
+# MOS9 libvirt fix to create group
+group_libvirtd:
+  group.present:
+    - name: libvirtd
+    - system: True
+    - require_in:
+      - user: user_nova
 
 {%- if not salt['user.info']('nova') %}
 user_nova:
