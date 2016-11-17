@@ -33,3 +33,292 @@ log_collector:
       decoder: "libvirt_decoder"
       splitter: "TokenSplitter"
     {%- endif %}
+metric_collector:
+  trigger:
+    {%- if pillar.nova.compute is defined %}
+    nova_fs_warning:
+      description: "The filesystem's free space is low (compute node)"
+      severity: warning
+      rules:
+      - metric: fs_space_percent_free
+        field:
+          fs: '/var/lib/nova'
+        relational_operator: '<'
+        threshold: 10
+        window: 60
+        periods: 0
+        function: min
+    nova_fs_critical:
+      description: "The filesystem's free space is too low (compute node)"
+      severity: critical
+      rules:
+      - metric: fs_space_percent_free
+        field:
+          fs: '/var/lib/nova'
+        relational_operator: '<'
+        threshold: 5
+        window: 60
+        periods: 0
+        function: min
+    {%- endif %}
+    nova_logs_error:
+      description: 'Too many errors have been detected in Nova logs'
+      severity: warning
+      no_data_policy: okay
+      rules:
+      - metric: log_messages
+        field:
+          service: nova
+          level: error
+        relational_operator: '>'
+        threshold: 0.1
+        window: 70
+        periods: 0
+        function: max
+    {%- if pillar.nova.controller is defined %}
+    nova_api_local_endpoint:
+      description: 'Nova API is locally down'
+      severity: down
+      rules:
+      - metric: openstack_check_local_api
+        field:
+          service: nova-api
+        relational_operator: '=='
+        threshold: 0
+        window: 60
+        periods: 0
+        function: last
+    {%- endif %}
+  alarm:
+    {%- if pillar.nova.compute is defined %}
+    nova_fs:
+      alerting: enabled
+      triggers:
+      - nova_fs_critical
+      - nova_fs_warning
+      dimension:
+        service: nova-fs
+    nova_logs_compute:
+      alerting: enabled
+      triggers:
+      - nova_logs_error
+      dimension:
+        service: nova-logs-compute
+    {%- endif %}
+    {%- if pillar.nova.controller is defined %}
+    nova_logs:
+      alerting: enabled
+      triggers:
+      - nova_logs_error
+      dimension:
+        service: nova-logs
+    nova_api_endpoint:
+      alerting: enabled
+      triggers:
+      - nova_api_local_endpoint
+      dimension:
+        service: nova-api-endpoint
+    {%- endif %}
+remote_collector:
+  trigger:
+    {%- if pillar.nova.controller is defined %}
+    nova_api_check_failed:
+      description: 'Endpoint check for nova-api is failed'
+      severity: down
+      rules:
+      - metric: openstack_check_api
+        field:
+          service: nova-api
+        relational_operator: '=='
+        threshold: 0
+        window: 60
+        periods: 0
+        function: last
+    {%- for nova_service in ('cert', 'consoleauth', 'compute', 'conductor', 'scheduler') %}
+    nova_{{ nova_service }}_one_down:
+      description: 'At least one Nova {{ nova_service }} is down'
+      severity: warning
+      rules:
+      - metric: openstack_nova_services
+        field:
+          service: {{ nova_service }}
+          state: down
+        relational_operator: '>'
+        threshold: 0
+        window: 60
+        periods: 0
+        function: last
+    nova_{{ nova_service }}_majority_down:
+      description: 'Majority of Nova {{ nova_service }}s are down'
+      severity: critical
+      rules:
+      - metric: openstack_nova_services
+        field:
+          service: {{ nova_service }}
+          state: up
+        relational_operator: '<='
+        threshold: 50
+        window: 60
+        periods: 0
+        function: last
+    nova_{{ nova_service }}_all_down:
+      description: 'All Nova {{ nova_service }}s are down'
+      severity: down
+      rules:
+      - metric: openstack_nova_services
+        field:
+          service: {{ nova_service }}
+          state: up
+        relational_operator: '=='
+        threshold: 0
+        window: 60
+        periods: 0
+        function: last
+    {%- endfor %}
+    nova_total_free_vcpu_warning:
+      description: 'There is no VCPU available for new instances'
+      severity: warning
+      rules:
+      - metric: openstack_nova_total_free_vcpus
+        relational_operator: '=='
+        threshold: 10
+        window: 60
+        periods: 0
+        function: max
+    nova_total_free_memory_warning:
+      description: 'There is no memory available for new instances'
+      severity: warning
+      rules:
+      - metric: openstack_nova_total_free_ram
+        relational_operator: '=='
+        threshold: 0
+        window: 60
+        periods: 0
+        function: max
+    {%- endif %}
+  alarm:
+    {%- if pillar.nova.controller is defined %}
+    nova_api_check:
+      alerting: true
+      triggers:
+      - nova_api_check_failed
+      dimension:
+        service: nova-api-check
+    {%- for nova_service in ('cert', 'consoleauth', 'compute', 'conductor', 'scheduler') %}
+    nova_{{ nova_service }}:
+      alerting: true
+      triggers:
+      - nova_{{ nova_service }}_all_down
+      - nova_{{ nova_service }}_majority_down
+      - nova_{{ nova_service }}_one_down
+      dimension:
+        service: nova-{{ nova_service }}
+    {%- endfor %}
+    nova_free_vcpu:
+      alerting: enabled
+      triggers:
+      - nova_total_free_vcpu_warning
+      dimension:
+        service: nova-free-vcpu
+    nova_free_memory:
+      alerting: enabled
+      triggers:
+      - nova_total_free_memory_warning
+      dimension:
+        service: nova-free-memory
+    {%- endif %}
+aggregator:
+  alarm_cluster:
+    nova_fs:
+      policy: majority_of_members
+      group_by: hostname
+      match:
+        service: nova-fs
+      members:
+      - nova_fs
+      dimension:
+        service: nova-compute
+    nova_logs_compute:
+      policy: highest_severity
+      group_by: hostname
+      match:
+        service: nova-logs-compute
+      members:
+      - nova_logs_compute
+      dimension:
+        service: nova-compute
+    nova_logs:
+      policy: highest_severity
+      group_by: hostname
+      match:
+        service: nova-logs
+      members:
+      - nova_logs
+      dimension:
+        service: nova-control
+    nova_api_endpoint:
+      policy: availability_of_members
+      group_by: hostname
+      match:
+        service: nova-api-endpoint
+      members:
+      - nova_api_endpoint
+      dimension:
+        service: nova-control
+    nova_api_check:
+      policy: highest_severity
+      match:
+        service: nova-api-check
+      members:
+      - nova_api_check
+      dimension:
+        service: nova-control
+    {%- for nova_service in ('cert', 'consoleauth', 'compute', 'conductor', 'scheduler') %}
+      policy: highest_severity
+      match:
+        service: nova-{{ nova_service }}
+      members:
+      - nova_{{ nova_service }}
+      dimension:
+        service: nova-control
+    {%- endfor %}
+    nova_free_vcpu:
+      policy: highest_severity
+      match:
+        service: nova-free-vcpu
+      members:
+      - nova_free_vcpu
+      dimension:
+        service: nova-compute
+    nova_free_memory:
+      policy: highest_severity
+      match:
+        service: nova-free-memory
+      members:
+      - nova_free_memory
+      dimension:
+        service: nova-compute
+    nova_control:
+      policy: highest_severity
+      match:
+        service: nova-control
+      members:
+      - nova_logs
+      - nova_api_endpoint
+      - nova_api_check
+      {%- for nova_service in ('cert', 'consoleauth', 'compute', 'conductor', 'scheduler') %}
+      - nova_{{ nova_service }}
+      {%- endfor %}
+      dimension:
+        cluster_name: nova-control
+    nova_compute:
+      policy: highest_severity
+      match:
+        service: nova-compute
+      members:
+      - nova_fs
+      - nova_logs_compute
+      - nova_free_vcpu
+      - nova_free_memory
+      dimension:
+        cluster_name: nova-compute
