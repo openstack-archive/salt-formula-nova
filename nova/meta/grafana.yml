@@ -1,3 +1,4 @@
 dashboard:
   nova:
+    format: json
     template: nova/files/grafana_influxdb.json
