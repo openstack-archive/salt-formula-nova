@@ -74,3 +74,9 @@ check:
     occurrences: 1
     subscribers:
     - remote-network
+  remote_nova_compute_avilable_space:
+    command: "PATH=$PATH:/etc/sensu/plugins check_nova_compute_disk_space.sh -u :::openstack.user::: -p :::openstack.password::: -t :::openstack.tenant::: -h 'http://:::openstack.host:::::::openstack.port:::/v2.0' -r {{ region }} -w 500 -c 100"
+    interval: 60
+    occurrences: 1
+    subscribers:
+    - remote-network
