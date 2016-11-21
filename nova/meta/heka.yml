@@ -284,6 +284,7 @@ aggregator:
         service: nova-control
         nagios_host: 01-service-clusters
     {%- for nova_service in ('cert', 'consoleauth', 'compute', 'conductor', 'scheduler') %}
+    nova_{{ nova_service }}:
       policy: highest_severity
       match:
         service: nova-{{ nova_service }}
