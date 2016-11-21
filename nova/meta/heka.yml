@@ -238,6 +238,7 @@ aggregator:
       - nova_fs
       dimension:
         service: nova-compute
+        nagios_host: 01-service-clusters
     nova_logs_compute:
       policy: highest_severity
       group_by: hostname
@@ -247,6 +248,7 @@ aggregator:
       - nova_logs_compute
       dimension:
         service: nova-compute
+        nagios_host: 01-service-clusters
     nova_logs:
       policy: highest_severity
       group_by: hostname
@@ -256,6 +258,7 @@ aggregator:
       - nova_logs
       dimension:
         service: nova-control
+        nagios_host: 01-service-clusters
     nova_api_endpoint:
       policy: availability_of_members
       group_by: hostname
@@ -265,6 +268,7 @@ aggregator:
       - nova_api_endpoint
       dimension:
         service: nova-control
+        nagios_host: 01-service-clusters
     nova_api_check:
       policy: highest_severity
       match:
@@ -273,6 +277,7 @@ aggregator:
       - nova_api_check
       dimension:
         service: nova-control
+        nagios_host: 01-service-clusters
     {%- for nova_service in ('cert', 'consoleauth', 'compute', 'conductor', 'scheduler') %}
       policy: highest_severity
       match:
@@ -281,6 +286,7 @@ aggregator:
       - nova_{{ nova_service }}
       dimension:
         service: nova-control
+        nagios_host: 01-service-clusters
     {%- endfor %}
     nova_free_vcpu:
       policy: highest_severity
@@ -290,6 +296,7 @@ aggregator:
       - nova_free_vcpu
       dimension:
         service: nova-compute
+        nagios_host: 01-service-clusters
     nova_free_memory:
       policy: highest_severity
       match:
@@ -298,6 +305,7 @@ aggregator:
       - nova_free_memory
       dimension:
         service: nova-compute
+        nagios_host: 00-top-clusters
     nova_control:
       policy: highest_severity
       match:
@@ -311,6 +319,7 @@ aggregator:
       {%- endfor %}
       dimension:
         cluster_name: nova-control
+        nagios_host: 00-top-clusters
     nova_compute:
       policy: highest_severity
       match:
@@ -322,3 +331,4 @@ aggregator:
       - nova_free_memory
       dimension:
         cluster_name: nova-compute
+        nagios_host: 00-top-clusters
