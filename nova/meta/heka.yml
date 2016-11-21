@@ -232,6 +232,7 @@ aggregator:
     nova_fs:
       policy: majority_of_members
       group_by: hostname
+      alerting: enabled
       match:
         service: nova-fs
       members:
@@ -242,6 +243,7 @@ aggregator:
     nova_logs_compute:
       policy: highest_severity
       group_by: hostname
+      alerting: enabled
       match:
         service: nova-logs-compute
       members:
@@ -252,6 +254,7 @@ aggregator:
     nova_logs:
       policy: highest_severity
       group_by: hostname
+      alerting: enabled
       match:
         service: nova-logs
       members:
@@ -262,6 +265,7 @@ aggregator:
     nova_api_endpoint:
       policy: availability_of_members
       group_by: hostname
+      alerting: enabled
       match:
         service: nova-api-endpoint
       members:
@@ -271,6 +275,7 @@ aggregator:
         nagios_host: 01-service-clusters
     nova_api_check:
       policy: highest_severity
+      alerting: enabled
       match:
         service: nova-api-check
       members:
@@ -281,6 +286,7 @@ aggregator:
     {%- for nova_service in ('cert', 'consoleauth', 'compute', 'conductor', 'scheduler') %}
     nova_{{ nova_service }}:
       policy: highest_severity
+      alerting: enabled
       match:
         service: nova-{{ nova_service }}
       members:
@@ -291,6 +297,7 @@ aggregator:
     {%- endfor %}
     nova_free_vcpu:
       policy: highest_severity
+      alerting: enabled
       match:
         service: nova-free-vcpu
       members:
@@ -300,6 +307,7 @@ aggregator:
         nagios_host: 01-service-clusters
     nova_free_memory:
       policy: highest_severity
+      alerting: enabled
       match:
         service: nova-free-memory
       members:
@@ -309,6 +317,7 @@ aggregator:
         nagios_host: 00-service-clusters
     nova_control:
       policy: highest_severity
+      alerting: enabled_with_notification
       match:
         service: nova-control
       members:
@@ -323,6 +332,7 @@ aggregator:
         nagios_host: 00-top-clusters
     nova_compute:
       policy: highest_severity
+      alerting: enabled_with_notification
       match:
         service: nova-compute
       members:
