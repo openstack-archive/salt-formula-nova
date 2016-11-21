@@ -232,6 +232,7 @@ aggregator:
     nova_fs:
       policy: majority_of_members
       group_by: hostname
+      alerting: enabled_with_notification
       match:
         service: nova-fs
       members:
@@ -242,6 +243,7 @@ aggregator:
     nova_logs_compute:
       policy: highest_severity
       group_by: hostname
+      alerting: enabled_with_notification
       match:
         service: nova-logs-compute
       members:
@@ -252,6 +254,7 @@ aggregator:
     nova_logs:
       policy: highest_severity
       group_by: hostname
+      alerting: enabled_with_notification
       match:
         service: nova-logs
       members:
@@ -262,6 +265,7 @@ aggregator:
     nova_api_endpoint:
       policy: availability_of_members
       group_by: hostname
+      alerting: enabled_with_notification
       match:
         service: nova-api-endpoint
       members:
