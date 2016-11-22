@@ -1240,7 +1240,7 @@
               "groupByTags": [],
               "measurement": "haproxy_backend_servers",
               "policy": "default",
-              "query": "SELECT last(\"value\") FROM \"haproxy_backend_servers\" WHERE \"environment_label\" =~ /^$environment$/ AND \"backend\" = 'nova-api' AND \"state\" = 'up' AND $timeFilter GROUP BY time($interval) fill(null)",
+              "query": "SELECT last(\"value\") FROM \"haproxy_backend_servers\" WHERE \"environment_label\" =~ /^$environment$/ AND \"backend\" = 'nova_api' AND \"state\" = 'up' AND $timeFilter GROUP BY time($interval) fill(null)",
               "rawQuery": false,
               "refId": "A",
               "resultFormat": "time_series",
@@ -1266,7 +1266,7 @@
                 },
                 {
                   "key": "backend",
-                  "value": "nova-api"
+                  "value": "nova_api"
                 },
                 {
                   "condition": "AND",
@@ -1349,7 +1349,7 @@
               "groupByTags": [],
               "measurement": "haproxy_backend_servers",
               "policy": "default",
-              "query": "SELECT last(\"value\") FROM \"haproxy_backend_servers\" WHERE \"environment_label\" =~ /^$environment$/ AND \"backend\" = 'nova-metadata-api' AND \"state\" = 'up' AND $timeFilter GROUP BY time($interval) fill(null)",
+              "query": "SELECT last(\"value\") FROM \"haproxy_backend_servers\" WHERE \"environment_label\" =~ /^$environment$/ AND \"backend\" = 'nova_metadata_api' AND \"state\" = 'up' AND $timeFilter GROUP BY time($interval) fill(null)",
               "rawQuery": false,
               "refId": "A",
               "resultFormat": "time_series",
@@ -1375,7 +1375,7 @@
                 },
                 {
                   "key": "backend",
-                  "value": "nova-metadata-api"
+                  "value": "nova_metadata_api"
                 },
                 {
                   "condition": "AND",
@@ -1458,7 +1458,7 @@
               "groupByTags": [],
               "measurement": "haproxy_backend_servers",
               "policy": "default",
-              "query": "SELECT last(\"value\") FROM \"haproxy_backend_servers\" WHERE \"environment_label\" =~ /^$environment$/ AND \"backend\" = 'nova-novncproxy-websocket' AND \"state\" = 'up' AND $timeFilter GROUP BY time($interval) fill(null)",
+              "query": "SELECT last(\"value\") FROM \"haproxy_backend_servers\" WHERE \"environment_label\" =~ /^$environment$/ AND \"backend\" = 'nova_novncproxy_websocket' AND \"state\" = 'up' AND $timeFilter GROUP BY time($interval) fill(null)",
               "rawQuery": false,
               "refId": "A",
               "resultFormat": "time_series",
@@ -1484,7 +1484,7 @@
                 },
                 {
                   "key": "backend",
-                  "value": "nova-novncproxy-websocket"
+                  "value": "nova_novncproxy_websocket"
                 },
                 {
                   "condition": "AND",
@@ -1591,7 +1591,7 @@
               "groupByTags": [],
               "measurement": "haproxy_backend_servers",
               "policy": "default",
-              "query": "SELECT last(\"value\") FROM \"haproxy_backend_servers\" WHERE \"environment_label\" =~ /^$environment$/ AND \"backend\" = 'nova-api' AND \"state\" = 'down' AND $timeFilter GROUP BY time($interval) fill(null)",
+              "query": "SELECT last(\"value\") FROM \"haproxy_backend_servers\" WHERE \"environment_label\" =~ /^$environment$/ AND \"backend\" = 'nova_api' AND \"state\" = 'down' AND $timeFilter GROUP BY time($interval) fill(null)",
               "rawQuery": false,
               "refId": "A",
               "resultFormat": "time_series",
@@ -1617,7 +1617,7 @@
                 },
                 {
                   "key": "backend",
-                  "value": "nova-api"
+                  "value": "nova_api"
                 },
                 {
                   "condition": "AND",
@@ -1700,7 +1700,7 @@
               "groupByTags": [],
               "measurement": "haproxy_backend_servers",
               "policy": "default",
-              "query": "SELECT last(\"value\") FROM \"haproxy_backend_servers\" WHERE \"environment_label\" =~ /^$environment$/ AND \"backend\" = 'nova-metadata-api' AND \"state\" = 'down' AND $timeFilter GROUP BY time($interval) fill(null)",
+              "query": "SELECT last(\"value\") FROM \"haproxy_backend_servers\" WHERE \"environment_label\" =~ /^$environment$/ AND \"backend\" = 'nova_metadata_api' AND \"state\" = 'down' AND $timeFilter GROUP BY time($interval) fill(null)",
               "rawQuery": false,
               "refId": "A",
               "resultFormat": "time_series",
@@ -1726,7 +1726,7 @@
                 },
                 {
                   "key": "backend",
-                  "value": "nova-metadata-api"
+                  "value": "nova_metadata_api"
                 },
                 {
                   "condition": "AND",
@@ -1809,7 +1809,7 @@
               "groupByTags": [],
               "measurement": "haproxy_backend_servers",
               "policy": "default",
-              "query": "SELECT last(\"value\") FROM \"haproxy_backend_servers\" WHERE \"environment_label\" =~ /^$environment$/ AND \"backend\" = 'nova-novncproxy-websocket' AND \"state\" = 'down' AND $timeFilter GROUP BY time($interval) fill(null)",
+              "query": "SELECT last(\"value\") FROM \"haproxy_backend_servers\" WHERE \"environment_label\" =~ /^$environment$/ AND \"backend\" = 'nova_novncproxy_websocket' AND \"state\" = 'down' AND $timeFilter GROUP BY time($interval) fill(null)",
               "rawQuery": false,
               "refId": "A",
               "resultFormat": "time_series",
@@ -1835,7 +1835,7 @@
                 },
                 {
                   "key": "backend",
-                  "value": "nova-novncproxy-websocket"
+                  "value": "nova_novncproxy_websocket"
                 },
                 {
                   "condition": "AND",
