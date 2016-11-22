@@ -152,7 +152,7 @@ remote_collector:
       description: 'Majority of Nova {{ nova_service }}s are down'
       severity: critical
       rules:
-      - metric: openstack_nova_services
+      - metric: openstack_nova_services_percent
         field:
           service: {{ nova_service }}
           state: up
