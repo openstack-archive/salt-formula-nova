@@ -1,4 +1,7 @@
 dashboard:
   nova:
     format: json
-    template: nova/files/grafana_influxdb.json
+    template: nova/files/nova_influxdb.json
+  hypervisor:
+    format: json
+    template: nova/files/hypervisor_influxdb.json
