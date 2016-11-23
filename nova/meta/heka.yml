@@ -35,32 +35,6 @@ log_collector:
     {%- endif %}
 metric_collector:
   trigger:
-    {%- if pillar.nova.compute is defined %}
-    nova_fs_warning:
-      description: "The filesystem's free space is low (compute node)"
-      severity: warning
-      rules:
-      - metric: fs_space_percent_free
-        field:
-          fs: '/var/lib/nova'
-        relational_operator: '<'
-        threshold: 10
-        window: 60
-        periods: 0
-        function: min
-    nova_fs_critical:
-      description: "The filesystem's free space is too low (compute node)"
-      severity: critical
-      rules:
-      - metric: fs_space_percent_free
-        field:
-          fs: '/var/lib/nova'
-        relational_operator: '<'
-        threshold: 5
-        window: 60
-        periods: 0
-        function: min
-    {%- endif %}
     nova_logs_error:
       description: 'Too many errors have been detected in Nova logs'
       severity: warning
@@ -91,13 +65,6 @@ metric_collector:
     {%- endif %}
   alarm:
     {%- if pillar.nova.compute is defined %}
-    nova_fs:
-      alerting: enabled
-      triggers:
-      - nova_fs_critical
-      - nova_fs_warning
-      dimension:
-        service: nova-fs
     nova_logs_compute:
       alerting: enabled
       triggers:
@@ -229,17 +196,6 @@ remote_collector:
     {%- endif %}
 aggregator:
   alarm_cluster:
-    nova_fs:
-      policy: majority_of_members
-      group_by: hostname
-      alerting: enabled
-      match:
-        service: nova-fs
-      members:
-      - nova_fs
-      dimension:
-        service: nova-compute
-        nagios_host: 01-service-clusters
     nova_logs_compute:
       policy: highest_severity
       group_by: hostname
@@ -336,7 +292,6 @@ aggregator:
       match:
         service: nova-compute
       members:
-      - nova_fs
       - nova_logs_compute
       - nova_free_vcpu
       - nova_free_memory
