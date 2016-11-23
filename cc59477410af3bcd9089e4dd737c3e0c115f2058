@@ -1,0 +1,8 @@
+Code-Review+2: Simon Pasquier <spasquier@mirantis.com>
+Workflow+1: Eric Lemoine <elemoine@mirantis.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Wed, 23 Nov 2016 16:27:51 +0000
+Reviewed-on: https://review.openstack.org/401317
+Project: openstack/salt-formula-nova
+Branch: refs/heads/stacklight
