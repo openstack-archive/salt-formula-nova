@@ -11,3 +11,5 @@ parameters:
         enabled: true
       config:
         enabled: true
+      grafana:
+        enabled: true

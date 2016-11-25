@@ -1,0 +1,7 @@
+dashboard:
+  nova:
+    format: json
+    template: nova/files/grafana_dashboards/nova_influxdb.json
+  hypervisor:
+    format: json
+    template: nova/files/grafana_dashboards/hypervisor_influxdb.json
