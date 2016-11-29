@@ -7,14 +7,20 @@
 
 {% set controller = salt['grains.filter_by']({
     'Debian': {
-        'pkgs': ['nova-consoleproxy', 'novnc', 'nova-api', 'nova-cert', 'nova-conductor', 'nova-consoleauth', 'nova-doc', 'nova-scheduler', 'python-novaclient', 'python-memcache', 'gettext-base'],
+        'pkgs': ['nova-consoleproxy', 'novnc', 'nova-api', 'nova-cert', 'nova-conductor', 'nova-consoleauth', 'nova-doc', 'nova-scheduler', 'python-novaclient', 'python-memcache', 'gettext-base', 'python-pycadf'],
         'services': ['nova-api', 'nova-cert', 'nova-consoleauth', 'nova-scheduler', 'nova-conductor', 'nova-novncproxy'],
         'debug': false,
+        'audit': {
+          'enabled': false
+        },
     },
     'RedHat': {
-        'pkgs': ['openstack-nova-novncproxy', 'python-nova', 'openstack-nova-api', 'openstack-nova-console', 'openstack-nova-scheduler', 'python-novaclient', 'openstack-nova-common', 'openstack-nova-conductor', 'openstack-nova-cert'],
+        'pkgs': ['openstack-nova-novncproxy', 'python-nova', 'openstack-nova-api', 'openstack-nova-console', 'openstack-nova-scheduler', 'python-novaclient', 'openstack-nova-common', 'openstack-nova-conductor', 'openstack-nova-cert', 'python-pycadf'],
         'services': ['openstack-nova-api', 'openstack-nova-cert', 'openstack-nova-consoleauth', 'openstack-nova-scheduler', 'openstack-nova-conductor', 'openstack-nova-novncproxy'],
         'debug': false,
+        'audit': {
+          'enabled': false
+        },
     },
 }, merge=pillar.nova.get('controller', {})) %}
 

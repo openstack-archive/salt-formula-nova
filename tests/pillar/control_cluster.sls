@@ -52,3 +52,7 @@ nova:
       mtu: 1500
     metadata:
       password: metadata
+    audit:
+      filter_factory: 'keystonemiddleware.audit:filter_factory'
+      map_file: '/etc/pycadf/nova_api_audit_map.conf'
+
