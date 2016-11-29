@@ -16,9 +16,11 @@ doc:
         vncproxy_url:
           name: "VNC proxy URL"
           value: {{ compute.vncproxy_url }}
+        {%- if compute.reserved_host_memory_mb is defined %}
         reserved_host_memory_mb:
           name: "Reserved Host Memmory"
           value: {{ compute.reserved_host_memory_mb }}
+        {%- endif %}
         database_host:
           name: "Database"
           value: {{ compute.database.user }}@{{ compute.database.host }}:{{ compute.database.port }}/{{ compute.database.name }}
