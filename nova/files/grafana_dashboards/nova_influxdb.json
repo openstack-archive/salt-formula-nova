@@ -280,7 +280,7 @@
                 {
                   "key": "cluster_name",
                   "operator": "=",
-                  "value": "nova-compute"
+                  "value": "nova-data"
                 }
               ]
             }
