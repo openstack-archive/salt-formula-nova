@@ -239,8 +239,8 @@ aggregator:
       dimension:
         service: nova-control
         nagios_host: 01-service-clusters
-    {%- for nova_service in ('cert', 'consoleauth', 'compute', 'conductor', 'scheduler') %}
-    nova_{{ nova_service }}:
+    {%- for nova_service in ('cert', 'consoleauth', 'conductor', 'scheduler') %}
+    nova_{{ nova_service }}_service:
       policy: highest_severity
       alerting: enabled
       match:
@@ -251,6 +251,16 @@ aggregator:
         service: nova-control
         nagios_host: 01-service-clusters
     {%- endfor %}
+    nova_compute_service:
+      policy: highest_severity
+      alerting: enabled
+      match:
+        service: nova-compute
+      members:
+      - nova_compute
+      dimension:
+        service: nova-compute
+        nagios_host: 01-service-clusters
     nova_free_vcpu:
       policy: highest_severity
       alerting: enabled
@@ -280,8 +290,8 @@ aggregator:
       - nova_logs
       - nova_api_endpoint
       - nova_api_check
-      {%- for nova_service in ('cert', 'consoleauth', 'compute', 'conductor', 'scheduler') %}
-      - nova_{{ nova_service }}
+      {%- for nova_service in ('cert', 'consoleauth', 'conductor', 'scheduler') %}
+      - nova_{{ nova_service }}_service
       {%- endfor %}
       dimension:
         cluster_name: nova-control
@@ -295,6 +305,7 @@ aggregator:
       - nova_logs_compute
       - nova_free_vcpu
       - nova_free_memory
+      - nova_compute_service
       dimension:
         cluster_name: nova-compute
         nagios_host: 00-top-clusters
