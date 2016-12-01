@@ -101,11 +101,21 @@ remote_collector:
         window: 60
         periods: 0
         function: last
-    {%- for nova_service in ('cert', 'consoleauth', 'compute', 'conductor', 'scheduler') %}
-    nova_{{ nova_service }}_one_down:
-      description: 'At least one Nova {{ nova_service }} is down'
+    {%- for nova_service in ('cert', 'consoleauth', 'conductor', 'scheduler') %}
+    nova_{{ nova_service }}_two_up:
+      description: 'There is one or more Nova {{ nova_service }} down'
       severity: warning
+      logical_operator: and
       rules:
+      - metric: openstack_nova_services
+        field:
+          service: {{ nova_service }}
+          state: up
+        relational_operator: '>='
+        threshold: 2
+        window: 60
+        periods: 0
+        function: last
       - metric: openstack_nova_services
         field:
           service: {{ nova_service }}
@@ -115,20 +125,30 @@ remote_collector:
         window: 60
         periods: 0
         function: last
-    nova_{{ nova_service }}_majority_down:
-      description: 'Majority of Nova {{ nova_service }}s are down'
+    nova_{{ nova_service }}_one_up:
+      description: 'There is only one Nova {{ nova_service }} up left'
       severity: critical
+      logical_operator: and
       rules:
-      - metric: openstack_nova_services_percent
+      - metric: openstack_nova_services
         field:
           service: {{ nova_service }}
           state: up
-        relational_operator: '<='
-        threshold: 50
+        relational_operator: '=='
+        threshold: 1
         window: 60
         periods: 0
         function: last
-    nova_{{ nova_service }}_all_down:
+      - metric: openstack_nova_services
+        field:
+          service: {{ nova_service }}
+          state: down
+        relational_operator: '>'
+        threshold: 0
+        window: 60
+        periods: 0
+        function: last
+    nova_{{ nova_service }}_zero_up:
       description: 'All Nova {{ nova_service }}s are down'
       severity: down
       rules:
@@ -142,6 +162,55 @@ remote_collector:
         periods: 0
         function: last
     {%- endfor %}
+    nova_compute_some_down:
+      description: 'Some Nova computes are down'
+      severity: warning
+      logical_operator: and
+      rules:
+      - metric: openstack_nova_services_percent
+        field:
+          service: compute
+          state: down
+        relational_operator: '>'
+        threshold: 0
+        window: 60
+        periods: 0
+        function: last
+      - metric: openstack_nova_services_percent
+        field:
+          service: compute
+          state: up
+        relational_operator: '>='
+        threshold: 50
+        window: 60
+        periods: 0
+        function: last
+    nova_compute_majority_down:
+      description: 'Majority of Nova computes are down'
+      severity: critical
+      rules:
+      - metric: openstack_nova_services_percent
+        field:
+          service: compute
+          state: up
+        relational_operator: '<='
+        threshold: 50
+        window: 60
+        periods: 0
+        function: last
+    nova_compute_all_down:
+      description: 'All Nova compute are down'
+      severity: down
+      rules:
+      - metric: openstack_nova_services_percent
+        field:
+          service: compute
+          state: down
+        relational_operator: '=='
+        threshold: 100
+        window: 60
+        periods: 0
+        function: last
     nova_total_free_vcpu_warning:
       description: 'There is no VCPU available for new instances'
       severity: warning
@@ -166,18 +235,18 @@ remote_collector:
   alarm:
     {%- if pillar.nova.controller is defined %}
     nova_api_check:
-      alerting: true
+      alerting: enabled
       triggers:
       - nova_api_check_failed
       dimension:
         service: nova-api-check
-    {%- for nova_service in ('cert', 'consoleauth', 'compute', 'conductor', 'scheduler') %}
+    {%- for nova_service in ('cert', 'consoleauth', 'conductor', 'scheduler') %}
     nova_{{ nova_service }}:
-      alerting: true
+      alerting: enabled
       triggers:
-      - nova_{{ nova_service }}_all_down
-      - nova_{{ nova_service }}_majority_down
-      - nova_{{ nova_service }}_one_down
+      - nova_{{ nova_service }}_zero_up
+      - nova_{{ nova_service }}_one_up
+      - nova_{{ nova_service }}_two_up
       dimension:
         service: nova-{{ nova_service }}
     {%- endfor %}
@@ -193,6 +262,14 @@ remote_collector:
       - nova_total_free_memory_warning
       dimension:
         service: nova-free-memory
+    nova_compute:
+      alerting: enabled
+      triggers:
+      - nova_compute_all_down
+      - nova_compute_majority_down
+      - nova_compute_some_down
+      dimension:
+        service: nova-compute
     {%- endif %}
 aggregator:
   alarm_cluster:
@@ -205,7 +282,7 @@ aggregator:
       members:
       - nova_logs_compute
       dimension:
-        service: nova-compute
+        service: nova-data
         nagios_host: 01-service-clusters
     nova_logs:
       policy: highest_severity
@@ -239,7 +316,7 @@ aggregator:
       dimension:
         service: nova-control
         nagios_host: 01-service-clusters
-    {%- for nova_service in ('cert', 'consoleauth', 'compute', 'conductor', 'scheduler') %}
+    {%- for nova_service in ('cert', 'consoleauth', 'conductor', 'scheduler') %}
     nova_{{ nova_service }}:
       policy: highest_severity
       alerting: enabled
@@ -259,7 +336,7 @@ aggregator:
       members:
       - nova_free_vcpu
       dimension:
-        service: nova-compute
+        service: nova-data
         nagios_host: 01-service-clusters
     nova_free_memory:
       policy: highest_severity
@@ -269,7 +346,17 @@ aggregator:
       members:
       - nova_free_memory
       dimension:
+        service: nova-data
+        nagios_host: 01-service-clusters
+    nova_compute:
+      policy: highest_severity
+      alerting: enabled
+      match:
         service: nova-compute
+      members:
+      - nova_compute
+      dimension:
+        service: nova-data
         nagios_host: 01-service-clusters
     nova_control:
       policy: highest_severity
@@ -280,21 +367,22 @@ aggregator:
       - nova_logs
       - nova_api_endpoint
       - nova_api_check
-      {%- for nova_service in ('cert', 'consoleauth', 'compute', 'conductor', 'scheduler') %}
+      {%- for nova_service in ('cert', 'consoleauth', 'conductor', 'scheduler') %}
       - nova_{{ nova_service }}
       {%- endfor %}
       dimension:
         cluster_name: nova-control
         nagios_host: 00-top-clusters
-    nova_compute:
+    nova_data:
       policy: highest_severity
       alerting: enabled_with_notification
       match:
-        service: nova-compute
+        service: nova-data
       members:
       - nova_logs_compute
       - nova_free_vcpu
       - nova_free_memory
+      - nova_compute
       dimension:
-        cluster_name: nova-compute
+        cluster_name: nova-data
         nagios_host: 00-top-clusters
