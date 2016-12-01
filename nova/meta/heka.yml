@@ -39,6 +39,7 @@ metric_collector:
       description: 'Too many errors have been detected in Nova logs'
       severity: warning
       no_data_policy: okay
+      logical_operator: or
       rules:
       - metric: log_messages
         field:
@@ -53,6 +54,7 @@ metric_collector:
     nova_api_local_endpoint:
       description: 'Nova API is locally down'
       severity: down
+      logical_operator: or
       rules:
       - metric: openstack_check_local_api
         field:
@@ -92,6 +94,7 @@ remote_collector:
     nova_api_check_failed:
       description: 'Endpoint check for nova-api is failed'
       severity: down
+      logical_operator: or
       rules:
       - metric: openstack_check_api
         field:
@@ -105,6 +108,7 @@ remote_collector:
     nova_{{ nova_service }}_one_down:
       description: 'At least one Nova {{ nova_service }} is down'
       severity: warning
+      logical_operator: or
       rules:
       - metric: openstack_nova_services
         field:
@@ -118,6 +122,7 @@ remote_collector:
     nova_{{ nova_service }}_majority_down:
       description: 'Majority of Nova {{ nova_service }}s are down'
       severity: critical
+      logical_operator: or
       rules:
       - metric: openstack_nova_services_percent
         field:
@@ -131,6 +136,7 @@ remote_collector:
     nova_{{ nova_service }}_all_down:
       description: 'All Nova {{ nova_service }}s are down'
       severity: down
+      logical_operator: or
       rules:
       - metric: openstack_nova_services
         field:
@@ -145,6 +151,7 @@ remote_collector:
     nova_total_free_vcpu_warning:
       description: 'There is no VCPU available for new instances'
       severity: warning
+      logical_operator: or
       rules:
       - metric: openstack_nova_total_free_vcpus
         relational_operator: '=='
@@ -155,6 +162,7 @@ remote_collector:
     nova_total_free_memory_warning:
       description: 'There is no memory available for new instances'
       severity: warning
+      logical_operator: or
       rules:
       - metric: openstack_nova_total_free_ram
         relational_operator: '=='
