@@ -166,14 +166,14 @@ remote_collector:
   alarm:
     {%- if pillar.nova.controller is defined %}
     nova_api_check:
-      alerting: true
+      alerting: enabled
       triggers:
       - nova_api_check_failed
       dimension:
         service: nova-api-check
     {%- for nova_service in ('cert', 'consoleauth', 'compute', 'conductor', 'scheduler') %}
     nova_{{ nova_service }}:
-      alerting: true
+      alerting: enabled
       triggers:
       - nova_{{ nova_service }}_all_down
       - nova_{{ nova_service }}_majority_down
