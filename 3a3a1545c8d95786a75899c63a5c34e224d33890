@@ -1,0 +1,9 @@
+Code-Review+2: Simon Pasquier <spasquier@mirantis.com>
+Code-Review+2: Eric Lemoine <elemoine@mirantis.com>
+Workflow+1: Eric Lemoine <elemoine@mirantis.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Fri, 02 Dec 2016 16:02:59 +0000
+Reviewed-on: https://review.openstack.org/405434
+Project: openstack/salt-formula-nova
+Branch: refs/heads/master
