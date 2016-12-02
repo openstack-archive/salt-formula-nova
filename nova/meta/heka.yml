@@ -197,7 +197,7 @@ remote_collector:
 aggregator:
   alarm_cluster:
     nova_logs_compute:
-      policy: highest_severity
+      policy: majority_of_node_members
       group_by: hostname
       alerting: enabled
       match:
@@ -208,7 +208,7 @@ aggregator:
         service: nova-compute
         nagios_host: 01-service-clusters
     nova_logs:
-      policy: highest_severity
+      policy: availability_of_members
       group_by: hostname
       alerting: enabled
       match:
@@ -230,7 +230,7 @@ aggregator:
         service: nova-control
         nagios_host: 01-service-clusters
     nova_api_check:
-      policy: highest_severity
+      policy: availability_of_members
       alerting: enabled
       match:
         service: nova-api-check
@@ -239,9 +239,9 @@ aggregator:
       dimension:
         service: nova-control
         nagios_host: 01-service-clusters
-    {%- for nova_service in ('cert', 'consoleauth', 'compute', 'conductor', 'scheduler') %}
+    {%- for nova_service in ('cert', 'consoleauth', 'conductor', 'scheduler') %}
     nova_{{ nova_service }}:
-      policy: highest_severity
+      policy: availability_of_members
       alerting: enabled
       match:
         service: nova-{{ nova_service }}
@@ -252,7 +252,7 @@ aggregator:
         nagios_host: 01-service-clusters
     {%- endfor %}
     nova_free_vcpu:
-      policy: highest_severity
+      policy: majority_of_node_members
       alerting: enabled
       match:
         service: nova-free-vcpu
@@ -262,7 +262,7 @@ aggregator:
         service: nova-compute
         nagios_host: 01-service-clusters
     nova_free_memory:
-      policy: highest_severity
+      policy: majority_of_node_members
       alerting: enabled
       match:
         service: nova-free-memory
@@ -280,7 +280,7 @@ aggregator:
       - nova_logs
       - nova_api_endpoint
       - nova_api_check
-      {%- for nova_service in ('cert', 'consoleauth', 'compute', 'conductor', 'scheduler') %}
+      {%- for nova_service in ('cert', 'consoleauth', 'conductor', 'scheduler') %}
       - nova_{{ nova_service }}
       {%- endfor %}
       dimension:
