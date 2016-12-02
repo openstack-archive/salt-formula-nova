@@ -274,7 +274,7 @@ remote_collector:
 aggregator:
   alarm_cluster:
     nova_logs_compute:
-      policy: highest_severity
+      policy: majority_of_node_members
       group_by: hostname
       alerting: enabled
       match:
@@ -285,7 +285,7 @@ aggregator:
         service: nova-data
         nagios_host: 01-service-clusters
     nova_logs:
-      policy: highest_severity
+      policy: status_of_members
       group_by: hostname
       alerting: enabled
       match:
