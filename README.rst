@@ -67,6 +67,8 @@ Nova services on the controller node
             tenant: service
         metadata:
           password: password
+        audit:
+          enabled: false
 
 
 Nova services from custom package repository
@@ -98,6 +100,20 @@ Client-side RabbitMQ HA setup
          user: openstack
          password: pwd
          virtual_host: '/openstack'
+      ....
+
+
+Enable auditing filter, ie: CADF
+
+.. code-block:: yaml
+
+    nova:
+      controller:
+        autidt:
+          enabled: true
+      ....
+          filter_factory: 'keystonemiddleware.audit:filter_factory'
+          map_file: '/etc/pycadf/nova_api_audit_map.conf'
       ....
 
 
