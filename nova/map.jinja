@@ -63,7 +63,7 @@
     },
 }, grain='oscodename', merge=pillar.nova.get('compute', {}))) %}
 
-{%- if salt['pillar.get']('linux:system:repo:mirantis_openstack', False) %}
+{%- if salt['pillar.get']('linux:system:repo:mirantis_openstack' , False) or salt['pillar.get']('linux:system:repo:mirantis' , False) %}
 {%- do compute.update({'libvirt_bin': '/etc/default/libvirtd'}) %}
 {%- do compute.update({'libvirt_service': 'libvirtd'}) %}
 {%- endif %}
