@@ -1,0 +1,8 @@
+Code-Review+2: Jakub Pavlik <pavlk.jakub@gmail.com>
+Workflow+1: Jakub Pavlik <pavlk.jakub@gmail.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Sun, 04 Dec 2016 10:16:18 +0000
+Reviewed-on: https://review.openstack.org/406334
+Project: openstack/salt-formula-nova
+Branch: refs/heads/master
