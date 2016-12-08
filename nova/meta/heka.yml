@@ -250,18 +250,18 @@ remote_collector:
       dimension:
         service: nova-{{ nova_service }}
     {%- endfor %}
-    nova_free_vcpu:
+    nova_total_free_vcpu:
       alerting: enabled
       triggers:
       - nova_total_free_vcpu_warning
       dimension:
-        service: nova-free-vcpu
-    nova_free_memory:
+        service: nova-total-free-vcpu
+    nova_total_free_memory:
       alerting: enabled
       triggers:
       - nova_total_free_memory_warning
       dimension:
-        service: nova-free-memory
+        service: nova-total-free-memory
     nova_compute:
       alerting: enabled
       triggers:
@@ -328,23 +328,23 @@ aggregator:
         service: nova-control
         nagios_host: 01-service-clusters
     {%- endfor %}
-    nova_free_vcpu:
+    nova_total_free_vcpu:
       policy: highest_severity
       alerting: enabled
       match:
-        service: nova-free-vcpu
+        service: nova-total-free-vcpu
       members:
-      - nova_free_vcpu
+      - nova_total_free_vcpu
       dimension:
         service: nova-data
         nagios_host: 01-service-clusters
-    nova_free_memory:
+    nova_total_free_memory:
       policy: highest_severity
       alerting: enabled
       match:
-        service: nova-free-memory
+        service: nova-total-free-memory
       members:
-      - nova_free_memory
+      - nova_total_free_memory
       dimension:
         service: nova-data
         nagios_host: 01-service-clusters
@@ -380,8 +380,8 @@ aggregator:
         service: nova-data
       members:
       - nova_logs_compute
-      - nova_free_vcpu
-      - nova_free_memory
+      - nova_total_free_vcpu
+      - nova_total_free_memory
       - nova_compute
       dimension:
         cluster_name: nova-data
