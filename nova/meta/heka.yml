@@ -162,6 +162,8 @@ remote_collector:
         periods: 0
         function: last
     {%- endfor %}
+    # we treat "up" and "disabled" states in the same way, considering
+    # that "disabled" should not be treated as an error
     nova_compute_some_down:
       description: 'Some Nova computes are down'
       severity: warning
@@ -176,15 +178,6 @@ remote_collector:
         window: 60
         periods: 0
         function: last
-      - metric: openstack_nova_services_percent
-        field:
-          service: compute
-          state: up
-        relational_operator: '>='
-        threshold: 50
-        window: 60
-        periods: 0
-        function: last
     nova_compute_majority_down:
       description: 'Majority of Nova computes are down'
       severity: critical
@@ -192,8 +185,8 @@ remote_collector:
       - metric: openstack_nova_services_percent
         field:
           service: compute
-          state: up
-        relational_operator: '<='
+          state: down
+        relational_operator: '>'
         threshold: 50
         window: 60
         periods: 0
