@@ -103,7 +103,7 @@ remote_collector:
         function: last
     {%- for nova_service in ('cert', 'consoleauth', 'conductor', 'scheduler') %}
     nova_{{ nova_service }}_two_up:
-      description: 'There is one or more Nova {{ nova_service }} down'
+      description: 'Some Nova {{ nova_service }}s are down'
       severity: warning
       logical_operator: and
       rules:
@@ -126,7 +126,7 @@ remote_collector:
         periods: 0
         function: last
     nova_{{ nova_service }}_one_up:
-      description: 'There is only one Nova {{ nova_service }} up left'
+      description: 'Only one Nova {{ nova_service }} is up'
       severity: critical
       logical_operator: and
       rules:
@@ -149,7 +149,7 @@ remote_collector:
         periods: 0
         function: last
     nova_{{ nova_service }}_zero_up:
-      description: 'All Nova {{ nova_service }}s are down'
+      description: 'All Nova {{ nova_service }}s are down or disabled'
       severity: down
       rules:
       - metric: openstack_nova_services
@@ -199,7 +199,7 @@ remote_collector:
         periods: 0
         function: last
     nova_compute_all_down:
-      description: 'All Nova compute are down'
+      description: 'All Nova computes are down'
       severity: down
       rules:
       - metric: openstack_nova_services_percent
