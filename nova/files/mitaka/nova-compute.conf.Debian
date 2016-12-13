@@ -56,7 +56,13 @@ service_down_time = 90
 instance_usage_audit = True
 instance_usage_audit_period = hour
 notify_on_state_change = vm_and_task_state
-notification_topics=notifications
+{%- if server.notification_topics %}
+{%- for topic in server.notification_topics %}
+notification_topics = {{ topic }}
+{%- endfor %}
+{%- else %}
+notification_topics = notifications
+{%- endif %}
 instance_usage_audit_period=hour
 {% endif %}
 
