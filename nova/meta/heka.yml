@@ -63,6 +63,18 @@ metric_collector:
         periods: 0
         function: last
     {%- endif %}
+    {%- if pillar.nova.compute is defined %}
+    libvirt_check:
+      description: 'Libvirt cannot be checked'
+      severity: down
+      rules:
+      - metric: libvirt_check
+        relational_operator: '=='
+        threshold: 0
+        window: 60
+        periods: 0
+        function: last
+    {%- endif %}
   alarm:
     {%- if pillar.nova.compute is defined %}
     nova_logs_compute:
@@ -71,6 +83,12 @@ metric_collector:
       - nova_logs_error
       dimension:
         service: nova-logs-compute
+    libvirt_check:
+      alerting: enabled
+      triggers:
+      - libvirt_check
+      dimension:
+        service: libvirt-check
     {%- endif %}
     {%- if pillar.nova.controller is defined %}
     nova_logs:
@@ -277,6 +295,17 @@ aggregator:
       dimension:
         service: nova-data
         nagios_host: 01-service-clusters
+    nova_libvirt:
+      policy: majority_of_node_members
+      group_by: hostname
+      alerting: enabled
+      match:
+        service: libvirt-check
+      members:
+      - libvirt_check
+      dimension:
+        service: nova-data
+        nagios_host: 01-service-clusters
     nova_logs:
       policy: status_of_members
       group_by: hostname
@@ -373,6 +402,7 @@ aggregator:
         service: nova-data
       members:
       - nova_logs_compute
+      - nova_libvirt
       - nova_total_free_vcpu
       - nova_total_free_memory
       - nova_compute
