@@ -92,6 +92,16 @@ use_virtio_for_bridges = True
 
 lock_path = /var/lib/nova/tmp
 
+[oslo_messaging_notifications]
+{%- if controller.notification is mapping %}
+driver = {{ controller.notification.get('driver', 'messagingv2') }}
+{%- if controller.notification.topics is defined %}
+topics = {{ controller.notification.topics }}
+{%- endif %}
+{%- elif controller.notification %}
+driver=messagingv2
+{%- endif %}
+
 [oslo_messaging_rabbit]
 {%- if controller.message_queue.members is defined %}
 rabbit_hosts = {% for member in controller.message_queue.members -%}
