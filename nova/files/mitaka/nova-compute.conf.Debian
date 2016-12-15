@@ -56,15 +56,18 @@ service_down_time = 90
 instance_usage_audit = True
 instance_usage_audit_period = hour
 notify_on_state_change = vm_and_task_state
-notification_topics=notifications
-instance_usage_audit_period=hour
 {% endif %}
 
 [oslo_concurrency]
 lock_path = /var/lib/nova/tmp
 
 [oslo_messaging_notifications]
-{%- if compute.notification is defined %}
+{%- if compute.notification is mapping %}
+driver = {{ compute.notification.get('driver', 'messagingv2') }}
+{%- if compute.notification.topics is defined %}
+topics = {{ compute.notification.topics }}
+{%- endif %}
+{%- elif compute.notification %}
 driver = messagingv2
 {%- endif %}
 
