@@ -109,7 +109,7 @@ Enable auditing filter, ie: CADF
 
     nova:
       controller:
-        autidt:
+        audit:
           enabled: true
       ....
           filter_factory: 'keystonemiddleware.audit:filter_factory'
