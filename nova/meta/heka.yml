@@ -157,12 +157,12 @@ remote_collector:
         window: 60
         periods: 0
         function: last
-      - metric: openstack_nova_services
+      - metric: openstack_nova_services_percent
         field:
           service: {{ nova_service }}
-          state: '== down || == disabled'
-        relational_operator: '>'
-        threshold: 0
+          state: up
+        relational_operator: '<'
+        threshold: 100
         window: 60
         periods: 0
         function: last
