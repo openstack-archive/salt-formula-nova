@@ -55,9 +55,11 @@ service_down_time = 90
 
 instance_usage_audit = True
 instance_usage_audit_period = hour
-notify_on_state_change = vm_and_task_state
 notification_topics=notifications
 instance_usage_audit_period=hour
+{%- if pillar.ceilometer is defined or compute.notification is defined %}
+notify_on_state_change = vm_and_task_state
+{% endif %}
 {% endif %}
 
 [oslo_concurrency]

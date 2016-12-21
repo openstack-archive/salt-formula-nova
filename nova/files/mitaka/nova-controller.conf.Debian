@@ -21,6 +21,10 @@ ram_allocation_ratio = {{ controller.ram_allocation_ratio }}
 disk_allocation_ratio = {{ controller.disk_allocation_ratio }}
 scheduler_default_filters = {{ controller.scheduler_default_filters }}
 scheduler_driver = filter_scheduler
+{%- if controller.notification is defined %}
+notification_driver = {{ controller.notification.driver }}
+notify_on_state_change = vm_and_task_state
+{% endif %}
 allow_resize_to_same_host = True
 
 iscsi_helper=tgtadm
