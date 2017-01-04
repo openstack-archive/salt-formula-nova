@@ -21,7 +21,7 @@ check:
     subscribers:
     - local-nova-controller
   local_nova_novncproxy_proc:
-    command: "PATH=$PATH:/usr/lib64/nagios/plugins:/usr/lib/nagios/plugins check_procs -C nova-novncproxy -u nova -c 1:5"
+    command: "PATH=$PATH:/usr/lib64/nagios/plugins:/usr/lib/nagios/plugins check_procs -C nova-novncproxy -u nova -c 1:32"
     interval: 60
     occurrences: 2
     subscribers:
