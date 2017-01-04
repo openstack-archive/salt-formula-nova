@@ -52,11 +52,17 @@ resume_guests_state_on_host_boot = True
 service_down_time = 90
 
 {% if pillar.ceilometer is defined %}
-
 instance_usage_audit = True
 instance_usage_audit_period = hour
+{%- endif %}
+
+{%- if compute.get('notification', {}).notify_on is defined %}
+{%- for key, value in compute.notification.notify_on.iteritems() %}
+notify_on_{{ key }} = {{ value }}
+{%- endfor %}
+{%- elif pillar.ceilometer is defined %}
 notify_on_state_change = vm_and_task_state
-{% endif %}
+{%- endif %}
 
 [oslo_concurrency]
 lock_path = /var/lib/nova/tmp
