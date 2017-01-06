@@ -10,6 +10,7 @@
         'pkgs': ['nova-consoleproxy', 'novnc', 'nova-api', 'nova-cert', 'nova-conductor', 'nova-consoleauth', 'nova-doc', 'nova-scheduler', 'python-novaclient', 'python-memcache', 'gettext-base', 'python-pycadf'],
         'services': ['nova-api', 'nova-cert', 'nova-consoleauth', 'nova-scheduler', 'nova-conductor', 'nova-novncproxy'],
         'debug': false,
+        'notification': false,
         'audit': {
           'enabled': false
         },
@@ -18,6 +19,7 @@
         'pkgs': ['openstack-nova-novncproxy', 'python-nova', 'openstack-nova-api', 'openstack-nova-console', 'openstack-nova-scheduler', 'python-novaclient', 'openstack-nova-common', 'openstack-nova-conductor', 'openstack-nova-cert', 'python-pycadf'],
         'services': ['openstack-nova-api', 'openstack-nova-cert', 'openstack-nova-consoleauth', 'openstack-nova-scheduler', 'openstack-nova-conductor', 'openstack-nova-novncproxy'],
         'debug': false,
+        'notification': false,
         'audit': {
           'enabled': false
         },
@@ -32,6 +34,7 @@
         'libvirt_service': 'libvirtd',
         'bind': compute_bind_defaults,
         'debug': false,
+        'notification': false,
         'identity': {
             'region': 'RegionOne'
         },
@@ -48,6 +51,7 @@
         'libvirt_service': 'libvirtd',
         'bind': compute_bind_defaults,
         'debug': false,
+        'notification': false,
         'identity': {
             'region': 'RegionOne'
         },
