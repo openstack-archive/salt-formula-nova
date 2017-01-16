@@ -190,6 +190,13 @@ virsh net-undefine default:
   - watch:
     - file: /etc/libvirt/{{ compute.libvirt_config }}
 
+{%- if grains.get('init', None) == "upstart" %}
+# MOS9 libvirt fix for upstart
+/etc/init/libvirtd.override:
+  file.managed:
+  - contents: 'start on runlevel [2345]'
+{%- endif %}
+
 {%- endif %}
 
 {%- endif %}
