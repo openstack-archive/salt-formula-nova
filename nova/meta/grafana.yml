@@ -5,3 +5,27 @@ dashboard:
   hypervisor:
     format: json
     template: nova/files/grafana_dashboards/hypervisor_influxdb.json
+  AutomaticMain:
+    row:
+      ost-control-plane:
+        title: OpenStack Control Plane
+        panel:
+          nova:
+            title: Nova
+            target:
+              cluster_status:
+                tags:
+                - key: cluster_name
+                  operator: "="
+                  value: nova-control
+      ost-data-plane:
+        title: OpenStack Data Plane
+        panel:
+          nova:
+            title: Nova
+            target:
+              cluster_status:
+                tags:
+                - key: cluster_name
+                  operator: "="
+                  value: nova-data
