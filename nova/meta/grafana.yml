@@ -5,3 +5,31 @@ dashboard:
   hypervisor:
     format: json
     template: nova/files/grafana_dashboards/hypervisor_influxdb.json
+  Main:
+    row:
+      ost-control-plane:
+        title: OpenStack Control Plane
+        panel:
+          nova:
+            title: Nova
+            links:
+            - dashboard: Nova
+              title: Nova
+              type: dashboard
+            target:
+              cluster_status:
+                rawQuery: true
+                query: SELECT last(value) FROM cluster_status WHERE cluster_name = 'nova-control' AND environment_label = '$environment' AND $timeFilter GROUP BY time($interval) fill(null)
+      ost-data-plane:
+        title: OpenStack Data Plane
+        panel:
+          nova:
+            title: Nova
+            links:
+            - dashboard: Nova
+              title: Nova
+              type: dashboard
+            target:
+              cluster_status:
+                rawQuery: true
+                query: SELECT last(value) FROM cluster_status WHERE cluster_name = 'nova-data' AND environment_label = '$environment' AND $timeFilter GROUP BY time($interval) fill(null)
