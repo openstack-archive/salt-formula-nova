@@ -242,6 +242,28 @@ remote_collector:
         window: 60
         periods: 0
         function: max
+    nova_aggregates_free_memory_warning:
+      description: 'The nova aggregates free memory percent is low'
+      severity: warning
+      rules:
+      - metric: openstack_nova_aggregate_free_ram_percent
+        group_by: [aggregate]
+        relational_operator: '<'
+        threshold: 10.0
+        window: 70
+        periods: 0
+        function: min
+    nova_aggregates_free_memory_critical:
+      description: 'The nova aggregates free memory percent is too low'
+      severity: critical
+      rules:
+      - metric: openstack_nova_aggregate_free_ram_percent
+        group_by: [aggregate]
+        relational_operator: '<'
+        threshold: 1.0
+        window: 70
+        periods: 0
+        function: min
     {%- endif %}
   alarm:
     {%- if pillar.nova.controller is defined %}
@@ -273,6 +295,13 @@ remote_collector:
       - nova_total_free_memory_warning
       dimension:
         service: nova-total-free-memory
+    nova_aggregates_free_memory:
+      alerting: enabled
+      triggers:
+      - nova_aggregates_free_memory_critical
+      - nova_aggregates_free_memory_warning
+      dimension:
+        service: nova-aggregates-free-memory
     nova_compute:
       alerting: enabled
       triggers:
@@ -370,6 +399,16 @@ aggregator:
       dimension:
         service: nova-data
         nagios_host: 01-service-clusters
+    nova_aggregates_free_memory:
+      policy: highest_severity
+      alerting: enabled
+      match:
+        service: nova-aggregates-free-memory
+      members:
+      - nova_aggregates_free_memory
+      dimension:
+        service: nova-data
+        nagios_host: 01-service-clusters
     nova_compute:
       policy: highest_severity
       alerting: enabled
@@ -405,6 +444,7 @@ aggregator:
       - nova_libvirt
       - nova_total_free_vcpu
       - nova_total_free_memory
+      - nova_aggregates_free_memory
       - nova_compute
       dimension:
         cluster_name: nova-data
