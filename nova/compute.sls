@@ -201,4 +201,18 @@ virsh net-undefine default:
 
 {%- endif %}
 
+{# temporary hack to fix broken init script in MOS 9.0 libvirt package #}
+
+{%- if compute.get('manage_init', False) and grains.init == 'upstart' %}
+
+/etc/init/libvirtd.conf:
+  file.managed:
+  - template: jinja
+  - source: salt://nova/files/libvirtd.conf
+  - mode: 755
+
+{%- endif %}
+
+{# end temporary hack #}
+
 {%- endif %}
