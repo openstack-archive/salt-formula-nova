@@ -182,6 +182,10 @@ catalog_info=volumev2:cinderv2:internalURL
 
 {%- if compute.get('ceph', {}).ephemeral is defined %}
 [libvirt]
+disk_cachemodes="network=writeback,block=none"
+cpu_mode=host-passthrough
+virt_type=kvm
+live_migration_flag=VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE,VIR_MIGRATE_PERSIST_DEST
 images_type=rbd
 images_rbd_pool={{ compute.ceph.rbd_pool }}
 images_rbd_ceph_conf=/etc/ceph/ceph.conf
