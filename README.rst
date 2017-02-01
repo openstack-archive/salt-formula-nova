@@ -237,6 +237,29 @@ Nova with ephemeral configured with Ceph
           secret_uuid: 03006edd-d957-40a3-ac4c-26cd254b3731
 
 
+Client role
+-----------
+
+Nova flavors
+
+.. code-block:: yaml
+
+  nova:
+    client:
+      enabled: true
+      server:
+        identity:
+          flavor:
+            jirka-flavor1:
+              flavor_id: 10
+              ram: 4096
+              disk: 10
+              vcpus: 1
+        identity1:
+          flavor:
+            ...
+
+
 Documentation and Bugs
 ============================
 
