@@ -69,6 +69,7 @@ Nova services on the controller node
           password: password
         audit:
           enabled: false
+        osapi_max_limit: 500
 
 
 Nova services from custom package repository

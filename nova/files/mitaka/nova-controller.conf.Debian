@@ -22,6 +22,7 @@ disk_allocation_ratio = {{ controller.disk_allocation_ratio }}
 scheduler_default_filters = {{ controller.scheduler_default_filters }}
 scheduler_driver = filter_scheduler
 allow_resize_to_same_host = True
+osapi_max_limit = {{ controller.osapi_max_limit|default('1000') }}
 
 iscsi_helper=tgtadm
 connection_type=libvirt
