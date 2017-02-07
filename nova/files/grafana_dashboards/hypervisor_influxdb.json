@@ -3,15 +3,15 @@
     "list": []
   },
   "editable": true,
+  "gnetId": null,
+  "graphTooltip": 1,
   "hideControls": false,
   "id": null,
   "links": [],
-  "originalTitle": "Hypervisor",
   "refresh": "1m",
   "rows": [
     {
       "collapse": false,
-      "editable": true,
       "height": "250px",
       "panels": [
         {
@@ -21,12 +21,7 @@
           "editable": true,
           "error": false,
           "fill": 0,
-          "grid": {
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
+          "grid": {},
           "id": 8,
           "interval": ">60s",
           "legend": {
@@ -100,8 +95,14 @@
               "tags": [
                 {
                   "key": "hostname",
-                  "operator": "=",
-                  "value": "$hostname"
+                  "operator": "=~",
+                  "value": "/^$hostname$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "environment_label",
+                  "operator": "=~",
+                  "value": "/^$environment$/"
                 }
               ]
             },
@@ -154,8 +155,14 @@
               "tags": [
                 {
                   "key": "hostname",
-                  "operator": "=",
-                  "value": "$hostname"
+                  "operator": "=~",
+                  "value": "/^$hostname$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "environment_label",
+                  "operator": "=~",
+                  "value": "/^$environment$/"
                 }
               ],
               "target": ""
@@ -209,8 +216,14 @@
               "tags": [
                 {
                   "key": "hostname",
-                  "operator": "=",
-                  "value": "$hostname"
+                  "operator": "=~",
+                  "value": "/^$hostname$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "environment_label",
+                  "operator": "=~",
+                  "value": "/^$environment$/"
                 }
               ],
               "target": ""
@@ -264,8 +277,14 @@
               "tags": [
                 {
                   "key": "hostname",
-                  "operator": "=",
-                  "value": "$hostname"
+                  "operator": "=~",
+                  "value": "/^$hostname$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "environment_label",
+                  "operator": "=~",
+                  "value": "/^$environment$/"
                 }
               ],
               "target": ""
@@ -319,8 +338,14 @@
               "tags": [
                 {
                   "key": "hostname",
-                  "operator": "=",
-                  "value": "$hostname"
+                  "operator": "=~",
+                  "value": "/^$hostname$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "environment_label",
+                  "operator": "=~",
+                  "value": "/^$environment$/"
                 }
               ],
               "target": ""
@@ -374,8 +399,14 @@
               "tags": [
                 {
                   "key": "hostname",
-                  "operator": "=",
-                  "value": "$hostname"
+                  "operator": "=~",
+                  "value": "/^$hostname$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "environment_label",
+                  "operator": "=~",
+                  "value": "/^$environment$/"
                 }
               ],
               "target": ""
@@ -429,24 +460,35 @@
               "tags": [
                 {
                   "key": "hostname",
-                  "operator": "=",
-                  "value": "$hostname"
+                  "operator": "=~",
+                  "value": "/^$hostname$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "environment_label",
+                  "operator": "=~",
+                  "value": "/^$environment$/"
                 }
               ],
               "target": ""
             }
           ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "CPU",
           "tooltip": {
             "msResolution": false,
             "shared": true,
+            "sort": 0,
             "value_type": "cumulative"
           },
           "type": "graph",
           "xaxis": {
-            "show": true
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
           },
           "yaxes": [
             {
@@ -476,11 +518,7 @@
           "fill": 1,
           "grid": {
             "max": null,
-            "min": null,
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+            "min": null
           },
           "id": 9,
           "interactive": true,
@@ -562,8 +600,14 @@
               "tags": [
                 {
                   "key": "hostname",
-                  "operator": "=",
-                  "value": "$hostname"
+                  "operator": "=~",
+                  "value": "/^$hostname$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "environment_label",
+                  "operator": "=~",
+                  "value": "/^$environment$/"
                 }
               ],
               "target": "randomWalk('random walk')"
@@ -618,8 +662,14 @@
               "tags": [
                 {
                   "key": "hostname",
-                  "operator": "=",
-                  "value": "$hostname"
+                  "operator": "=~",
+                  "value": "/^$hostname$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "environment_label",
+                  "operator": "=~",
+                  "value": "/^$environment$/"
                 }
               ],
               "target": ""
@@ -674,8 +724,14 @@
               "tags": [
                 {
                   "key": "hostname",
-                  "operator": "=",
-                  "value": "$hostname"
+                  "operator": "=~",
+                  "value": "/^$hostname$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "environment_label",
+                  "operator": "=~",
+                  "value": "/^$environment$/"
                 }
               ],
               "target": ""
@@ -730,13 +786,20 @@
               "tags": [
                 {
                   "key": "hostname",
-                  "operator": "=",
-                  "value": "$hostname"
+                  "operator": "=~",
+                  "value": "/^$hostname$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "environment_label",
+                  "operator": "=~",
+                  "value": "/^$environment$/"
                 }
               ],
               "target": ""
             }
           ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "timezone": "browser",
@@ -745,11 +808,15 @@
             "msResolution": false,
             "query_as_alias": true,
             "shared": true,
+            "sort": 0,
             "value_type": "individual"
           },
           "type": "graph",
           "xaxis": {
-            "show": true
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
           },
           "yaxes": [
             {
@@ -789,9 +856,20 @@
             "thresholdLabels": false,
             "thresholdMarkers": true
           },
-          "id": 10,
+          "id": 12,
           "interval": ">60s",
           "links": [],
+          "mappingType": 1,
+          "mappingTypes": [
+            {
+              "name": "value to text",
+              "value": 1
+            },
+            {
+              "name": "range to text",
+              "value": 2
+            }
+          ],
           "maxDataPoints": 100,
           "nullPointMode": "connected",
           "nullText": null,
@@ -799,6 +877,13 @@
           "postfixFontSize": "50%",
           "prefix": "",
           "prefixFontSize": "50%",
+          "rangeMaps": [
+            {
+              "from": "null",
+              "text": "N/A",
+              "to": "null"
+            }
+          ],
           "span": 2,
           "sparkline": {
             "fillColor": "rgba(31, 118, 189, 0.18)",
@@ -810,31 +895,25 @@
             {
               "column": "value",
               "dsType": "influxdb",
-              "fields": [
-                {
-                  "func": "last",
-                  "name": "value"
-                }
-              ],
               "function": "mean",
               "groupBy": [
                 {
-                  "interval": "auto",
                   "params": [
-                    "auto"
+                    "$interval"
                   ],
                   "type": "time"
                 },
                 {
                   "params": [
-                    "previous"
+                    "null"
                   ],
                   "type": "fill"
                 }
               ],
+              "groupByTags": [],
               "measurement": "fs_space_percent_free",
               "policy": "default",
-              "query": "SELECT last(\"value\") FROM \"fs_space_percent_free\" WHERE \"hostname\" =~ /^$hostname$/ AND \"fs\" = '/var/lib/nova' AND $timeFilter GROUP BY time($interval) fill(previous)",
+              "query": "SELECT mean(\"value\") FROM \"fs_space_percent_free\" WHERE \"hostname\" =~ /^$server$/ AND \"fs\" =~ /^$mount$/ AND $timeFilter GROUP BY time($interval) fill(null)",
               "rawQuery": false,
               "refId": "A",
               "resultFormat": "time_series",
@@ -848,27 +927,33 @@
                   },
                   {
                     "params": [],
-                    "type": "last"
+                    "type": "mean"
                   }
                 ]
               ],
               "tags": [
                 {
                   "key": "hostname",
-                  "operator": "=",
-                  "value": "$hostname"
+                  "operator": "=~",
+                  "value": "/^$hostname$/"
                 },
                 {
                   "condition": "AND",
                   "key": "fs",
                   "operator": "=",
-                  "value": "/var/lib/nova"
+                  "value": "/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "environment_label",
+                  "operator": "=~",
+                  "value": "/^$environment$/"
                 }
               ]
             }
           ],
           "thresholds": "10,15",
-          "title": "Available ephemeral storage",
+          "title": "Free space",
           "type": "singlestat",
           "valueFontSize": "80%",
           "valueMaps": [
@@ -881,12 +966,15 @@
           "valueName": "current"
         }
       ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
       "showTitle": true,
-      "title": "Host"
+      "title": "Host",
+      "titleSize": "h6"
     },
     {
       "collapse": false,
-      "editable": true,
       "height": "250px",
       "panels": [
         {
@@ -911,8 +999,18 @@
           },
           "id": 11,
           "interval": "> 60s",
-          "isNew": true,
           "links": [],
+          "mappingType": 1,
+          "mappingTypes": [
+            {
+              "name": "value to text",
+              "value": 1
+            },
+            {
+              "name": "range to text",
+              "value": 2
+            }
+          ],
           "maxDataPoints": 100,
           "nullPointMode": "connected",
           "nullText": null,
@@ -920,6 +1018,13 @@
           "postfixFontSize": "50%",
           "prefix": "",
           "prefixFontSize": "50%",
+          "rangeMaps": [
+            {
+              "from": "null",
+              "text": "N/A",
+              "to": "null"
+            }
+          ],
           "span": 3,
           "sparkline": {
             "fillColor": "rgba(31, 118, 189, 0.18)",
@@ -967,8 +1072,14 @@
               "tags": [
                 {
                   "key": "hostname",
-                  "operator": "=",
-                  "value": "$hostname"
+                  "operator": "=~",
+                  "value": "/^$hostname$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "environment_label",
+                  "operator": "=~",
+                  "value": "/^$environment$/"
                 }
               ]
             }
@@ -993,14 +1104,8 @@
           "editable": true,
           "error": false,
           "fill": 0,
-          "grid": {
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
+          "grid": {},
           "id": 5,
-          "isNew": true,
           "legend": {
             "avg": false,
             "current": false,
@@ -1064,7 +1169,13 @@
                 {
                   "key": "hostname",
                   "operator": "=~",
-                  "value": "/$hostname$/"
+                  "value": "/^$hostname$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "environment_label",
+                  "operator": "=~",
+                  "value": "/^$environment$/"
                 }
               ]
             },
@@ -1109,22 +1220,33 @@
                 {
                   "key": "hostname",
                   "operator": "=~",
-                  "value": "/$hostname$/"
+                  "value": "/^$hostname$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "environment_label",
+                  "operator": "=~",
+                  "value": "/^$environment$/"
                 }
               ]
             }
           ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "Virtual CPUs",
           "tooltip": {
             "msResolution": false,
             "shared": true,
+            "sort": 0,
             "value_type": "cumulative"
           },
           "type": "graph",
           "xaxis": {
-            "show": true
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
           },
           "yaxes": [
             {
@@ -1150,14 +1272,8 @@
           "editable": true,
           "error": false,
           "fill": 0,
-          "grid": {
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
+          "grid": {},
           "id": 6,
-          "isNew": true,
           "legend": {
             "avg": false,
             "current": false,
@@ -1221,7 +1337,13 @@
                 {
                   "key": "hostname",
                   "operator": "=~",
-                  "value": "/$hostname$/"
+                  "value": "/^$hostname$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "environment_label",
+                  "operator": "=~",
+                  "value": "/^$environment$/"
                 }
               ]
             },
@@ -1266,22 +1388,33 @@
                 {
                   "key": "hostname",
                   "operator": "=~",
-                  "value": "/$hostname$/"
+                  "value": "/^$hostname$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "environment_label",
+                  "operator": "=~",
+                  "value": "/^$environment$/"
                 }
               ]
             }
           ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "Virtual RAM",
           "tooltip": {
             "msResolution": false,
             "shared": true,
+            "sort": 0,
             "value_type": "cumulative"
           },
           "type": "graph",
           "xaxis": {
-            "show": true
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
           },
           "yaxes": [
             {
@@ -1307,14 +1440,8 @@
           "editable": true,
           "error": false,
           "fill": 0,
-          "grid": {
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
+          "grid": {},
           "id": 7,
-          "isNew": true,
           "legend": {
             "avg": false,
             "current": false,
@@ -1378,7 +1505,13 @@
                 {
                   "key": "hostname",
                   "operator": "=~",
-                  "value": "/$hostname$/"
+                  "value": "/^$hostname$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "environment_label",
+                  "operator": "=~",
+                  "value": "/^$environment$/"
                 }
               ]
             },
@@ -1423,22 +1556,33 @@
                 {
                   "key": "hostname",
                   "operator": "=~",
-                  "value": "/$hostname$/"
+                  "value": "/^$hostname$/"
+                },
+                {
+                  "condition": "AND",
+                  "key": "environment_label",
+                  "operator": "=~",
+                  "value": "/^$environment$/"
                 }
               ]
             }
           ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "Virtual Disk",
           "tooltip": {
             "msResolution": false,
             "shared": true,
+            "sort": 0,
             "value_type": "cumulative"
           },
           "type": "graph",
           "xaxis": {
-            "show": true
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
           },
           "yaxes": [
             {
@@ -1458,12 +1602,15 @@
           ]
         }
       ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
       "showTitle": true,
-      "title": "Virtual Resources"
+      "title": "Virtual Resources",
+      "titleSize": "h6"
     },
     {
       "collapse": false,
-      "editable": true,
       "height": "250px",
       "panels": [
         {
@@ -1473,12 +1620,7 @@
           "editable": true,
           "error": false,
           "fill": 1,
-          "grid": {
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
+          "grid": {},
           "id": 1,
           "interval": ">60s",
           "legend": {
@@ -1554,15 +1696,9 @@
               ],
               "tags": [
                 {
-                  "key": "hostname",
-                  "operator": "=~",
-                  "value": "/$hostname$/"
-                },
-                {
-                  "condition": "AND",
                   "key": "instance_id",
                   "operator": "=~",
-                  "value": "/$instance_id$/"
+                  "value": "/^$instance_id$/"
                 }
               ]
             },
@@ -1617,30 +1753,29 @@
               ],
               "tags": [
                 {
-                  "key": "hostname",
-                  "operator": "=~",
-                  "value": "/$hostname$/"
-                },
-                {
-                  "condition": "AND",
                   "key": "instance_id",
                   "operator": "=~",
-                  "value": "/$instance_id$/"
+                  "value": "/^$instance_id$/"
                 }
               ]
             }
           ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "CPU",
           "tooltip": {
             "msResolution": false,
             "shared": true,
+            "sort": 0,
             "value_type": "cumulative"
           },
           "type": "graph",
           "xaxis": {
-            "show": true
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
           },
           "yaxes": [
             {
@@ -1668,12 +1803,7 @@
           "editable": true,
           "error": false,
           "fill": 1,
-          "grid": {
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
+          "grid": {},
           "id": 2,
           "interval": ">60s",
           "legend": {
@@ -1737,30 +1867,29 @@
               ],
               "tags": [
                 {
-                  "key": "hostname",
-                  "operator": "=~",
-                  "value": "/$hostname$/"
-                },
-                {
-                  "condition": "AND",
                   "key": "instance_id",
                   "operator": "=~",
-                  "value": "/$instance_id$/"
+                  "value": "/^$instance_id$/"
                 }
               ]
             }
           ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "Memory",
           "tooltip": {
             "msResolution": false,
             "shared": true,
+            "sort": 0,
             "value_type": "cumulative"
           },
           "type": "graph",
           "xaxis": {
-            "show": true
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
           },
           "yaxes": [
             {
@@ -1788,12 +1917,7 @@
           "editable": true,
           "error": false,
           "fill": 1,
-          "grid": {
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
+          "grid": {},
           "id": 3,
           "interval": "> 60s",
           "legend": {
@@ -1857,21 +1981,15 @@
               ],
               "tags": [
                 {
-                  "key": "hostname",
-                  "operator": "=~",
-                  "value": "/$hostname$/"
-                },
-                {
-                  "condition": "AND",
                   "key": "instance_id",
                   "operator": "=~",
-                  "value": "/$instance_id$/"
+                  "value": "/^$instance_id$/"
                 },
                 {
                   "condition": "AND",
                   "key": "device",
                   "operator": "=~",
-                  "value": "/$disk$/"
+                  "value": "/^$disk$/"
                 }
               ]
             },
@@ -1914,12 +2032,6 @@
               ],
               "tags": [
                 {
-                  "key": "hostname",
-                  "operator": "=~",
-                  "value": "/$hostname$/"
-                },
-                {
-                  "condition": "AND",
                   "key": "instance_id",
                   "operator": "=~",
                   "value": "/$instance_id$/"
@@ -1928,22 +2040,27 @@
                   "condition": "AND",
                   "key": "device",
                   "operator": "=~",
-                  "value": "/$disk$/"
+                  "value": "/^$disk$/"
                 }
               ]
             }
           ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "Disk I/O",
           "tooltip": {
             "msResolution": false,
             "shared": true,
+            "sort": 0,
             "value_type": "cumulative"
           },
           "type": "graph",
           "xaxis": {
-            "show": true
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
           },
           "yaxes": [
             {
@@ -1969,12 +2086,7 @@
           "editable": true,
           "error": false,
           "fill": 1,
-          "grid": {
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
+          "grid": {},
           "id": 4,
           "interval": "> 60s",
           "legend": {
@@ -2038,21 +2150,15 @@
               ],
               "tags": [
                 {
-                  "key": "hostname",
-                  "operator": "=~",
-                  "value": "/$hostname$/"
-                },
-                {
-                  "condition": "AND",
                   "key": "instance_id",
                   "operator": "=~",
-                  "value": "/$instance_id$/"
+                  "value": "/^$instance_id$/"
                 },
                 {
                   "condition": "AND",
                   "key": "interface",
                   "operator": "=~",
-                  "value": "/$interface$/"
+                  "value": "/^$interface$/"
                 }
               ]
             },
@@ -2095,36 +2201,35 @@
               ],
               "tags": [
                 {
-                  "key": "hostname",
-                  "operator": "=~",
-                  "value": "/$hostname$/"
-                },
-                {
-                  "condition": "AND",
                   "key": "instance_id",
                   "operator": "=~",
-                  "value": "/$instance_id$/"
+                  "value": "/^$instance_id$/"
                 },
                 {
                   "condition": "AND",
                   "key": "interface",
                   "operator": "=~",
-                  "value": "/$interface$/"
+                  "value": "/^$interface$/"
                 }
               ]
             }
           ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "Network I/O",
           "tooltip": {
             "msResolution": false,
             "shared": true,
+            "sort": 0,
             "value_type": "cumulative"
           },
           "type": "graph",
           "xaxis": {
-            "show": true
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
           },
           "yaxes": [
             {
@@ -2144,11 +2249,15 @@
           ]
         }
       ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
       "showTitle": true,
-      "title": "Virtual instance"
+      "title": "Virtual instance",
+      "titleSize": "h6"
     }
   ],
-  "schemaVersion": 12,
+  "schemaVersion": 14,
   "sharedCrosshair": true,
   "style": "dark",
   "tags": [],
@@ -2156,40 +2265,57 @@
     "list": [
       {
         "allFormat": "regex values",
+        "allValue": null,
         "current": {},
-        "datasource": null,
+        "datasource": "lma",
         "hide": 0,
         "includeAll": false,
+        "label": null,
+        "multi": false,
         "name": "environment",
         "options": [],
         "query": "show tag values from cpu_idle with key = environment_label",
         "refresh": 1,
         "refresh_on_load": true,
         "regex": "",
-        "type": "query"
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
       },
       {
         "allFormat": "glob",
+        "allValue": null,
         "current": {},
-        "datasource": null,
+        "datasource": "lma",
         "hide": 0,
         "includeAll": false,
+        "label": null,
         "multi": false,
         "multiFormat": "glob",
         "name": "hostname",
         "options": [],
-        "query": "show tag values from openstack_nova_running_instances with key = hostname where environment_label =~ /^$environment$/",
+        "query": "show tag values from libvirt_check with key = hostname where environment_label =~ /^$environment$/",
         "refresh": 1,
         "refresh_on_load": true,
         "regex": "",
-        "type": "query"
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
       },
       {
         "allFormat": "glob",
+        "allValue": null,
         "current": {},
-        "datasource": null,
+        "datasource": "lma",
         "hide": 0,
         "includeAll": false,
+        "label": null,
         "multi": false,
         "multiFormat": "glob",
         "name": "instance_id",
@@ -2197,14 +2323,22 @@
         "query": "show tag values from virt_cpu_time with key = instance_id where hostname =~ /^$hostname$/ and environment_label =~ /^$environment$/",
         "refresh": 1,
         "refresh_on_load": true,
-        "type": "query"
+        "regex": "",
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
       },
       {
         "allFormat": "glob",
+        "allValue": null,
         "current": {},
-        "datasource": null,
+        "datasource": "lma",
         "hide": 0,
         "includeAll": false,
+        "label": null,
         "multi": false,
         "multiFormat": "glob",
         "name": "disk",
@@ -2213,14 +2347,21 @@
         "refresh": 1,
         "refresh_on_load": true,
         "regex": "",
-        "type": "query"
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
       },
       {
         "allFormat": "glob",
+        "allValue": null,
         "current": {},
-        "datasource": null,
+        "datasource": "lma",
         "hide": 0,
         "includeAll": false,
+        "label": null,
         "multi": false,
         "multiFormat": "glob",
         "name": "interface",
@@ -2228,7 +2369,13 @@
         "query": "show tag values from virt_if_octets_rx with key = interface where hostname =~ /^$hostname$/ and instance_id =~ /^$instance_id$/ and environment_label =~ /^$environment$/",
         "refresh": 1,
         "refresh_on_load": true,
-        "type": "query"
+        "regex": "",
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
       }
     ]
   },
@@ -2264,5 +2411,5 @@
   },
   "timezone": "browser",
   "title": "Hypervisor",
-  "version": 2
+  "version": 3
 }
