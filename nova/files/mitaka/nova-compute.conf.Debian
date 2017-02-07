@@ -93,7 +93,7 @@ html5proxy_base_url = {{ compute.vncproxy_url }}/spice_auto.html
 {%- if compute.cache is defined %}
 backend = oslo_cache.memcache_pool
 enabled = true
-memcached_servers={%- for member in compute.cache.members %}{{ member.host }}:11211{% if not loop.last %},{% endif %}{%- endfor %}
+memcache_servers={%- for member in compute.cache.members %}{{ member.host }}:11211{% if not loop.last %},{% endif %}{%- endfor %}
 {%- endif %}
 
 [libvirt]
