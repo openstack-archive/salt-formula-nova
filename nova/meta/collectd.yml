@@ -24,6 +24,13 @@ remote_plugin:
     project: {{ controller.identity.tenant }}
     user: {{ controller.identity.user }}
     password: {{ controller.identity.password }}
+  nova_services:
+    plugin: python
+    template: nova/files/collectd_openstack_nova_services.conf
+    url: "http://{{ controller.identity.host }}:{{ controller.identity.port }}/v{% if controller.identity.get('api_version', 2)|int == 2 %}2.0{% else %}3{% endif %}"
+    project: {{ controller.identity.tenant }}
+    user: {{ controller.identity.user }}
+    password: {{ controller.identity.password }}
   nova_hypervisor_stats:
     plugin: python
     template: nova/files/collectd_hypervisor_stats.conf
