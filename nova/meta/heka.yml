@@ -245,6 +245,7 @@ remote_collector:
     nova_aggregates_free_memory_warning:
       description: 'The nova aggregates free memory percent is low'
       severity: warning
+      no_data_policy: okay
       rules:
       - metric: openstack_nova_aggregate_free_ram_percent
         group_by: [aggregate]
@@ -256,6 +257,7 @@ remote_collector:
     nova_aggregates_free_memory_critical:
       description: 'The nova aggregates free memory percent is too low'
       severity: critical
+      no_data_policy: okay
       rules:
       - metric: openstack_nova_aggregate_free_ram_percent
         group_by: [aggregate]
