@@ -260,6 +260,25 @@ Nova flavors
           flavor:
             ...
 
+SRIOV
+------
+
+Add PciPassthroughFilter into scheduler filters and NICs on specific compute nodes.
+
+.. code-block:: yaml
+
+  nova:
+    controller:
+      sriov: true
+      scheduler_default_filters: "DifferentHostFilter,RetryFilter,AvailabilityZoneFilter,RamFilter,CoreFilter,DiskFilter,ComputeFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,ServerGroupAntiAffinityFilter,ServerGroupAffinityFilter,PciPassthroughFilter"
+
+  nova:
+    compute:
+      sriov:
+        nic_one:
+          devname: eth1
+          physical_network: physnet1
+
 
 Documentation and Bugs
 ============================
