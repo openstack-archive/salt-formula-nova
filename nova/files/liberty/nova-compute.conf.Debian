@@ -16,11 +16,11 @@ ec2_private_dns_show_ip=False
 api_paste_config=/etc/nova/api-paste.ini
 volumes_path=/var/lib/nova/volumes
 enabled_apis=ec2,osapi_compute,metadata
-
+{%- if controller.sriov is defined %}
 {%- for nic_name, sriov in compute.sriov.iteritems() %}
 pci_passthrough_whitelist = {"devname":"{{ sriov.devname }}","physical_network":"{{ sriov.physical_network }}"}
 {%- endfor %}
-
+{%- endif %}
 {%- if compute.image.use_cow is defined %}
 use_cow_images = {{ compute.image.use_cow }}
 {%- endif %}

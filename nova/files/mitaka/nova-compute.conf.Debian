@@ -18,11 +18,11 @@ security_group_api=neutron
 vif_plugging_is_fatal=True
 vif_plugging_timeout=300
 dhcp_domain={{ compute.get('dhcp_domain', 'novalocal') }}
-
+{%- if controller.sriov is defined %}
 {%- for nic_name, sriov in compute.sriov.iteritems() %}
 pci_passthrough_whitelist = {"devname":"{{ sriov.devname }}","physical_network":"{{ sriov.physical_network }}"}
 {%- endfor %}
-
+{%- endif %}
 {%- if compute.image.use_cow is defined %}
 use_cow_images = {{ compute.image.use_cow }}
 {%- endif %}
