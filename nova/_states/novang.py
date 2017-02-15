@@ -14,9 +14,10 @@ def __virtual__():
     '''
     return 'novang' if 'nova.flavor_list' in __salt__ else False
 
+
 def flavor_present(name, flavor_id=0, ram=0, disk=0, vcpus=1, profile=None):
     '''
-    Ensures that the nova flavor exists  
+    Ensures that the nova flavor exists
     '''
     ret = {'name': name,
            'changes': {},
@@ -33,6 +34,7 @@ def flavor_present(name, flavor_id=0, ram=0, disk=0, vcpus=1, profile=None):
         ret['changes']['Flavor'] = 'Created'
     return ret
 
+
 def quota_present(tenant_name, profile, name=None, **kwargs):
     '''
     Ensures that the nova quota exists
@@ -46,35 +48,25 @@ def quota_present(tenant_name, profile, name=None, **kwargs):
             changes[key] = value
             __salt__['novang.quota_update'](tenant_name, profile, **arg)
     if bool(changes):
-        return _updated(tenant_name, 'tenant', changes)        
+        return _updated(tenant_name, 'tenant', changes)
     else:
         return _no_change(tenant_name, 'tenant')
 
-def _updated(name, resource, resource_definition):
-    changes_dict = {'name': name,
-                    'changes': resource_definition,
-                    'result': True,
-                    'comment': '{0} {1} tenant was updated'.format(resource, name)}
-    return changes_dict
 
-def _update_failed(name, resource):
-    changes_dict = {'name': name,
-                    'changes': {},
-                    'comment': '{0} {1} failed to update'.format(resource, name),
-                    'result': False}
-    return changes_dict
-
-def _no_change(name, resource, test=False):
-    changes_dict = {'name': name,
-                    'changes': {},
-                    'result': True}
-    if test:
-        changes_dict['comment'] = \
-            '{0} {1} will be {2}'.format(resource, name, test)
+def availability_zone_present(name=None, availability_zone=None, profile=None):
+    '''
+    Ensures that the nova availability zone exists
+    '''
+    name = availability_zone
+    zone_exists = __salt__['novang.availability_zone_get'](name, profile)
+    if zone_exists == False:
+        item_created = __salt__['novang.availability_zone_create'](name, availability_zone, profile)
+        if bool(item_created):
+            return _created(availability_zone, 'availabilty zone', item_created)         
     else:
-        changes_dict['comment'] = \
-            '{0} {1} is in correct state'.format(resource, name)
-    return changes_dict
+        return _already_exists(availability_zone, 'availabilty zone')
+    return existing_availability_zones
+
 
 def instance_present(name, flavor, image, networks, security_groups=None, profile=None, tenant_name=None):
     ret = {'name': name,
@@ -133,3 +125,45 @@ def instance_present(name, flavor, image, networks, security_groups=None, profil
             'changes': {},
             'result': True,
             'comment': 'Instance "{0}" was successfuly created'.format(name)}
+
+def _already_exists(name, resource):
+    changes_dict = {'name': name,
+                    'changes': {},
+                    'result': True}
+    changes_dict['comment'] = \
+        '{0} {1} already exists'.format(resource, name)
+    return changes_dict
+
+
+def _created(name, resource, resource_definition):
+    changes_dict = {'name': name,
+                    'changes': resource_definition,
+                    'result': True,
+                    'comment': '{0} {1} created'.format(resource, name)}
+    return changes_dict
+
+def _updated(name, resource, resource_definition):
+    changes_dict = {'name': name,
+                    'changes': resource_definition,
+                    'result': True,
+                    'comment': '{0} {1} tenant was updated'.format(resource, name)}
+    return changes_dict
+
+def _update_failed(name, resource):
+    changes_dict = {'name': name,
+                    'changes': {},
+                    'comment': '{0} {1} failed to update'.format(resource, name),
+                    'result': False}
+    return changes_dict
+
+def _no_change(name, resource, test=False):
+    changes_dict = {'name': name,
+                    'changes': {},
+                    'result': True}
+    if test:
+        changes_dict['comment'] = \
+            '{0} {1} will be {2}'.format(resource, name, test)
+    else:
+        changes_dict['comment'] = \
+            '{0} {1} is in correct state'.format(resource, name)
+    return changes_dict

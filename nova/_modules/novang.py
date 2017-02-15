@@ -67,8 +67,30 @@ def _auth(profile=None, tenant_name=None):
         'region_name': region_name,
         'os_auth_plugin': os_auth_system
     }
-
     return suon.SaltNova(**kwargs)
+
+
+def server_list(profile=None, tenant_name=None):
+    '''
+    Return list of active servers
+    CLI Example:
+    .. code-block:: bash
+        salt '*' nova.server_list
+    '''
+    conn = _auth(profile, tenant_name)
+    return conn.server_list()
+
+
+def server_get(name, tenant_name=None, profile=None):
+    '''
+    Return information about a server
+    '''
+    items = server_list(profile, tenant_name)
+    instance_id = None
+    for key, value in items.iteritems():
+        if key == name:
+            instance_id = value['id']
+    return instance_id
 
 
 def get_connection_args(profile=None):
@@ -124,6 +146,8 @@ def quota_update(tenant_name, profile=None, **quota_argument):
     nt_ks = conn.compute_conn
     item = nt_ks.quotas.update(tenant_id, **quota_argument)
     return item
+
+
 def server_list(profile=None, tenant_name=None):
     '''
     Return list of active servers
@@ -134,6 +158,7 @@ def server_list(profile=None, tenant_name=None):
     conn = _auth(profile, tenant_name)
     return conn.server_list()
 
+
 def secgroup_list(profile=None, tenant_name=None):
     '''
     Return a list of available security groups (nova items-list)
@@ -143,6 +168,7 @@ def secgroup_list(profile=None, tenant_name=None):
     '''
     conn = _auth(profile, tenant_name)
     return conn.secgroup_list()
+
 
 def boot(name, flavor_id=0, image_id=0, profile=None, tenant_name=None, timeout=300, **kwargs):
     '''
@@ -169,6 +195,51 @@ def boot(name, flavor_id=0, image_id=0, profile=None, tenant_name=None, timeout=
     #kwargs = {'nics': nics}
     conn = _auth(profile, tenant_name)
     return conn.boot(name, flavor_id, image_id, timeout, **kwargs)
+
+
 def network_show(name, profile=None):
     conn = _auth(profile)
     return conn.network_show(name)
+
+
+def availability_zone_list(profile=None):
+    '''
+    list existing availability zones
+    '''
+    connection_args = get_connection_args(profile)
+    conn = _auth(profile)
+    nt_ks = conn.compute_conn
+    ret = nt_ks.aggregates.list()
+    return ret
+
+
+def availability_zone_get(name, profile=None):
+    '''
+    list existing availability zones
+    '''
+    connection_args = get_connection_args(profile)
+    conn = _auth(profile)
+    nt_ks = conn.compute_conn
+    zone_exists=False
+    items = availability_zone_list(profile)
+    for p in items:
+        item = nt_ks.aggregates.get(p).__getattr__('name')
+        if item == name:
+            zone_exists = True
+    return zone_exists
+
+
+def availability_zone_create(name, availability_zone, profile=None):
+    '''
+    create availability zone
+    '''
+    connection_args = get_connection_args(profile)
+    conn = _auth(profile)
+    nt_ks = conn.compute_conn
+    item = nt_ks.aggregates.create(name, availability_zone)
+    ret = {
+        'Id': item.__getattr__('id'),
+        'Aggregate Name': item.__getattr__('name'),
+        'Availability Zone': item.__getattr__('availability_zone'),
+    }
+    return ret

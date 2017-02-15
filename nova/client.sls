@@ -7,6 +7,8 @@ nova_client_packages:
 
 {%- for identity_name, identity in client.server.iteritems() %}
 
+{%- if identity.flavor is defined %}
+
 {%- for flavor_name, flavor in identity.flavor.iteritems() %}
 
 nova_openstack_flavor_{{ flavor_name }}:
@@ -28,6 +30,19 @@ nova_openstack_flavor_{{ flavor_name }}:
     {%- endif %}
 
 {%- endfor %}
+
+{%- endif %}
+
+{%- if identity.availability_zones is defined %}
+
+{%- for availability_zone_name in identity.availability_zones %}
+nova_availability_zone_{{ availability_zone_name }}:
+  novang.availability_zone_present:
+    - availability_zone: {{ availability_zone_name }}
+    - profile: {{ identity_name }}
+{%- endfor %}
+
+{%- endif %}
 
 {%- endfor %}
 
