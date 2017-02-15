@@ -3,6 +3,7 @@
 Nova state that ensures that defined flavor is present
 '''
 import logging
+import collections
 from functools import wraps
 LOG = logging.getLogger(__name__)
 
@@ -11,8 +12,7 @@ def __virtual__():
     '''
     Only load if the nova module is in __salt__
     '''
-    return 'novang' if 'nova.flavor_list' in __salt__ else False   
-
+    return 'novang' if 'nova.flavor_list' in __salt__ else False
 
 def flavor_present(name, flavor_id=0, ram=0, disk=0, vcpus=1, profile=None):
     '''
@@ -32,7 +32,6 @@ def flavor_present(name, flavor_id=0, ram=0, disk=0, vcpus=1, profile=None):
         ret['comment'] = 'Flavor {0} has been created'.format(name)
         ret['changes']['Flavor'] = 'Created'
     return ret
-
 
 def quota_present(tenant_name, profile, name=None, **kwargs):
     '''
@@ -76,3 +75,61 @@ def _no_change(name, resource, test=False):
         changes_dict['comment'] = \
             '{0} {1} is in correct state'.format(resource, name)
     return changes_dict
+
+def instance_present(name, flavor, image, networks, security_groups=None, profile=None, tenant_name=None):
+    ret = {'name': name,
+           'changes': {},
+           'result': True,
+           'comment': 'Instance "{0}" already exists'.format(name)}
+    kwargs = {}
+    nics = []
+    existing_instances = __salt__['novang.server_list'](profile, tenant_name)
+    if name in existing_instances:
+        return ret
+    existing_flavors = __salt__['nova.flavor_list'](profile)
+    if flavor in existing_flavors:
+        flavor_id = existing_flavors[name]['id']
+    else:
+        return {'name': name,
+                'changes': {},
+                'result': False,
+                'comment': 'Flavor "{0}" doesn\'t exists'.format(flavor)}
+
+    existing_image = __salt__['nova.image_list'](image, profile)
+    if not existing_image:
+        return {'name': name,
+                'changes': {},
+                'result': False,
+                'comment': 'Image "{0}" doesn\'t exists'.format(image)}
+    else:
+        image_id = existing_image.get(image).get('id')
+    if security_groups is not None:
+        kwargs['security_groups'] = []
+        for secgroup in security_groups:
+            existing_secgroups = __salt__['novang.secgroup_list'](profile, tenant_name)
+            if not secgroup in existing_secgroups:
+                return {'name': name,
+                        'changes': {},
+                        'result': False,
+                        'comment': 'Security group "{0}" doesn\'t exists'.format(secgroup)}
+            else:
+                kwargs['security_groups'].append(secgroup)
+    for net in networks:
+        existing_network = __salt__['novang.network_show'](net.get('name'), profile)
+        if not existing_network:
+            return {'name': name,
+                    'changes': {},
+                    'result': False,
+                    'comment': 'Network "{0}" doesn\'t exists'.format(net.get(name))}
+        else:
+            network_id = existing_network.get('id')
+            if net.get('v4_fixed_ip') is not None:
+                nics.append({'net-id': network_id, 'v4-fixed-ip': net.get('v4_fixed_ip')})
+            else:
+                nics.append({'net-id': network_id})
+    kwargs['nics'] = nics
+    new_instance_id = __salt__['novang.boot'] (name, flavor_id, image_id, profile, tenant_name, **kwargs)
+    return {'name': name,
+            'changes': {},
+            'result': True,
+            'comment': 'Instance "{0}" was successfuly created'.format(name)}

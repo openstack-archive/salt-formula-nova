@@ -34,7 +34,7 @@ def __virtual__():
 __opts__ = {}
 
 
-def _auth(profile=None):
+def _auth(profile=None, tenant_name=None):
     '''
     Set up nova credentials
     '''
@@ -42,7 +42,10 @@ def _auth(profile=None):
         credentials = __salt__['config.option'](profile)
         user = credentials['keystone.user']
         password = credentials['keystone.password']
-        tenant = credentials['keystone.tenant']
+        if tenant_name:
+            tenant = tenant_name
+        else:
+            tenant = credentials['keystone.tenant']
         auth_url = credentials['keystone.auth_url']
         region_name = credentials.get('keystone.region_name', None)
         api_key = credentials.get('keystone.api_key', None)
@@ -121,7 +124,51 @@ def quota_update(tenant_name, profile=None, **quota_argument):
     nt_ks = conn.compute_conn
     item = nt_ks.quotas.update(tenant_id, **quota_argument)
     return item
+def server_list(profile=None, tenant_name=None):
+    '''
+    Return list of active servers
+    CLI Example:
+    .. code-block:: bash
+        salt '*' nova.server_list
+    '''
+    conn = _auth(profile, tenant_name)
+    return conn.server_list()
 
+def secgroup_list(profile=None, tenant_name=None):
+    '''
+    Return a list of available security groups (nova items-list)
+    CLI Example:
+    .. code-block:: bash
+        salt '*' nova.secgroup_list
+    '''
+    conn = _auth(profile, tenant_name)
+    return conn.secgroup_list()
 
-
-
+def boot(name, flavor_id=0, image_id=0, profile=None, tenant_name=None, timeout=300, **kwargs):
+    '''
+    Boot (create) a new instance
+    name
+        Name of the new instance (must be first)
+    flavor_id
+        Unique integer ID for the flavor
+    image_id
+        Unique integer ID for the image
+    timeout
+        How long to wait, after creating the instance, for the provider to
+        return information about it (default 300 seconds).
+        .. versionadded:: 2014.1.0
+    CLI Example:
+    .. code-block:: bash
+        salt '*' nova.boot myinstance flavor_id=4596 image_id=2
+    The flavor_id and image_id are obtained from nova.flavor_list and
+    nova.image_list
+    .. code-block:: bash
+        salt '*' nova.flavor_list
+        salt '*' nova.image_list
+    '''
+    #kwargs = {'nics': nics}
+    conn = _auth(profile, tenant_name)
+    return conn.boot(name, flavor_id, image_id, timeout, **kwargs)
+def network_show(name, profile=None):
+    conn = _auth(profile)
+    return conn.network_show(name)
