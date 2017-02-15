@@ -23,10 +23,8 @@ cpu_allocation_ratio = {{ controller.cpu_allocation_ratio }}
 ram_allocation_ratio = {{ controller.ram_allocation_ratio }}
 disk_allocation_ratio = {{ controller.disk_allocation_ratio }}
 scheduler_default_filters = {{ controller.scheduler_default_filters }}
-{%- if controller.get('sriov', false) %}
 scheduler_available_filters = nova.scheduler.filters.all_filters
 scheduler_available_filters = nova.scheduler.filters.pci_passthrough_filter.PciPassthroughFilter
-{%- endif %}
 osapi_max_limit = {{ controller.osapi_max_limit|default('1000') }}
 
 allow_resize_to_same_host = True
