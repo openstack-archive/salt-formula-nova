@@ -32,6 +32,10 @@ image_service=nova.image.glance.GlanceImageService
 
 reserved_host_memory_mb = {{ compute.get('reserved_host_memory_mb', '512') }}
 
+{%- if compute.vcpu_pin_set is defined %}
+vcpu_pin_set={{ compute.vcpu_pin_set }}
+{%- endif %}
+
 allow_resize_to_same_host=True
 
 auth_strategy = keystone

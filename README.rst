@@ -279,6 +279,25 @@ Add PciPassthroughFilter into scheduler filters and NICs on specific compute nod
           devname: eth1
           physical_network: physnet1
 
+CPU pinning & Hugepages
+-----------------------
+
+CPU pinning of virtual machine instances to dedicated physical CPU cores.
+Hugepages mount point for libvirt.
+
+.. code-block:: yaml
+
+  nova:
+    controller:
+      scheduler_default_filters: "DifferentHostFilter,RetryFilter,AvailabilityZoneFilter,RamFilter,CoreFilter,DiskFilter,ComputeFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,ServerGroupAntiAffinityFilter,ServerGroupAffinityFilter,NUMATopologyFilter,AggregateInstanceExtraSpecsFilter"
+
+  nova:
+    compute:
+      vcpu_pin_set: 2,3,4,5
+      hugepages:
+        mount_points:
+        - path: /mnt/hugepages_1GB
+        - path: /mnt/hugepages_2MB
 
 Documentation and Bugs
 ============================

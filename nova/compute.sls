@@ -181,6 +181,18 @@ virsh net-undefine default:
     - pkg: nova_compute_packages
   - onlyif: "virsh net-list | grep default"
 
+{%- if compute.hugepages is defined %}
+
+/etc/default/qemu-kvm:
+  file.managed:
+  - contents: KVM_HUGEPAGES=1
+  - require:
+    - pkg: nova_compute_packages
+  - require_in:
+    - service: {{ compute.libvirt_service }}
+
+{%- endif %}
+
 {{ compute.libvirt_service }}:
   service.running:
   - enable: true
@@ -189,6 +201,7 @@ virsh net-undefine default:
     - cmd: virsh net-undefine default
   - watch:
     - file: /etc/libvirt/{{ compute.libvirt_config }}
+    - file: /etc/libvirt/qemu.conf
 
 {%- if grains.get('init', None) == "upstart" %}
 # MOS9 libvirt fix for upstart

@@ -337,7 +337,10 @@
 # in a location of $MOUNTPOINT/libvirt/qemu
 #
 #hugetlbfs_mount = "/dev/hugepages"
-
+#hugetlbfs_mount = ["/run/hugepages/kvm", "/mnt/hugepages_1GB"]
+{%- if compute.hugepages is defined %}
+hugetlbfs_mount = [{%- for mount in compute.hugepages.mount_points %}"{{ mount.path }}"{% if not loop.last %}, {% endif %}{%- endfor %}]
+{%- endif %}
 
 # Path to the setuid helper for creating tap devices.  This executable
 # is used to create <source type='bridge'> interfaces when libvirtd is

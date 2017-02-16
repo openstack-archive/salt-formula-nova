@@ -2,6 +2,10 @@ nova:
   compute:
     version: liberty
     enabled: true
+    vcpu_pin_set: 1,2,3
+    hugepages:
+      mount_points:
+      - path: /mnt/hugepages_1GB
     virtualization: kvm
     heal_instance_info_cache_interval: 60
     vncproxy_url: openstack:6080
