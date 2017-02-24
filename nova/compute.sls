@@ -120,6 +120,31 @@ nova_compute_services:
   - watch:
     - file: /etc/nova/nova.conf
 
+{%- if compute.availability_zone != None %}
+
+{%- set ident = compute.identity %}
+
+{%- if ident.get('api_version', '2') == '3' %}
+{%- set version = "v3" %}
+{%- else %}
+{%- set version = "v2.0" %}
+{%- endif %}
+
+{%- if ident.get('protocol', 'http') == 'http' %}
+{%- set protocol = 'http' %}
+{%- else %}
+{%- set protocol = 'https' %}
+{%- endif %}
+
+{%- set identity_params = " --os-username="+ident.user+" --os-password="+ident.password+" --os-project-name="+ident.tenant+" --os-auth-url="+protocol+"://"+ident.host+":"+ident.port|string+"/"+version %}
+
+Add_compute_to_availability_zone_{{ compute.availability_zone }}:
+  cmd.run:
+  - name: "nova {{ identity_params }} aggregate-add-host {{ compute.availability_zone }} {{ pillar.linux.system.name }}"
+  - unless: "nova {{ identity_params }} service-list | grep {{ compute.availability_zone }} | grep {{ pillar.linux.system.name }}"
+
+{%- endif %}
+
 {%- if compute.virtualization == 'kvm' %}
 
 {% if compute.ceph is defined %}

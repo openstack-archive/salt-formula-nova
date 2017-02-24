@@ -130,6 +130,7 @@ Nova controller services on compute node
         version: juno
         enabled: true
         virtualization: kvm
+        availability_zone: availability_zone_01
         security_group: true
         bind:
           vnc_address: 172.20.0.100
@@ -251,14 +252,33 @@ Nova flavors
       server:
         identity:
           flavor:
-            jirka-flavor1:
+            flavor1:
               flavor_id: 10
               ram: 4096
               disk: 10
               vcpus: 1
+            flavor2:
+              flavor_id: auto
+              ram: 4096
+              disk: 20
+              vcpus: 2
         identity1:
           flavor:
             ...
+
+
+Availability zones
+
+.. code-block:: yaml
+
+    nova:
+      client:
+        enabled: true
+        server:
+          identity:
+            availability_zones:
+            - availability_zone_01
+            - availability_zone_02
 
 SRIOV
 ------
