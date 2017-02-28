@@ -80,7 +80,7 @@ def instance_present(name, flavor, image, networks, security_groups=None, profil
         return ret
     existing_flavors = __salt__['nova.flavor_list'](profile)
     if flavor in existing_flavors:
-        flavor_id = existing_flavors[name]['id']
+        flavor_id = existing_flavors[flavor]['id']
     else:
         return {'name': name,
                 'changes': {},
