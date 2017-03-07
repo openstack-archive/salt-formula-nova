@@ -206,18 +206,6 @@ virsh net-undefine default:
     - pkg: nova_compute_packages
   - onlyif: "virsh net-list | grep default"
 
-{%- if compute.hugepages is defined %}
-
-/etc/default/qemu-kvm:
-  file.managed:
-  - contents: KVM_HUGEPAGES=1
-  - require:
-    - pkg: nova_compute_packages
-  - require_in:
-    - service: {{ compute.libvirt_service }}
-
-{%- endif %}
-
 {{ compute.libvirt_service }}:
   service.running:
   - enable: true

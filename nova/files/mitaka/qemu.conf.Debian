@@ -340,6 +340,7 @@
 #hugetlbfs_mount = ["/run/hugepages/kvm", "/mnt/hugepages_1GB"]
 {%- if compute.hugepages is defined %}
 hugetlbfs_mount = [{%- for mount in compute.hugepages.mount_points %}"{{ mount.path }}"{% if not loop.last %}, {% endif %}{%- endfor %}]
+security_driver="none"
 {%- endif %}
 
 # Path to the setuid helper for creating tap devices.  This executable
