@@ -280,7 +280,7 @@ Availability zones
             - availability_zone_01
             - availability_zone_02
 
-SRIOV
+SR-IOV
 ------
 
 Add PciPassthroughFilter into scheduler filters and NICs on specific compute nodes.
