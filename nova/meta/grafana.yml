@@ -5,6 +5,67 @@ dashboard:
   hypervisor:
     format: json
     template: nova/files/grafana_dashboards/hypervisor_influxdb.json
+  service_level:
+    row:
+      nova-service-level:
+        title: Nova Service Levels
+        panel:
+          nova-control-uptime:
+            title: Nova Control Uptime
+            target:
+              nova-control-healthy-status:
+                alias: "Healthy"
+                rawQuery: true
+                query: SELECT count(value) FROM cluster_status WHERE environment_label = '$environment' AND cluster_name = 'nova-control' AND value = 0 AND $timeFilter
+              nova-control-degraded-unknwon-status:
+                alias: "Degraded or Unknwon"
+                rawQuery: true
+                query: SELECT count(value) FROM cluster_status WHERE environment_label = '$environment' AND cluster_name = 'nova-control' AND (value = 1 OR value = 2 OR value = 3) AND $timeFilter
+              nova-control-down-status:
+                alias: "Down"
+                rawQuery: true
+                query: SELECT count(value) FROM cluster_status WHERE environment_label = '$environment' AND cluster_name = 'nova-control' AND value = 4 AND $timeFilter
+          nova-data-uptime:
+            title: Nova Data Uptime
+            target:
+              nova-data-healthy-status:
+                alias: "Healthy"
+                rawQuery: true
+                query: SELECT count(value) FROM cluster_status WHERE environment_label = '$environment' AND cluster_name = 'nova-data' AND value = 0 AND $timeFilter
+              nova-data-degraded-unknwon-status:
+                alias: "Degraded or Unknwon"
+                rawQuery: true
+                query: SELECT count(value) FROM cluster_status WHERE environment_label = '$environment' AND cluster_name = 'nova-data' AND (value = 1 OR value = 2 OR value = 3) AND $timeFilter
+              nova-data-down-status:
+                alias: "Down"
+                rawQuery: true
+                query: SELECT count(value) FROM cluster_status WHERE environment_label = '$environment' AND cluster_name = 'nova-data' AND value = 4 AND $timeFilter
+          nova-api-availability:
+            title: Nova API Availability
+            target:
+              nova-api-up-status:
+                alias: "Up"
+                rawQuery: true
+                query: SELECT count(value) FROM openstack_check_api WHERE environment_label = '$environment' AND service = 'nova-api' AND value = 1 AND $timeFilter
+              nova-api-down-status:
+                alias: "Down"
+                rawQuery: true
+                query: SELECT count(value) FROM openstack_check_api WHERE environment_label = '$environment' AND service = 'nova-api' AND value = 0 AND $timeFilter
+          nova-api-requests:
+            title: Nova API Requests
+            target:
+              nova-api-okay-status:
+                alias: "Okay"
+                rawQuery: true
+                query: SELECT count(max) FROM openstack_nova_http_response_times WHERE environment_label = '$environment' AND (http_status = '2xx' OR http_status = '3xx') AND $timeFilter
+              nova-api-error-status:
+                alias: "Error"
+                rawQuery: true
+                query: SELECT count(max) FROM openstack_nova_http_response_times WHERE environment_label = '$environment' AND http_status = '4xx' AND $timeFilter
+              nova-api-fatal-status:
+                alias: "Fatal"
+                rawQuery: true
+                query: SELECT count(max) FROM openstack_nova_http_response_times WHERE environment_label = '$environment' AND http_status = '5xx' AND $timeFilter
   main:
     row:
       ost-control-plane:
