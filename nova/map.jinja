@@ -41,7 +41,8 @@
         'pkgs': ['nova-compute-kvm', 'python-novaclient', 'pm-utils', 'sysfsutils', 'sg3-utils', 'libvirt-bin', 'python-memcache', 'qemu-kvm','python-guestfs', 'gettext-base'],
         'services': ['nova-compute'],
         'libvirt_config': 'libvirtd.conf',
-        'libvirt_service': 'libvirtd',
+        'libvirt_bin': '/etc/default/libvirt-bin',
+        'libvirt_service': 'libvirt-bin',
         'bind': compute_bind_defaults,
         'debug': false,
         'notification': false,
@@ -72,9 +73,4 @@
         },
         'heal_instance_info_cache_interval': '60',
     },
-}, merge=salt['grains.filter_by']({
-    'trusty': {
-        'libvirt_bin': '/etc/default/libvirt-bin',
-        'libvirt_service': 'libvirt-bin',
-    },
-}, grain='oscodename', merge=pillar.nova.get('compute', {}))) %}
+}, merge=pillar.nova.get('compute', {})) %}

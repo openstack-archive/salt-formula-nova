@@ -183,6 +183,18 @@ ceph_virsh_secret_set_value:
     - pkg: nova_compute_packages
   - watch_in:
     - service: {{ compute.libvirt_service }}
+
+{%- if grains.get('init', None) == 'systemd' %}
+
+libvirt_restart_systemd:
+  module.wait:
+  - name: service.systemctl_reload
+  - watch:
+    - file: {{ compute.libvirt_bin }}
+  - require_in:
+    - service: {{ compute.libvirt_service }}
+
+{%- endif %}
 {%- endif %}
 
 /etc/libvirt/qemu.conf:
