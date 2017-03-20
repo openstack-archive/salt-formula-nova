@@ -19,6 +19,7 @@
   },
   "editable": true,
   "gnetId": null,
+  "graphTooltip": 1,
   "hideControls": false,
   "id": null,
   "links": [],
@@ -26,7 +27,6 @@
   "rows": [
     {
       "collapse": false,
-      "editable": true,
       "height": "250px",
       "panels": [
         {
@@ -456,12 +456,7 @@
           "editable": true,
           "error": false,
           "fill": 0,
-          "grid": {
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
+          "grid": {},
           "id": 7,
           "interval": ">60s",
           "legend": {
@@ -712,6 +707,7 @@
               ]
             }
           ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "HTTP response time on $server",
@@ -723,7 +719,10 @@
           },
           "type": "graph",
           "xaxis": {
-            "show": true
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
           },
           "yaxes": [
             {
@@ -749,13 +748,7 @@
           "editable": true,
           "error": false,
           "fill": 1,
-          "grid": {
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)",
-            "thresholdLine": false
-          },
+          "grid": {},
           "id": 9,
           "interval": "> 60s",
           "legend": {
@@ -834,6 +827,7 @@
               ]
             }
           ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "API Availability",
@@ -845,7 +839,10 @@
           },
           "type": "graph",
           "xaxis": {
-            "show": true
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
           },
           "yaxes": [
             {
@@ -872,13 +869,7 @@
           "editable": true,
           "error": false,
           "fill": 0,
-          "grid": {
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)",
-            "thresholdLine": false
-          },
+          "grid": {},
           "id": 8,
           "interval": "> 60s",
           "legend": {
@@ -1186,6 +1177,7 @@
               ]
             }
           ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "Number of HTTP responses on $server",
@@ -1197,7 +1189,10 @@
           },
           "type": "graph",
           "xaxis": {
-            "show": true
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
           },
           "yaxes": [
             {
@@ -1217,12 +1212,15 @@
           ]
         }
       ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
       "showTitle": true,
-      "title": "Service Status"
+      "title": "Service Status",
+      "titleSize": "h6"
     },
     {
       "collapse": false,
-      "editable": true,
       "height": "100px",
       "panels": [
         {
@@ -2036,12 +2034,15 @@
           "type": "text"
         }
       ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
       "showTitle": true,
-      "title": "Nova API"
+      "title": "Nova API",
+      "titleSize": "h6"
     },
     {
       "collapse": false,
-      "editable": true,
       "height": "250px",
       "panels": [
         {
@@ -2451,7 +2452,6 @@
           "hideTimeOverride": false,
           "id": 73,
           "interval": ">60s",
-          "isNew": true,
           "links": [],
           "pageSize": null,
           "scroll": true,
@@ -2501,7 +2501,7 @@
               ],
               "measurement": "openstack_nova_service",
               "policy": "default",
-              "query": "SELECT state, last(value) FROM \"openstack_nova_service\" WHERE $timeFilter AND \"environment_label\" =~ /^$environment$/and service = 'compute' GROUP BY time($interval), hostname",
+              "query": "SELECT az as \"AZ\", state, last(value) FROM \"openstack_nova_service\" WHERE $timeFilter AND \"environment_label\" =~ /^$environment$/and service = 'compute' GROUP BY time($interval), hostname",
               "rawQuery": true,
               "refId": "A",
               "resultFormat": "table",
@@ -2935,13 +2935,12 @@
           "hideTimeOverride": false,
           "id": 82,
           "interval": ">60s",
-          "isNew": true,
           "links": [],
           "pageSize": null,
           "scroll": true,
           "showHeader": true,
           "sort": {
-            "col": 1,
+            "col": 0,
             "desc": true
           },
           "span": 7,
@@ -2985,7 +2984,7 @@
               ],
               "measurement": "openstack_nova_service",
               "policy": "default",
-              "query": "SELECT state, last(value) FROM \"openstack_nova_service\" WHERE $timeFilter AND \"environment_label\" =~ /^$environment$/and service = 'scheduler' GROUP BY time($interval), hostname",
+              "query": "SELECT az as \"AZ\", state, last(value) FROM \"openstack_nova_service\" WHERE $timeFilter AND \"environment_label\" =~ /^$environment$/and service = 'scheduler' GROUP BY time($interval), hostname",
               "rawQuery": true,
               "refId": "A",
               "resultFormat": "table",
@@ -3419,14 +3418,13 @@
           "hideTimeOverride": false,
           "id": 87,
           "interval": ">60s",
-          "isNew": true,
           "links": [],
           "pageSize": null,
           "scroll": true,
           "showHeader": true,
           "sort": {
             "col": 0,
-            "desc": false
+            "desc": true
           },
           "span": 7,
           "styles": [
@@ -3469,7 +3467,7 @@
               ],
               "measurement": "openstack_nova_service",
               "policy": "default",
-              "query": "SELECT state, last(value) FROM \"openstack_nova_service\" WHERE $timeFilter AND \"environment_label\" =~ /^$environment$/and service = 'conductor' GROUP BY time($interval), hostname",
+              "query": "SELECT az as \"AZ\", state, last(value) FROM \"openstack_nova_service\" WHERE $timeFilter AND \"environment_label\" =~ /^$environment$/and service = 'conductor' GROUP BY time($interval), hostname",
               "rawQuery": true,
               "refId": "A",
               "resultFormat": "table",
@@ -3903,14 +3901,13 @@
           "hideTimeOverride": false,
           "id": 92,
           "interval": ">60s",
-          "isNew": true,
           "links": [],
           "pageSize": null,
           "scroll": true,
           "showHeader": true,
           "sort": {
             "col": 0,
-            "desc": false
+            "desc": true
           },
           "span": 7,
           "styles": [
@@ -3953,7 +3950,7 @@
               ],
               "measurement": "openstack_nova_service",
               "policy": "default",
-              "query": "SELECT state, last(value) FROM \"openstack_nova_service\" WHERE $timeFilter AND \"environment_label\" =~ /^$environment$/and service = 'cert' GROUP BY time($interval), hostname",
+              "query": "SELECT az as \"AZ\", state, last(value) FROM \"openstack_nova_service\" WHERE $timeFilter AND \"environment_label\" =~ /^$environment$/and service = 'cert' GROUP BY time($interval), hostname",
               "rawQuery": true,
               "refId": "A",
               "resultFormat": "table",
@@ -4387,7 +4384,6 @@
           "hideTimeOverride": false,
           "id": 98,
           "interval": ">60s",
-          "isNew": true,
           "links": [],
           "pageSize": null,
           "scroll": true,
@@ -4437,7 +4433,7 @@
               ],
               "measurement": "openstack_nova_service",
               "policy": "default",
-              "query": "SELECT state, last(value) FROM \"openstack_nova_service\" WHERE $timeFilter AND \"environment_label\" =~ /^$environment$/and service = 'consoleauth' GROUP BY time($interval), hostname",
+              "query": "SELECT az as \"AZ\", state, last(value) FROM \"openstack_nova_service\" WHERE $timeFilter AND \"environment_label\" =~ /^$environment$/and service = 'consoleauth' GROUP BY time($interval), hostname",
               "rawQuery": true,
               "refId": "A",
               "resultFormat": "table",
@@ -4465,12 +4461,15 @@
           "type": "table"
         }
       ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
       "showTitle": true,
-      "title": "Nova services"
+      "title": "Nova services",
+      "titleSize": "h6"
     },
     {
       "collapse": false,
-      "editable": true,
       "height": "250px",
       "panels": [
         {
@@ -4577,6 +4576,7 @@
                 },
                 {
                   "key": "state",
+                  "operator": "=",
                   "value": "active"
                 }
               ]
@@ -4603,12 +4603,7 @@
           "editable": true,
           "error": false,
           "fill": 0,
-          "grid": {
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
+          "grid": {},
           "id": 64,
           "interval": ">60s",
           "legend": {
@@ -4686,6 +4681,7 @@
               ]
             }
           ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "",
@@ -4697,7 +4693,10 @@
           },
           "type": "graph",
           "xaxis": {
-            "show": true
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
           },
           "yaxes": [
             {
@@ -4846,12 +4845,7 @@
           "editable": true,
           "error": false,
           "fill": 0,
-          "grid": {
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
+          "grid": {},
           "id": 65,
           "interval": ">60s",
           "legend": {
@@ -4929,6 +4923,7 @@
               ]
             }
           ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "",
@@ -4940,7 +4935,10 @@
           },
           "type": "graph",
           "xaxis": {
-            "show": true
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
           },
           "yaxes": [
             {
@@ -5085,12 +5083,7 @@
           "editable": true,
           "error": false,
           "fill": 0,
-          "grid": {
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
+          "grid": {},
           "id": 28,
           "interval": ">60s",
           "legend": {
@@ -5265,6 +5258,7 @@
               ]
             }
           ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "",
@@ -5276,7 +5270,10 @@
           },
           "type": "graph",
           "xaxis": {
-            "show": true
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
           },
           "yaxes": [
             {
@@ -5297,12 +5294,15 @@
           ]
         }
       ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
       "showTitle": true,
-      "title": "Instances"
+      "title": "Instances",
+      "titleSize": "h6"
     },
     {
       "collapse": false,
-      "editable": true,
       "height": "250px",
       "panels": [
         {
@@ -5337,7 +5337,6 @@
           "error": false,
           "height": "10px",
           "id": 104,
-          "isNew": true,
           "links": [],
           "mode": "html",
           "span": 4,
@@ -6057,12 +6056,15 @@
           "valueName": "current"
         }
       ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
       "showTitle": true,
-      "title": "Resources"
+      "title": "Resources",
+      "titleSize": "h6"
     },
     {
       "collapse": false,
-      "editable": true,
       "height": "250px",
       "panels": [
         {
@@ -6072,15 +6074,9 @@
           "editable": true,
           "error": false,
           "fill": 1,
-          "grid": {
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
+          "grid": {},
           "id": 105,
           "interval": ">60s",
-          "isNew": true,
           "legend": {
             "alignAsTable": true,
             "avg": false,
@@ -6154,17 +6150,22 @@
               ]
             }
           ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "Free VCPUs",
           "tooltip": {
             "msResolution": false,
             "shared": true,
+            "sort": 0,
             "value_type": "cumulative"
           },
           "type": "graph",
           "xaxis": {
-            "show": true
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
           },
           "yaxes": [
             {
@@ -6193,15 +6194,9 @@
           "editable": true,
           "error": false,
           "fill": 1,
-          "grid": {
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
+          "grid": {},
           "id": 106,
           "interval": ">60s",
-          "isNew": true,
           "legend": {
             "alignAsTable": true,
             "avg": false,
@@ -6275,17 +6270,22 @@
               ]
             }
           ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "Free Disk Space",
           "tooltip": {
             "msResolution": false,
             "shared": true,
+            "sort": 0,
             "value_type": "cumulative"
           },
           "type": "graph",
           "xaxis": {
-            "show": true
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
           },
           "yaxes": [
             {
@@ -6314,15 +6314,9 @@
           "editable": true,
           "error": false,
           "fill": 1,
-          "grid": {
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
+          "grid": {},
           "id": 107,
           "interval": ">60s",
-          "isNew": true,
           "legend": {
             "alignAsTable": true,
             "avg": false,
@@ -6396,17 +6390,22 @@
               ]
             }
           ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "Free RAM",
           "tooltip": {
             "msResolution": false,
             "shared": true,
+            "sort": 0,
             "value_type": "cumulative"
           },
           "type": "graph",
           "xaxis": {
-            "show": true
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
           },
           "yaxes": [
             {
@@ -6434,15 +6433,9 @@
           "editable": true,
           "error": false,
           "fill": 1,
-          "grid": {
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
+          "grid": {},
           "id": 108,
           "interval": ">60s",
-          "isNew": true,
           "legend": {
             "alignAsTable": true,
             "avg": false,
@@ -6516,17 +6509,22 @@
               ]
             }
           ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "Used VCPUs",
           "tooltip": {
             "msResolution": false,
             "shared": true,
+            "sort": 0,
             "value_type": "cumulative"
           },
           "type": "graph",
           "xaxis": {
-            "show": true
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
           },
           "yaxes": [
             {
@@ -6555,15 +6553,9 @@
           "editable": true,
           "error": false,
           "fill": 1,
-          "grid": {
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
+          "grid": {},
           "id": 109,
           "interval": ">60s",
-          "isNew": true,
           "legend": {
             "alignAsTable": true,
             "avg": false,
@@ -6637,17 +6629,22 @@
               ]
             }
           ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "Used Disk Space",
           "tooltip": {
             "msResolution": false,
             "shared": true,
+            "sort": 0,
             "value_type": "cumulative"
           },
           "type": "graph",
           "xaxis": {
-            "show": true
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
           },
           "yaxes": [
             {
@@ -6676,15 +6673,9 @@
           "editable": true,
           "error": false,
           "fill": 1,
-          "grid": {
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
+          "grid": {},
           "id": 110,
           "interval": ">60s",
-          "isNew": true,
           "legend": {
             "alignAsTable": true,
             "avg": false,
@@ -6758,17 +6749,22 @@
               ]
             }
           ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "Used RAM",
           "tooltip": {
             "msResolution": false,
             "shared": true,
+            "sort": 0,
             "value_type": "cumulative"
           },
           "type": "graph",
           "xaxis": {
-            "show": true
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
           },
           "yaxes": [
             {
@@ -6790,11 +6786,15 @@
           ]
         }
       ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
       "showTitle": true,
-      "title": "Resources per Aggregates"
+      "title": "Resources per Aggregates",
+      "titleSize": "h6"
     }
   ],
-  "schemaVersion": 12,
+  "schemaVersion": 14,
   "sharedCrosshair": true,
   "style": "dark",
   "tags": [],
@@ -6803,31 +6803,47 @@
     "list": [
       {
         "allFormat": "regex values",
+        "allValue": null,
         "current": {},
         "datasource": null,
         "hide": 0,
         "includeAll": false,
+        "label": null,
+        "multi": false,
         "name": "environment",
         "options": [],
         "query": "show tag values from cpu_idle with key = environment_label",
         "refresh": 1,
         "refresh_on_load": true,
         "regex": "",
-        "type": "query"
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
       },
       {
         "allFormat": "regex values",
+        "allValue": null,
         "current": {},
         "datasource": "lma",
         "hide": 0,
         "includeAll": true,
+        "label": null,
+        "multi": false,
         "name": "server",
         "options": [],
         "query": "show tag values from openstack_nova_http_response_times with key = hostname where environment_label =~ /^$environment$/ ",
         "refresh": 1,
         "refresh_on_load": true,
         "regex": "",
-        "type": "query"
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
       }
     ]
   },
@@ -6868,5 +6884,5 @@
   },
   "timezone": "browser",
   "title": "Nova",
-  "version": 5
+  "version": 7
 }
