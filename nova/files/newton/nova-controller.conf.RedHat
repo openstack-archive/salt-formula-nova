@@ -77,9 +77,9 @@ transport_url = rabbit://{% for member in controller.message_queue.members -%}
                              {{ controller.message_queue.user }}:{{ controller.message_queue.password }}@{{ member.host }}:{{ member.get('port', 5672) }}
                              {%- if not loop.last -%},{%- endif -%}
                          {%- endfor -%}
-                             {{ controller.message_queue.virtual_host }}
+                             /{{ controller.message_queue.virtual_host }}
 {%- else %}
-transport_url = rabbit://{{ controller.message_queue.user }}:{{ controller.message_queue.password }}@{{ controller.message_queue.host }}:{{ member.get('port', 5672) }}{{ controller.message_queue.virtual_host }}
+transport_url = rabbit://{{ controller.message_queue.user }}:{{ controller.message_queue.password }}@{{ controller.message_queue.host }}:{{ controller.message_queue.port }}{{ controller.message_queue.virtual_host }}
 {%- endif %}
 
 rpc_backend=rabbit
@@ -163,7 +163,7 @@ db_max_retries = 3
 db_retry_interval = 1
 connection_debug = 10
 pool_timeout = 120
-connection = {{ controller.database.engine }}+pymysql://{{ controller.database.user }}:{{ controller.database.password }}@{{ controller.database.host }}/{{ controller.database.name }}?charset=utf8&read_timeout=60
+connection = {{ controller.database.engine }}+pymysql://{{ controller.database.user }}:{{ controller.database.password }}@{{ controller.database.host }}/{{ controller.database.name }}?charset=utf8
 
 [oslo_middleware]
 enable_proxy_headers_parsing=True
@@ -179,11 +179,11 @@ db_max_retries = 3
 db_retry_interval = 1
 connection_debug = 10
 pool_timeout = 120
-connection = {{ controller.database.engine }}+pymysql://{{ controller.database.user }}:{{ controller.database.password }}@{{ controller.database.host }}/{{ controller.database.name }}_api?charset=utf8&read_timeout=60
+connection = {{ controller.database.engine }}+pymysql://{{ controller.database.user }}:{{ controller.database.password }}@{{ controller.database.host }}/{{ controller.database.name }}_api?charset=utf8
 
 [glance]
 
-api_servers = {{ controller.glance.host }}
+api_servers = {{ controller.glance.host }}:9292
 
 [neutron]
 auth_type=v3password

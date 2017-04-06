@@ -43,7 +43,7 @@ allow_resize_to_same_host=True
 auth_strategy = keystone
 
 neutron_url_timeout = 300
-compute_driver = nova.virt.libvirt.LibvirtDriver
+compute_driver = libvirt.LibvirtDriver
 
 heal_instance_info_cache_interval = {{ compute.heal_instance_info_cache_interval }}
 
@@ -66,9 +66,9 @@ transport_url = rabbit://{% for member in compute.message_queue.members -%}
                              {{ compute.message_queue.user }}:{{ compute.message_queue.password }}@{{ member.host }}:{{ member.get('port', 5672) }}
                              {%- if not loop.last -%},{%- endif -%}
                          {%- endfor -%}
-                             {{ compute.message_queue.virtual_host }}
+                             /{{ compute.message_queue.virtual_host }}
 {%- else %}
-transport_url = rabbit://{{ compute.message_queue.user }}:{{ compute.message_queue.password }}@{{ compute.message_queue.host }}:{{ member.get('port', 5672) }}{{ compute.message_queue.virtual_host }}
+transport_url = rabbit://{{ compute.message_queue.user }}:{{ compute.message_queue.password }}@{{ compute.message_queue.host }}:{{ controller.message_queue.port }}{{ compute.message_queue.virtual_host }}
 {%- endif %}
 
 rpc_backend=rabbit

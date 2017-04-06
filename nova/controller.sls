@@ -69,7 +69,7 @@ nova_controller_syncdb:
   cmd.run:
   - names:
     - nova-manage db sync
-    {%- if controller.version == "mitaka" %}
+    {%- if controller.version == "mitaka" or controller.version == "newton" %}
     - nova-manage api_db sync
     {%- endif %}
   - require:
