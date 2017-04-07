@@ -5003,7 +5003,7 @@ catalog_info=volumev2:cinderv2:internalURL
 #   (i.e. "http://10.0.1.0:9292" or "https://my.glance.server/image").
 #  (list value)
 #api_servers=<None>
-api_servers={{ compute.image.host }}:9292
+api_servers=http://{{ compute.image.host }}:9292
 
 #
 # Enable insecure SSL (https) requests to glance.
