@@ -119,7 +119,7 @@ memcache_servers={%- for member in compute.cache.members %}{{ member.host }}:112
 {%- endif %}
 
 [libvirt]
-cpu_mode = host-passthrough
+cpu_mode = {{ compute.get('cpu_mode', 'host-passthrough') }}
 virt_type = kvm
 inject_partition=-2
 inject_password=False

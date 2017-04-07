@@ -399,6 +399,20 @@ In order to actually utilize this feature, the following metadata must be set on
   glance image-update --property hw_scsi_model=virtio-scsi <image>
   glance image-update --property hw_disk_bus=scsi <image>
 
+libvirt CPU mode
+----------------
+
+Allow setting the model of CPU that is exposed to a VM. This allows better
+support live migration between hypervisors with different hardware, among other
+things. Defaults to host-passthrough.
+
+.. code-block:: yaml
+
+  nova:
+    compute:
+      cpu_mode: host-model
+
+
 Documentation and Bugs
 ======================
 
