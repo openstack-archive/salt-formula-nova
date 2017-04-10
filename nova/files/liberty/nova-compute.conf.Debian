@@ -125,7 +125,7 @@ notify_on_{{ key }} = {{ value }}
 notification_driver = messagingv2
 {%- endif %}
 
-resume_guests_state_on_host_boot = {% compute.get('resume_guests_state_on_host_boot', False) %}
+resume_guests_state_on_host_boot = {{ compute.get('resume_guests_state_on_host_boot', False) }}
 
 {%- if compute.identity.get('version', 2) == 2 %}
 
