@@ -132,6 +132,7 @@ Nova controller services on compute node
         virtualization: kvm
         availability_zone: availability_zone_01
         security_group: true
+        resume_guests_state_on_host_boot: False
         bind:
           vnc_address: 172.20.0.100
           vnc_port: 6080

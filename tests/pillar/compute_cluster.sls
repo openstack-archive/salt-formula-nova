@@ -11,6 +11,7 @@ nova:
     vncproxy_url: openstack:6080
     report_interval: 60
     vnc_keymap: en-gb
+    resume_guests_state_on_host_boot: True
     bind:
       vnc_address: 127.0.0.1
       vnc_port: 6080

@@ -86,6 +86,8 @@ notify_on_{{ key }} = {{ value }}
 notify_on_state_change = vm_and_task_state
 {%- endif %}
 
+resume_guests_state_on_host_boot = {% compute.get('resume_guests_state_on_host_boot', False) %}
+
 [oslo_concurrency]
 lock_path = /var/lib/nova/tmp
 
