@@ -108,8 +108,8 @@ notify_on_{{ key }} = {{ value }}
 notify_on_state_change = vm_and_task_state
 {%- endif %}
 
-{%- if compute.notification is defined %}
-notification_driver = {{ compute.notification.driver }}
+{%- if compute.notification is mapping %}
+notification_driver = {{ compute.notification.get('driver', 'messagingv2') }}
 
 {%- if compute.notification.topics is defined %}
 notification_topics = {{ compute.notification.topics }}
@@ -121,7 +121,12 @@ notify_on_{{ key }} = {{ value }}
 {%- endfor %}
 {%- endif %}
 
+{%- elif compute.notification %}
+notification_driver = messagingv2
 {%- endif %}
+
+
+
 
 {%- if compute.identity.get('version', 2) == 2 %}
 

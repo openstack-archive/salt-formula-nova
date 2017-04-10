@@ -7,7 +7,7 @@
 
 {% set controller = salt['grains.filter_by']({
     'Debian': {
-        'pkgs': ['nova-consoleproxy', 'novnc', 'nova-api', 'nova-cert', 'nova-conductor', 'nova-consoleauth', 'nova-doc', 'nova-scheduler', 'python-novaclient', 'python-memcache', 'gettext-base', 'python-pycadf'],
+        'pkgs': ['nova-common', 'nova-consoleproxy', 'novnc', 'nova-api', 'nova-cert', 'nova-conductor', 'nova-consoleauth', 'nova-doc', 'nova-scheduler', 'python-novaclient', 'python-memcache', 'gettext-base', 'python-pycadf'],
         'services': ['nova-api', 'nova-cert', 'nova-consoleauth', 'nova-scheduler', 'nova-conductor', 'nova-novncproxy'],
         'debug': false,
         'notification': false,
@@ -38,7 +38,7 @@
 
 {% set compute = salt['grains.filter_by']({
     'Debian': {
-        'pkgs': ['nova-compute-kvm', 'python-novaclient', 'pm-utils', 'sysfsutils', 'sg3-utils', 'libvirt-bin', 'python-memcache', 'qemu-kvm','python-guestfs', 'gettext-base'],
+        'pkgs': ['nova-common', 'nova-compute-kvm', 'python-novaclient', 'pm-utils', 'sysfsutils', 'sg3-utils', 'libvirt-bin', 'python-memcache', 'qemu-kvm','python-guestfs', 'gettext-base'],
         'services': ['nova-compute'],
         'libvirt_config': 'libvirtd.conf',
         'libvirt_bin': '/etc/default/libvirt-bin',

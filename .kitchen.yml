@@ -1,0 +1,57 @@
+---
+driver:
+  name: docker
+  hostname: nova.ci.local
+  use_sudo: false
+
+provisioner:
+  name: salt_solo
+  salt_install: bootstrap
+  salt_bootstrap_url: https://bootstrap.saltstack.com
+  salt_version: latest
+  require_chef: false
+  log_level: error
+  formula: nova
+  grains:
+    noservices: True
+  dependencies:
+    - name: linux
+      repo: git
+      source: https://github.com/salt-formulas/salt-formula-linux
+  state_top:
+    base:
+      "*":
+        - linux.system
+        - nova
+  pillars:
+    top.sls:
+      base:
+        "*":
+          - linux_repo_openstack
+          - nova
+  pillars-from-files:
+    linux_repo_openstack.sls: tests/pillar/repo_mcp_openstack.sls
+
+verifier:
+  name: inspec
+  sudo: true
+
+platforms:
+  - name: <%= ENV['PLATFORM'] || 'ubuntu-xenial' %>
+    driver_config:
+      image: <%= ENV['PLATFORM'] || 'trevorj/salty-whales:xenial' %>
+      platform: ubuntu
+
+suites:
+
+  - name: compute_cluster
+    provisioner:
+      pillars-from-files:
+        nova.sls: tests/pillar/compute_cluster.sls
+
+  - name: control_cluster
+    provisioner:
+      pillars-from-files:
+        nova.sls: tests/pillar/control_cluster.sls
+
+# vim: ft=yaml sw=2 ts=2 sts=2 tw=125

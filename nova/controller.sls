@@ -3,6 +3,12 @@
 {%- if controller.enabled %}
 
 {%- if grains.os_family == 'Debian' %}
+debconf-set-prerequisite:
+    pkg.installed:
+      - name: debconf-utils
+      - require_in:
+        - debconf: nova_consoleproxy_debconf
+
 nova_consoleproxy_debconf:
   debconf.set:
   - name: nova-consoleproxy

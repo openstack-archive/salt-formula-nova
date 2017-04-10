@@ -49,6 +49,11 @@ nova:
       host: 127.0.0.1
       port: 9696
       extension_sync_interval: 600
+      user: nova
+      password: password
+      tenant: service
+    metadata:
+      password: metadata
     cache:
       engine: memcached
       members:
