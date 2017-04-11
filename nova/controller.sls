@@ -74,12 +74,50 @@ contrail_nova_packages:
 nova_controller_syncdb:
   cmd.run:
   - names:
-    - nova-manage db sync
-    {%- if controller.version == "mitaka" or controller.version == "newton" %}
+    {%- if controller.version == "mitaka" or controller.version == "newton" or controller.version == "ocata" %}
     - nova-manage api_db sync
     {%- endif %}
+    {%- if controller.version == "ocata" %}
+    - 'su -s /bin/sh -c "nova-manage cell_v2 map_cell0" nova'
+    {%- endif %}
+    - nova-manage db sync
   - require:
     - file: /etc/nova/nova.conf
+
+{%- if controller.version == "ocata" %}
+
+nova_placement_package:
+  pkg.installed:
+  - name: nova-placement-api
+
+/etc/apache2/sites-available/nova-placement-api.conf:
+  file.managed:
+  - source: salt://nova/files/{{ controller.version }}/nova-placement-api.conf
+  - template: jinja
+  - require:
+    - pkg: nova_controller_packages
+    - pkg: nova_placement_package
+
+nova_cell_create:
+  cmd.run:
+  - name:
+    - 'su -s /bin/sh -c "nova-manage cell_v2 create_cell --name=cell1 --verbose" nova'
+  - unless: 'nova-manage cell_v2 list_cells | grep cell1'
+  - require:
+    - file: /etc/nova/nova.conf
+
+nova_apache_restart:
+  service.running:
+  - enable: true
+  - name: apache2
+  - require:
+    - cmd: nova_controller_syncdb
+  - watch:
+    - file: /etc/nova/nova.conf
+    - file: /etc/nova/api-paste.ini
+    - file: /etc/apache2/sites-available/nova-placement-api.conf
+
+{%- endif %}
 
 nova_controller_services:
   service.running:
