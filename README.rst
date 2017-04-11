@@ -1,14 +1,14 @@
 
-==============
-Nova
-==============
+============
+Nova Formula
+============
 
 OpenStack Nova provides a cloud computing fabric controller, supporting a wide
 variety of virtualization technologies, including KVM, Xen, LXC, VMware, and
 more. In addition to its native API, it includes compatibility with the
 commonly encountered Amazon EC2 and S3 APIs.
 
-Sample pillars
+Sample Pillars
 ==============
 
 Controller nodes
@@ -320,31 +320,6 @@ Hugepages mount point for libvirt.
         - path: /mnt/hugepages_1GB
         - path: /mnt/hugepages_2MB
 
-Documentation and Bugs
-============================
-
-To learn how to deploy OpenStack Salt, consult the documentation available
-online at:
-
-    https://wiki.openstack.org/wiki/OpenStackSalt
-
-In the unfortunate event that bugs are discovered, they should be reported to
-the appropriate bug tracker. If you obtained the software from a 3rd party
-operating system vendor, it is often wise to use their own bug tracker for
-reporting problems. In all other cases use the master OpenStack bug tracker,
-available at:
-
-    http://bugs.launchpad.net/openstack-salt
-
-Developers wishing to work on the OpenStack Salt project should always base
-their work on the latest formulas code, available from the master GIT
-repository at:
-
-    https://git.openstack.org/cgit/openstack/salt-formula-nova
-
-Developers should also join the discussion on the IRC list, at:
-
-    https://wiki.openstack.org/wiki/Meetings/openstack-salt
 
 Documentation and Bugs
 ======================
