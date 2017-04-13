@@ -67,6 +67,20 @@ def availability_zone_present(name=None, availability_zone=None, profile=None):
         return _already_exists(availability_zone, 'availabilty zone')
     return existing_availability_zones
 
+def aggregate_present(name=None, aggregate=None, profile=None):
+    '''
+    Ensures that the nova aggregate exists
+    '''
+    name = aggregate
+    aggregate_exists = __salt__['novang.aggregate_get'](name, profile)
+    if aggregate_exists == False:
+        item_created = __salt__['novang.aggregate_create'](name, aggregate, profile)
+        if bool(item_created):
+            return _created(aggregate, 'aggregate', item_created)
+    else:
+        return _already_exists(aggregate, 'aggregate')
+    return existing_aggregate
+
 
 def instance_present(name, flavor, image, networks, security_groups=None, profile=None, tenant_name=None):
     ret = {'name': name,

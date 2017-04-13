@@ -281,6 +281,21 @@ Availability zones
             - availability_zone_01
             - availability_zone_02
 
+
+
+Aggregates
+
+.. code-block:: yaml
+
+    nova:
+      client:
+        enabled: true
+        server:
+          identity:
+            aggregates:
+            - aggregate1
+            - aggregate2
+
 SR-IOV
 ------
 
