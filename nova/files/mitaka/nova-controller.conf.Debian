@@ -22,6 +22,9 @@ disk_allocation_ratio = {{ controller.disk_allocation_ratio }}
 scheduler_default_filters = {{ controller.scheduler_default_filters }}
 scheduler_available_filters = nova.scheduler.filters.all_filters
 scheduler_available_filters = nova.scheduler.filters.pci_passthrough_filter.PciPassthroughFilter
+{% for filter in controller.get('scheduler_custom_filters', []) %}
+scheduler_available_filters = {{ filter }}
+{% endif %}
 scheduler_driver = filter_scheduler
 allow_resize_to_same_host = True
 osapi_max_limit = {{ controller.osapi_max_limit|default('1000') }}

@@ -320,6 +320,21 @@ Hugepages mount point for libvirt.
         - path: /mnt/hugepages_1GB
         - path: /mnt/hugepages_2MB
 
+Custom Scheduler filters
+------------------------
+
+If you have a custom filter, that needs to be included in the scheduler, then you can include it like so:
+
+.. code-block:: yaml
+
+  nova:
+    controller:
+      scheduler_custom_filters:
+      - my_custom_driver.nova.scheduler.filters.my_custom_filter.MyCustomFilter
+
+      # Then add your custom filter on the end (make sure to include all other ones that you need as well)
+      scheduler_default_filters: "DifferentHostFilter,RetryFilter,AvailabilityZoneFilter,RamFilter,CoreFilter,DiskFilter,ComputeFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,ServerGroupAntiAffinityFilter,ServerGroupAffinityFilter,PciPassthroughFilter,MyCustomFilter"
+
 
 Documentation and Bugs
 ======================
