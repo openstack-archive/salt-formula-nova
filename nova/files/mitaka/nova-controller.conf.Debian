@@ -58,7 +58,6 @@ neutron_metadata_proxy_shared_secret={{ controller.metadata.password }}
 {%- endif %}
 
 allow_resize_to_same_host=True
-start_guests_on_host_boot=true
 
 rpc_cast_timeout = 30
 rpc_response_timeout = 3600

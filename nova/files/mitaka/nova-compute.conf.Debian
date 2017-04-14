@@ -56,7 +56,7 @@ report_interval = {{ compute.get('report_interval', '60') }}
 block_device_allocate_retries=600
 block_device_allocate_retries_interval=10
 
-resume_guests_state_on_host_boot = True
+resume_guests_state_on_host_boot = {{ compute.get('resume_guests_state_on_host_boot', True) }}
 service_down_time = 90
 
 {% if pillar.ceilometer is defined %}
@@ -71,8 +71,6 @@ notify_on_{{ key }} = {{ value }}
 {%- elif pillar.ceilometer is defined %}
 notify_on_state_change = vm_and_task_state
 {%- endif %}
-
-resume_guests_state_on_host_boot = {{ compute.get('resume_guests_state_on_host_boot', False) }}
 
 [oslo_concurrency]
 lock_path = /var/lib/nova/tmp

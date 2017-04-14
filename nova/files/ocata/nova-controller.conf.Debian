@@ -652,14 +652,6 @@ disk_allocation_ratio = {{ controller.disk_allocation_ratio }}
 #live_migration_retry_count=30
 
 #
-# This option specifies whether to start guests that were running before the
-# host rebooted. It ensures that all of the instances on a Nova compute node
-# resume their state each time the compute node boots or restarts.
-#  (boolean value)
-#resume_guests_state_on_host_boot=false
-resume_guests_state_on_host_boot=true
-
-#
 # Number of times to retry network allocation. It is required to attempt network
 # allocation retries if the virtual interface plug fails.
 #

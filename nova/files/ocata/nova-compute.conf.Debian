@@ -669,7 +669,7 @@ reserved_host_memory_mb = {{ compute.get('reserved_host_memory_mb', '512') }}
 # resume their state each time the compute node boots or restarts.
 #  (boolean value)
 #resume_guests_state_on_host_boot=false
-resume_guests_state_on_host_boot=true
+resume_guests_state_on_host_boot={{ compute.get('resume_guests_state_on_host_boot', True) }}
 
 #
 # Number of times to retry network allocation. It is required to attempt network
