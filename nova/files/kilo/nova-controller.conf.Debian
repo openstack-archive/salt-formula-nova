@@ -72,7 +72,6 @@ firewall_driver = nova.virt.firewall.NoopFirewallDriver
 security_group_api = neutron
 
 rpc_backend = nova.rpc.impl_kombu
-start_guests_on_host_boot=truembu
 
 {%- if controller.cache is defined %}
 memcached_servers={%- for member in controller.cache.members %}{{ member.host }}:11211{% if not loop.last %},{% endif %}{%- endfor %}
@@ -103,7 +102,6 @@ neutron_metadata_proxy_shared_secret={{ controller.metadata.password }}
 {%- endif %}
 
 allow_resize_to_same_host=True
-start_guests_on_host_boot=true
 
 rpc_cast_timeout = 30
 rpc_conn_pool_size = 300

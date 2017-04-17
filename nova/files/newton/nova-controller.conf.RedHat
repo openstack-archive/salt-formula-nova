@@ -62,8 +62,6 @@ metadata_workers = {{ controller.workers }}
 
 
 allow_resize_to_same_host=True
-start_guests_on_host_boot=true
-resume_guests_state_on_host_boot=true
 
 rpc_cast_timeout = 30
 rpc_response_timeout = 3600
