@@ -4694,6 +4694,9 @@ max_instances_per_host=50
 #available_filters=nova.scheduler.filters.all_filters
 available_filters=nova.scheduler.filters.all_filters
 available_filters=nova.scheduler.filters.pci_passthrough_filter.PciPassthroughFilter
+{% for filter in controller.get('scheduler_custom_filters', []) %}
+scheduler_available_filters = {{ filter }}
+{% endfor %}
 
 #
 # Filters that the scheduler will use.
