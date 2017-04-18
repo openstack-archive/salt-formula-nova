@@ -120,8 +120,6 @@ nova_compute_services:
   - watch:
     - file: /etc/nova/nova.conf
 
-{%- if compute.availability_zone != None %}
-
 {%- set ident = compute.identity %}
 
 {%- if ident.get('api_version', '2') == '3' %}
@@ -138,12 +136,22 @@ nova_compute_services:
 
 {%- set identity_params = " --os-username="+ident.user+" --os-password="+ident.password+" --os-project-name="+ident.tenant+" --os-auth-url="+protocol+"://"+ident.host+":"+ident.port|string+"/"+version %}
 
+{%- if compute.availability_zone != None %}
+
 Add_compute_to_availability_zone_{{ compute.availability_zone }}:
   cmd.run:
   - name: "nova {{ identity_params }} aggregate-add-host {{ compute.availability_zone }} {{ pillar.linux.system.name }}"
   - unless: "nova {{ identity_params }} service-list | grep {{ compute.availability_zone }} | grep {{ pillar.linux.system.name }}"
 
 {%- endif %}
+
+{%- for aggregate in compute.aggregates %}
+Add_compute_to_aggregate_{{ aggregate }}:
+  cmd.run:
+  - name: "nova {{ identity_params }} aggregate-add-host {{ aggregate }} {{ pillar.linux.system.name }}"
+  - unless: "nova {{ identity_params }} aggregate-details {{ aggregate }} | grep {{ pillar.linux.system.name }}"
+
+{%- endfor %}
 
 {%- if compute.virtualization == 'kvm' %}
 

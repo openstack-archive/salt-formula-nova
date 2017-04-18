@@ -44,6 +44,17 @@ nova_availability_zone_{{ availability_zone_name }}:
 
 {%- endif %}
 
+{%- if identity.aggregates is defined %}
+
+{%- for aggregate_name in identity.aggregates %}
+nova_aggregate_{{ aggregate_name }}:
+  novang.aggregate_present:
+    - aggregate: {{ aggregate_name }}
+    - profile: {{ identity_name }}
+{%- endfor %}
+
+{%- endif %}
+
 {%- endfor %}
 
 {%- endif %}

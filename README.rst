@@ -131,6 +131,9 @@ Nova controller services on compute node
         enabled: true
         virtualization: kvm
         availability_zone: availability_zone_01
+        aggregates:
+        - hosts_with_fc
+        - hosts_with_ssd
         security_group: true
         resume_guests_state_on_host_boot: False
         bind:
@@ -280,6 +283,21 @@ Availability zones
             availability_zones:
             - availability_zone_01
             - availability_zone_02
+
+
+
+Aggregates
+
+.. code-block:: yaml
+
+    nova:
+      client:
+        enabled: true
+        server:
+          identity:
+            aggregates:
+            - aggregate1
+            - aggregate2
 
 SR-IOV
 ------

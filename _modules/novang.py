@@ -243,3 +243,44 @@ def availability_zone_create(name, availability_zone, profile=None):
         'Availability Zone': item.__getattr__('availability_zone'),
     }
     return ret
+
+def aggregate_list(profile=None):
+    '''
+    list existing aggregates
+    '''
+    connection_args = get_connection_args(profile)
+    conn = _auth(profile)
+    nt_ks = conn.compute_conn
+    ret = nt_ks.aggregates.list()
+    return ret
+
+
+def aggregate_get(name, profile=None):
+    '''
+    list existing aggregates
+    '''
+    connection_args = get_connection_args(profile)
+    conn = _auth(profile)
+    nt_ks = conn.compute_conn
+    aggregate_exists=False
+    items = aggregate_list(profile)
+    for p in items:
+        item = nt_ks.aggregates.get(p).__getattr__('name')
+        if item == name:
+            aggregate_exists = True
+    return aggregate_exists
+
+
+def aggregate_create(name, aggregate, profile=None):
+    '''
+    create aggregate
+    '''
+    connection_args = get_connection_args(profile)
+    conn = _auth(profile)
+    nt_ks = conn.compute_conn
+    item = nt_ks.aggregates.create(name, aggregate)
+    ret = {
+        'Id': item.__getattr__('id'),
+        'Aggregate Name': item.__getattr__('name'),
+    }
+    return ret
