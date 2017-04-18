@@ -24,7 +24,7 @@ scheduler_available_filters = nova.scheduler.filters.all_filters
 scheduler_available_filters = nova.scheduler.filters.pci_passthrough_filter.PciPassthroughFilter
 {% for filter in controller.get('scheduler_custom_filters', []) %}
 scheduler_available_filters = {{ filter }}
-{% endif %}
+{% endfor %}
 scheduler_driver = filter_scheduler
 scheduler_use_baremetal_filters = False
 allow_resize_to_same_host = True
