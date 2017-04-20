@@ -100,8 +100,7 @@ nova_placement_package:
 
 nova_cell_create:
   cmd.run:
-  - name:
-    - 'su -s /bin/sh -c "nova-manage cell_v2 create_cell --name=cell1 --verbose" nova'
+  - name: 'su -s /bin/sh -c "nova-manage cell_v2 create_cell --name=cell1 --verbose" nova'
   - unless: 'nova-manage cell_v2 list_cells | grep cell1'
   - require:
     - file: /etc/nova/nova.conf
