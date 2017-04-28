@@ -118,6 +118,21 @@ Enable auditing filter, ie: CADF
       ....
 
 
+Enable CORS parameters
+
+.. code-block:: yaml
+
+    nova:
+      controller:
+        cors:
+          allowed_origin: https:localhost.local,http:localhost.local
+          expose_headers: X-Auth-Token,X-Openstack-Request-Id,X-Subject-Token
+          allow_methods: GET,PUT,POST,DELETE,PATCH
+          allow_headers: X-Auth-Token,X-Openstack-Request-Id,X-Subject-Token
+          allow_credentials: True
+          max_age: 86400
+
+
 Compute nodes
 -------------
 
