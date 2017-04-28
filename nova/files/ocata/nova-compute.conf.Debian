@@ -6482,6 +6482,9 @@ live_migration_tunnelled=true
 #  (string value)
 # Allowed values: ignore, unmap
 #hw_disk_discard=<None>
+{%- if compute.libvirt.hw_disk_discard is defined %}
+hw_disk_discard={{ compute.libvirt.hw_disk_discard }}
+{%- endif %}
 
 # DEPRECATED: Allows image information files to be stored in non-standard
 # locations (string value)

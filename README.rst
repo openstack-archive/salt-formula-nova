@@ -353,6 +353,24 @@ If you have a custom filter, that needs to be included in the scheduler, then yo
       # Then add your custom filter on the end (make sure to include all other ones that you need as well)
       scheduler_default_filters: "DifferentHostFilter,RetryFilter,AvailabilityZoneFilter,RamFilter,CoreFilter,DiskFilter,ComputeFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,ServerGroupAntiAffinityFilter,ServerGroupAffinityFilter,PciPassthroughFilter,MyCustomFilter"
 
+Hardware Trip/Unmap Support
+---------------------------
+
+To enable TRIM support for ephemeral images (thru nova managed images), libvirt has this option.
+
+.. code-block:: yaml
+
+  nova:
+    compute:
+      libvirt:
+        hw_disk_discard: unmap
+
+In order to actually utilize this feature, the following metadata must be set on the image as well, so the SCSI unmap is supported.
+
+.. code-block:: bash
+
+  glance image-update --property hw_scsi_model=virtio-scsi <image>
+  glance image-update --property hw_disk_bus=scsi <image>
 
 Documentation and Bugs
 ======================

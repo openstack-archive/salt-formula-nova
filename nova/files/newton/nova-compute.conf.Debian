@@ -140,6 +140,9 @@ rbd_secret_uuid={{ compute.ceph.secret_uuid }}
 libvirt_inject_password=false
 libvirt_inject_key=false
 {%- endif %}
+{%- if compute.libvirt.hw_disk_discard is defined %}
+hw_disk_discard={{ compute.libvirt.hw_disk_discard }}
+{%- endif %}
 
 {%- if compute.get('libvirt', {}).uri is defined %}
 connection_uri={{ compute.libvirt.uri }}
