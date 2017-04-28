@@ -98,6 +98,11 @@ nova_placement_package:
     - pkg: nova_controller_packages
     - pkg: nova_placement_package
 
+placement_config:
+  file.symlink:
+     - name: /etc/apache2/sites-enabled/nova-placement-api.conf
+     - target: /etc/apache2/sites-available/nova-placement-api.conf
+
 nova_cell_create:
   cmd.run:
   - name: 'su -s /bin/sh -c "nova-manage cell_v2 create_cell --name=cell1 --verbose" nova'
