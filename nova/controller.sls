@@ -80,6 +80,9 @@ nova_controller_syncdb:
     {%- if controller.version == "ocata" %}
     - 'su -s /bin/sh -c "nova-manage cell_v2 map_cell0" nova'
     {%- endif %}
+    {%- if controller.version == "newton" or controller.version == "ocata" %}
+    - nova-manage db online_data_migrations
+    {%- endif %}
     - nova-manage db sync
   - require:
     - file: /etc/nova/nova.conf

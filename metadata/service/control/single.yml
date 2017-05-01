@@ -60,8 +60,9 @@ parameters:
         host: ${_param:single_address}
         port: 9696
         mtu: 1500
+        tenant: service
       metadata:
-        password: metadataPass
+        password: ${_param:metadata_password}
       cache:
         engine: memcached
         members:
