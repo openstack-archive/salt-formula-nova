@@ -399,6 +399,18 @@ In order to actually utilize this feature, the following metadata must be set on
   glance image-update --property hw_scsi_model=virtio-scsi <image>
   glance image-update --property hw_disk_bus=scsi <image>
 
+Scheduler Host Manager
+----------------------
+
+Specify a custom host manager.
+
+.. code-block:: yaml
+
+  nova:
+    controller:
+      scheduler_host_manager: ironic_host_manager
+
+
 Documentation and Bugs
 ======================
 
