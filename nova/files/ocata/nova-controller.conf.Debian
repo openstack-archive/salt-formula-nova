@@ -3042,7 +3042,7 @@ transport_url = rabbit://{% for member in controller.message_queue.members -%}
                          {%- endfor -%}
                              /{{ controller.message_queue.virtual_host }}
 {%- else %}
-transport_url = rabbit://{{ controller.message_queue.user }}:{{ controller.message_queue.password }}@{{ controller.message_queue.host }}:{{ controller.message_queue.port }}{{ controller.message_queue.virtual_host }}
+transport_url = rabbit://{{ controller.message_queue.user }}:{{ controller.message_queue.password }}@{{ controller.message_queue.host }}:{{ controller.message_queue.port }}/{{ controller.message_queue.virtual_host }}
 {%- endif %}
 
 # DEPRECATED: The messaging driver to use, defaults to rabbit. Other drivers
