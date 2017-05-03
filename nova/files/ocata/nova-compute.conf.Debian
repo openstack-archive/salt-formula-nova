@@ -8237,7 +8237,7 @@ project_name = {{ compute.identity.tenant }}
 username = {{ compute.identity.user }}
 password = {{ compute.identity.password }}
 auth_url=http://{{ compute.identity.host }}:35357/v3
-interface = internal
+os_interface = internal
 
 #
 # Region name of this node. This is used when picking the URL in the service

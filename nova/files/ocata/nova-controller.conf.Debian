@@ -8260,7 +8260,7 @@ project_name = {{ controller.identity.tenant }}
 username = {{ controller.identity.user }}
 password = {{ controller.identity.password }}
 auth_url=http://{{ controller.identity.host }}:35357/v3
-interface = internal
+os_interface = internal
 
 #
 # Endpoint interface for this node. This is used when picking the URL in the
