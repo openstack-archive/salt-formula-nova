@@ -433,6 +433,7 @@ aggregator:
       {%- for nova_service in ('cert', 'consoleauth', 'conductor', 'scheduler') %}
       - nova_{{ nova_service }}
       {%- endfor %}
+      - haproxy_nova-control
       dimension:
         cluster_name: nova-control
         nagios_host: 00-top-clusters
