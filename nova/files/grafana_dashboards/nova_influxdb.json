@@ -2501,7 +2501,7 @@
               ],
               "measurement": "openstack_nova_service",
               "policy": "default",
-              "query": "SELECT az as \"AZ\", state, last(value) FROM \"openstack_nova_service\" WHERE $timeFilter AND \"environment_label\" =~ /^$environment$/and service = 'compute' GROUP BY time($interval), hostname",
+              "query": "SELECT az as \"AZ\", state, last(value) FROM \"openstack_nova_service\" WHERE $timeFilter AND \"environment_label\" =~ /^$environment$/and service = 'compute' GROUP BY time($interval), hostname fill(null)",
               "rawQuery": true,
               "refId": "A",
               "resultFormat": "table",
@@ -2984,7 +2984,7 @@
               ],
               "measurement": "openstack_nova_service",
               "policy": "default",
-              "query": "SELECT az as \"AZ\", state, last(value) FROM \"openstack_nova_service\" WHERE $timeFilter AND \"environment_label\" =~ /^$environment$/and service = 'scheduler' GROUP BY time($interval), hostname",
+              "query": "SELECT az as \"AZ\", state, last(value) FROM \"openstack_nova_service\" WHERE $timeFilter AND \"environment_label\" =~ /^$environment$/and service = 'scheduler' GROUP BY time($interval), hostname fill(null)",
               "rawQuery": true,
               "refId": "A",
               "resultFormat": "table",
@@ -3467,7 +3467,7 @@
               ],
               "measurement": "openstack_nova_service",
               "policy": "default",
-              "query": "SELECT az as \"AZ\", state, last(value) FROM \"openstack_nova_service\" WHERE $timeFilter AND \"environment_label\" =~ /^$environment$/and service = 'conductor' GROUP BY time($interval), hostname",
+              "query": "SELECT az as \"AZ\", state, last(value) FROM \"openstack_nova_service\" WHERE $timeFilter AND \"environment_label\" =~ /^$environment$/and service = 'conductor' GROUP BY time($interval), hostname fill(null)",
               "rawQuery": true,
               "refId": "A",
               "resultFormat": "table",
@@ -3950,7 +3950,7 @@
               ],
               "measurement": "openstack_nova_service",
               "policy": "default",
-              "query": "SELECT az as \"AZ\", state, last(value) FROM \"openstack_nova_service\" WHERE $timeFilter AND \"environment_label\" =~ /^$environment$/and service = 'cert' GROUP BY time($interval), hostname",
+              "query": "SELECT az as \"AZ\", state, last(value) FROM \"openstack_nova_service\" WHERE $timeFilter AND \"environment_label\" =~ /^$environment$/and service = 'cert' GROUP BY time($interval), hostname fill(null)",
               "rawQuery": true,
               "refId": "A",
               "resultFormat": "table",
@@ -4433,7 +4433,7 @@
               ],
               "measurement": "openstack_nova_service",
               "policy": "default",
-              "query": "SELECT az as \"AZ\", state, last(value) FROM \"openstack_nova_service\" WHERE $timeFilter AND \"environment_label\" =~ /^$environment$/and service = 'consoleauth' GROUP BY time($interval), hostname",
+              "query": "SELECT az as \"AZ\", state, last(value) FROM \"openstack_nova_service\" WHERE $timeFilter AND \"environment_label\" =~ /^$environment$/and service = 'consoleauth' GROUP BY time($interval), hostname fill(null)",
               "rawQuery": true,
               "refId": "A",
               "resultFormat": "table",
@@ -4589,7 +4589,7 @@
           "valueMaps": [
             {
               "op": "=",
-              "text": "0",
+              "text": "N/A",
               "value": "null"
             }
           ],
@@ -4639,18 +4639,12 @@
                     "$interval"
                   ],
                   "type": "time"
-                },
-                {
-                  "params": [
-                    "0"
-                  ],
-                  "type": "fill"
                 }
               ],
               "groupByTags": [],
               "measurement": "openstack_nova_instances",
               "policy": "default",
-              "query": "SELECT max(\"value\") FROM \"openstack_nova_instances\" WHERE \"environment_label\" =~ /^$environment$/ AND \"state\" = 'active' AND $timeFilter GROUP BY time($interval) fill(0)",
+              "query": "SELECT max(\"value\") FROM \"openstack_nova_instances\" WHERE \"environment_label\" =~ /^$environment$/ AND \"state\" = 'active' AND $timeFilter GROUP BY time($interval)",
               "rawQuery": false,
               "refId": "A",
               "resultFormat": "time_series",
@@ -4832,7 +4826,7 @@
           "valueMaps": [
             {
               "op": "=",
-              "text": "0",
+              "text": "N/A",
               "value": "null"
             }
           ],
@@ -4881,18 +4875,12 @@
                     "$interval"
                   ],
                   "type": "time"
-                },
-                {
-                  "params": [
-                    "0"
-                  ],
-                  "type": "fill"
                 }
               ],
               "groupByTags": [],
               "measurement": "openstack_nova_instances",
               "policy": "default",
-              "query": "SELECT max(\"value\") FROM \"openstack_nova_instances\" WHERE \"environment_label\" =~ /^$environment$/ AND \"state\" = 'error' AND $timeFilter GROUP BY time($interval) fill(0)",
+              "query": "SELECT max(\"value\") FROM \"openstack_nova_instances\" WHERE \"environment_label\" =~ /^$environment$/ AND \"state\" = 'error' AND $timeFilter GROUP BY time($interval)",
               "rawQuery": false,
               "refId": "A",
               "resultFormat": "time_series",
@@ -5122,18 +5110,12 @@
                     "$interval"
                   ],
                   "type": "time"
-                },
-                {
-                  "params": [
-                    "0"
-                  ],
-                  "type": "fill"
                 }
               ],
               "groupByTags": [],
               "measurement": "openstack_nova_instance_creation_time",
               "policy": "default",
-              "query": "SELECT mean(\"value\") FROM \"openstack_nova_instance_creation_time\" WHERE \"environment_label\" =~ /^$environment$/ AND $timeFilter GROUP BY time($interval) fill(0)",
+              "query": "SELECT mean(\"value\") FROM \"openstack_nova_instance_creation_time\" WHERE \"environment_label\" =~ /^$environment$/ AND $timeFilter GROUP BY time($interval)",
               "rawQuery": false,
               "refId": "A",
               "resultFormat": "time_series",
@@ -5171,18 +5153,12 @@
                     "$interval"
                   ],
                   "type": "time"
-                },
-                {
-                  "params": [
-                    "0"
-                  ],
-                  "type": "fill"
                 }
               ],
               "groupByTags": [],
               "measurement": "openstack_nova_instance_creation_time",
               "policy": "default",
-              "query": "SELECT max(\"value\") FROM \"openstack_nova_instance_creation_time\" WHERE \"environment_label\" =~ /^$environment$/ AND $timeFilter GROUP BY time($interval) fill(0)",
+              "query": "SELECT max(\"value\") FROM \"openstack_nova_instance_creation_time\" WHERE \"environment_label\" =~ /^$environment$/ AND $timeFilter GROUP BY time($interval)",
               "rawQuery": false,
               "refId": "B",
               "resultFormat": "time_series",
@@ -5220,18 +5196,12 @@
                     "$interval"
                   ],
                   "type": "time"
-                },
-                {
-                  "params": [
-                    "0"
-                  ],
-                  "type": "fill"
                 }
               ],
               "groupByTags": [],
               "measurement": "openstack_nova_instance_creation_time",
               "policy": "default",
-              "query": "SELECT min(\"value\") FROM \"openstack_nova_instance_creation_time\" WHERE \"environment_label\" =~ /^$environment$/ AND $timeFilter GROUP BY time($interval) fill(0)",
+              "query": "SELECT min(\"value\") FROM \"openstack_nova_instance_creation_time\" WHERE \"environment_label\" =~ /^$environment$/ AND $timeFilter GROUP BY time($interval)",
               "rawQuery": false,
               "refId": "C",
               "resultFormat": "time_series",
