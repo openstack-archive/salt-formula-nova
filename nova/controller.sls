@@ -69,6 +69,30 @@ contrail_nova_packages:
   - require:
     - pkg: nova_controller_packages
 
+{%- for name, rule in controller.get('policy', {}).iteritems() %}
+
+{%- if rule != None %}
+rule_{{ name }}_present:
+  keystone_policy.rule_present:
+  - path: /etc/nova/policy.json
+  - name: {{ name }}
+  - rule: {{ rule }}
+  - require:
+    - pkg: nova_controller_packages
+
+{%- else %}
+
+rule_{{ name }}_absent:
+  keystone_policy.rule_absent:
+  - path: /etc/nova/policy.json
+  - name: {{ name }}
+  - require:
+    - pkg: nova_controller_packages
+
+{%- endif %}
+
+{%- endfor %}
+
 {%- if not grains.get('noservices', False) %}
 
 nova_controller_syncdb:
