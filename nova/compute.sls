@@ -36,9 +36,9 @@ group_libvirtd:
     - name: libvirtd
     - system: True
     - require_in:
-      - user: user_nova
+      - user: user_nova_compute
 
-user_nova:
+user_nova_compute:
   user.present:
   - name: nova
   - home: /var/lib/nova
@@ -61,13 +61,13 @@ user_nova:
     - file: /var/lib/nova/.ssh/id_rsa
     {%- endif %}
 
-group_nova:
+group_nova_compute:
   group.present:
     - name: nova
     - gid: 303
     - system: True
     - require_in:
-      - user: user_nova
+      - user: user_nova_compute
 {%- endif %}
 
 {%- if compute.user is defined %}
@@ -105,20 +105,20 @@ user_nova_bash:
 {%- endif %}
 
 {%- if pillar.nova.controller is not defined %}
-
 /etc/nova/nova.conf:
   file.managed:
   - source: salt://nova/files/{{ compute.version }}/nova-compute.conf.{{ grains.os_family }}
   - template: jinja
+  - watch_in:
+    - service: nova_compute_services
   - require:
     - pkg: nova_compute_packages
+{%- endif %}
 
 nova_compute_services:
   service.running:
   - enable: true
   - names: {{ compute.services }}
-  - watch:
-    - file: /etc/nova/nova.conf
 
 {%- set ident = compute.identity %}
 
@@ -245,8 +245,6 @@ virsh net-undefine default:
 /etc/init/libvirtd.override:
   file.managed:
   - contents: 'start on runlevel [2345]'
-{%- endif %}
-
 {%- endif %}
 
 {%- endif %}
