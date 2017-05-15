@@ -77,9 +77,6 @@ nova_controller_syncdb:
     {%- if controller.version == "mitaka" or controller.version == "newton" or controller.version == "ocata" %}
     - nova-manage api_db sync
     {%- endif %}
-    {%- if controller.version == "ocata" %}
-    - 'su -s /bin/sh -c "nova-manage cell_v2 map_cell0" nova'
-    {%- endif %}
     {%- if controller.version == "newton" or controller.version == "ocata" %}
     - nova-manage db online_data_migrations
     {%- endif %}
@@ -88,6 +85,12 @@ nova_controller_syncdb:
     - file: /etc/nova/nova.conf
 
 {%- if controller.version == "ocata" %}
+
+nova_controller_cell_syncdb:
+  cmd.run:
+  - name: 'su -s /bin/sh -c "nova-manage cell_v2 map_cell0" nova'
+  - require:
+    - cmd: nova_controller_syncdb
 
 nova_placement_package:
   pkg.installed:
