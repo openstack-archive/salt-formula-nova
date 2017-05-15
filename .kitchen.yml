@@ -29,8 +29,13 @@ provisioner:
         "*":
           - linux_repo_openstack
           - nova
+    nova:
+      controller:
+        version: <%= ENV['OS_VERSION'] || 'mitaka' %>
+      compute:
+        version: <%= ENV['OS_VERSION'] || 'mitaka' %>
   pillars-from-files:
-    linux_repo_openstack.sls: tests/pillar/repo_mcp_openstack.sls
+    linux_repo_openstack.sls: tests/pillar/repo_mcp_openstack_<%= ENV['OS_VERSION'] || 'mitaka' %>.sls
 
 verifier:
   name: inspec
