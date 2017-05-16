@@ -20,6 +20,7 @@ env:
   - PLATFORM=trevorj/salty-whales:trusty OS_VERSION=mitaka
   - PLATFORM=trevorj/salty-whales:xenial OS_VERSION=mitaka
   - PLATFORM=trevorj/salty-whales:xenial OS_VERSION=newton
+  - PLATFORM=trevorj/salty-whales:xenial OS_VERSION=ocata
 
 before_script:
   - set -o pipefail
