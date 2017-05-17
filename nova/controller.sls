@@ -92,9 +92,16 @@ nova_controller_cell_syncdb:
   - require:
     - cmd: nova_controller_syncdb
 
+nova_placement_service_mask:
+  file.symlink:
+   - name: /etc/systemd/system/nova-placement-api.service
+   - target: /dev/null
+
 nova_placement_package:
   pkg.installed:
   - name: nova-placement-api
+  - require:
+    - file: nova_placement_service_mask
 
 /etc/apache2/sites-available/nova-placement-api.conf:
   file.managed:
