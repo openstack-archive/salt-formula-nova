@@ -18,6 +18,9 @@ provisioner:
     - name: linux
       repo: git
       source: https://github.com/salt-formulas/salt-formula-linux
+    - name: keystone
+      repo: git
+      source: https://github.com/salt-formulas/salt-formula-keystone
   state_top:
     base:
       "*":

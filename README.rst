@@ -132,6 +132,18 @@ Enable CORS parameters
           allow_credentials: True
           max_age: 86400
 
+Configuration of policy.json file
+
+.. code-block:: yaml
+
+    nova:
+      controller:
+        ....
+        policy:
+          context_is_admin: 'role:admin or role:administrator'
+          'compute:create': 'rule:admin_or_owner'
+          # Add key without value to remove line from policy.json
+          'compute:create:attach_network':
 
 Compute nodes
 -------------

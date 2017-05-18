@@ -58,4 +58,8 @@ nova:
     audit:
       filter_factory: 'keystonemiddleware.audit:filter_factory'
       map_file: '/etc/pycadf/nova_api_audit_map.conf'
+    policy:
+      context_is_admin: 'role:admin or role:administrator'
+      'compute:create': 'rule:admin_or_owner'
+      'compute:create:attach_network':
 
