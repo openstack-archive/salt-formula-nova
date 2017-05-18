@@ -29,6 +29,8 @@ osapi_max_limit = {{ controller.osapi_max_limit|default('1000') }}
 
 allow_resize_to_same_host = True
 
+service_down_time = {{ controller.service_down_time|default('180') }}
+
 logdir=/var/log/nova
 iscsi_helper=tgtadm
 connection_type=libvirt

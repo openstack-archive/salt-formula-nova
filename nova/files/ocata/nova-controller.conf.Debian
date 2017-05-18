@@ -2603,7 +2603,7 @@ report_interval=10
 #
 # * report_interval (service_down_time should not be less than report_interval)
 #  (integer value)
-#service_down_time=60
+service_down_time = {{ controller.service_down_time|default('180') }}
 
 #
 # Enable periodic tasks.

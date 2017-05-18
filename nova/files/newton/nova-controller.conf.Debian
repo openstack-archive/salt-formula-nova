@@ -52,6 +52,8 @@ scheduler_host_subset_size=30
 my_ip={{ controller.bind.private_address }}
 fping_path=/usr/bin/fping
 
+service_down_time = {{ controller.service_down_time|default('180') }}
+
 
 use_neutron = True
 firewall_driver = nova.virt.firewall.NoopFirewallDriver

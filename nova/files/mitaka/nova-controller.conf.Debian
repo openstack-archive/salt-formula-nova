@@ -29,6 +29,9 @@ scheduler_driver = filter_scheduler
 allow_resize_to_same_host = True
 osapi_max_limit = {{ controller.osapi_max_limit|default('1000') }}
 
+service_down_time = {{ controller.service_down_time|default('180') }}
+
+
 iscsi_helper=tgtadm
 connection_type=libvirt
 root_helper=sudo nova-rootwrap /etc/nova/rootwrap.conf

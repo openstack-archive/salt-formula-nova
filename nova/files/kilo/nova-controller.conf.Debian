@@ -36,6 +36,8 @@ ec2_private_dns_show_ip=True
 api_paste_config=/etc/nova/api-paste.ini
 volumes_path=/var/lib/nova/volumes
 
+service_down_time = {{ controller.service_down_time|default('180') }}
+
 sql_connection = {{ controller.database.engine }}://{{ controller.database.user }}:{{ controller.database.password }}@{{ controller.database.host }}/{{ controller.database.name }}
 
 network_api_class = nova.network.neutronv2.api.API

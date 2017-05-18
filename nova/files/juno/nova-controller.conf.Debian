@@ -40,6 +40,8 @@ network_api_class = nova_contrail_vif.contrailvif.ContrailNetworkAPI
 network_api_class = nova.network.neutronv2.api.API
 {%- endif %}
 
+service_down_time = {{ controller.service_down_time|default('180') }}
+
 compute_driver = libvirt.LibvirtDriver
 libvirt_type=kvm
 rootwrap_config = /etc/nova/rootwrap.conf
