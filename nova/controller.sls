@@ -98,22 +98,45 @@ rule_{{ name }}_absent:
 nova_controller_syncdb:
   cmd.run:
   - names:
-    {%- if controller.version == "mitaka" or controller.version == "newton" or controller.version == "ocata" %}
-    - nova-manage api_db sync
-    {%- endif %}
-    {%- if controller.version == "newton" or controller.version == "ocata" %}
-    - nova-manage db online_data_migrations
-    {%- endif %}
     - nova-manage db sync
   - require:
     - file: /etc/nova/nova.conf
 
-{%- if controller.version == "ocata" %}
-
-nova_controller_cell_syncdb:
+{%- if controller.version in ["mitaka", "newton", "ocata"] %}
+nova_controller_sync_apidb:
   cmd.run:
-  - name: 'su -s /bin/sh -c "nova-manage cell_v2 map_cell0" nova'
+  - name: nova-manage api_db sync
   - require:
+    - file: /etc/nova/nova.conf
+  - require_in:
+    - cmd: nova_controller_syncdb
+{%- endif %}
+
+{%- if controller.version in ["newton", "ocata"] %}
+nova_controller_online_data_migrations:
+  cmd.run:
+  - name: nova-manage db online_data_migrations
+  - require:
+    - cmd: nova_controller_syncdb
+{%- endif %}
+
+{%- if controller.version in ["ocata"] %}
+
+nova_controller_map_cell0:
+  cmd.run:
+  - name: nova-manage cell_v2 map_cell0
+  - require:
+    - cmd: nova_controller_sync_apidb
+  - require_in:
+    - cmd: nova_controller_syncdb
+
+nova_cell1_create:
+  cmd.run:
+  - name: nova-manage cell_v2 create_cell --name=cell1
+  - unless: 'nova-manage cell_v2 list_cells | grep cell1'
+  - require:
+    - cmd: nova_controller_sync_apidb
+  - require_in:
     - cmd: nova_controller_syncdb
 
 nova_placement_service_mask:
@@ -139,13 +162,6 @@ placement_config:
   file.symlink:
      - name: /etc/apache2/sites-enabled/nova-placement-api.conf
      - target: /etc/apache2/sites-available/nova-placement-api.conf
-
-nova_cell_create:
-  cmd.run:
-  - name: 'su -s /bin/sh -c "nova-manage cell_v2 create_cell --name=cell1 --verbose" nova'
-  - unless: 'nova-manage cell_v2 list_cells | grep cell1'
-  - require:
-    - file: /etc/nova/nova.conf
 
 nova_apache_restart:
   service.running:
