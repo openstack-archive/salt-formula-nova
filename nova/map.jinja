@@ -79,3 +79,14 @@
         'heal_instance_info_cache_interval': '60',
     },
 }, merge=pillar.nova.get('compute', {})) %}
+
+
+
+{% set monitoring = salt['grains.filter_by']({
+    'default': {
+        'disk': {
+              'warn': '15%',
+              'crit': '5%',
+        },
+    },
+}, grain='os_family', merge=salt['pillar.get']('nova:monitoring')) %}
