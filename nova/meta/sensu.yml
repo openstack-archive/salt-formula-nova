@@ -1,5 +1,4 @@
-{%- from "nova/map.jinja" import controller with context %}
-{%- from "nova/map.jinja" import compute with context %}
+{%- from "nova/map.jinja" import controller,compute,monitoring with context %}
 {%- if pillar.nova.controller is defined %}
 {%- set region = controller.identity.region %}
 {%- endif %}
@@ -51,7 +50,7 @@ check:
     subscribers:
     - local-nova-compute
   local_linux_storage_nova_instances_usage:
-    command: "PATH=$PATH:/usr/lib64/nagios/plugins:/usr/lib/nagios/plugins check_disk -w 15% -c 5% -p /var/lib/nova/instances"
+    command: "PATH=$PATH:/usr/lib64/nagios/plugins:/usr/lib/nagios/plugins check_disk -w {{ monitoring.disk.warn }} -c {{ monitoring.disk.crit }} -p /var/lib/nova/instances"
     interval: 60
     occurrences: 1
     subscribers:
