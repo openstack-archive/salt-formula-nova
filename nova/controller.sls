@@ -95,30 +95,26 @@ rule_{{ name }}_absent:
 
 {%- if not grains.get('noservices', False) %}
 
-nova_controller_syncdb:
-  cmd.run:
-  - names:
-    - nova-manage db sync
-  - require:
-    - file: /etc/nova/nova.conf
-
 {%- if controller.version in ["mitaka", "newton", "ocata"] %}
 nova_controller_sync_apidb:
   cmd.run:
   - name: nova-manage api_db sync
   - require:
     - file: /etc/nova/nova.conf
-  - require_in:
-    - cmd: nova_controller_syncdb
 {%- endif %}
 
 {%- if controller.version in ["newton", "ocata"] %}
 nova_controller_online_data_migrations:
   cmd.run:
   - name: nova-manage db online_data_migrations
-  - require:
-    - cmd: nova_controller_syncdb
 {%- endif %}
+
+nova_controller_syncdb:
+  cmd.run:
+  - names:
+    - nova-manage db sync
+  - require:
+    - file: /etc/nova/nova.conf
 
 {%- if controller.version in ["ocata"] %}
 
