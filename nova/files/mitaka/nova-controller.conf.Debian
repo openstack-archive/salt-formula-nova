@@ -184,7 +184,7 @@ auth_type = password
 project_domain_name = default
 user_domain_name = default
 auth_url = http://{{ controller.identity.host }}:35357
-{% if pillar.neutron is defined %}
+{% if pillar.neutron is defined and pillar.neutron.server is defined %}
 password={{ pillar.neutron.server.identity.password }}
 project_name={{ pillar.neutron.server.identity.tenant }}
 username={{ pillar.neutron.server.identity.user }}
