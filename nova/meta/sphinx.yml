@@ -13,9 +13,11 @@ doc:
         virtualization:
           name: "Virtualization type"
           value: {{ compute.virtualization }}
+        {%- if compute.vncproxy_url is defined %}
         vncproxy_url:
           name: "VNC proxy URL"
           value: {{ compute.vncproxy_url }}
+        {%- endif %}
         {%- if compute.reserved_host_memory_mb is defined %}
         reserved_host_memory_mb:
           name: "Reserved Host Memmory"
@@ -27,9 +29,11 @@ doc:
         network_host:
           name: "Network service"
           value: {{ compute.network.host }}:{{ compute.network.port }}
+        {%- if compute.image is defined %}
         glance_host:
           name: "Image service"
           value: {{ compute.image.host }}:{{ compute.image.port }}
+        {%- endif %}
         message_queue_ip:
           name: "Message queue"
           value: {{ compute.message_queue.user }}@{{ compute.message_queue.host }}:{{ compute.message_queue.port }}{{ compute.message_queue.virtual_host }}

@@ -29,47 +29,6 @@ vm.swappiness:
     - service: nova_compute_services
 {%- endif %}
 
-{%- if not salt['user.info']('nova') %}
-# MOS9 libvirt fix to create group
-group_libvirtd:
-  group.present:
-    - name: libvirtd
-    - system: True
-    - require_in:
-      - user: user_nova_compute
-
-user_nova_compute:
-  user.present:
-  - name: nova
-  - home: /var/lib/nova
-  {%- if compute.user is defined %}
-  - shell: /bin/bash
-  {%- else %}
-  - shell: /bin/false
-  {%- endif %}
-  - uid: 303
-  - gid: 303
-  - system: True
-  - groups:
-    {%- if salt['group.info']('libvirtd') %}
-    - libvirtd
-    {%- endif %}
-    - nova
-  - require_in:
-    - pkg: nova_compute_packages
-    {%- if compute.user is defined %}
-    - file: /var/lib/nova/.ssh/id_rsa
-    {%- endif %}
-
-group_nova_compute:
-  group.present:
-    - name: nova
-    - gid: 303
-    - system: True
-    - require_in:
-      - user: user_nova_compute
-{%- endif %}
-
 {%- if compute.user is defined %}
 
 nova_auth_keys:
@@ -154,6 +113,47 @@ Add_compute_to_aggregate_{{ aggregate }}:
 {%- endfor %}
 
 {%- if compute.virtualization == 'kvm' %}
+
+{%- if not salt['user.info']('nova') %}
+# MOS9 libvirt fix to create group
+group_libvirtd:
+  group.present:
+    - name: libvirtd
+    - system: True
+    - require_in:
+      - user: user_nova_compute
+
+user_nova_compute:
+  user.present:
+  - name: nova
+  - home: /var/lib/nova
+  {%- if compute.user is defined %}
+  - shell: /bin/bash
+  {%- else %}
+  - shell: /bin/false
+  {%- endif %}
+  - uid: 303
+  - gid: 303
+  - system: True
+  - groups:
+    {%- if salt['group.info']('libvirtd') %}
+    - libvirtd
+    {%- endif %}
+    - nova
+  - require_in:
+    - pkg: nova_compute_packages
+    {%- if compute.user is defined %}
+    - file: /var/lib/nova/.ssh/id_rsa
+    {%- endif %}
+
+group_nova_compute:
+  group.present:
+    - name: nova
+    - gid: 303
+    - system: True
+    - require_in:
+      - user: user_nova_compute
+{%- endif %}
 
 {% if compute.ceph is defined %}
 
