@@ -1,0 +1,7 @@
+{%- from "nova/map.jinja" import controller with context %}
+{%- if controller is defined and controller.get('enabled', False) and controller.cpu_allocation_ratio is defined %}
+remote_agent:
+  input:
+    openstack:
+      cpu_ratio: "{{ controller.cpu_allocation_ratio }}"
+{%- endif %}
