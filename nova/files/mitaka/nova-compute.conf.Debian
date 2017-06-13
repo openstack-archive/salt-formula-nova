@@ -13,7 +13,6 @@ network_device_mtu=65000
 use_neutron = True
 config_drive_format=vfat
 force_config_drive=True
-allow_resize_to_same_host=True
 security_group_api=neutron
 vif_plugging_is_fatal=True
 vif_plugging_timeout=300
@@ -168,8 +167,7 @@ rabbit_retry_interval = 1
 rabbit_retry_backoff = 2
 
 [glance]
-api_servers={{ compute.image.host }}:9292
-host={{ compute.image.host }}
+api_servers=http://{{ compute.image.host }}:9292
 
 [neutron]
 username={{ compute.network.user }}
