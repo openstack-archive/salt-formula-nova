@@ -5878,7 +5878,7 @@ memcached_servers={%- for member in compute.cache.members %}{{ member.host }}:11
 #
 # From nova.conf
 #
-cpu_mode = host-passthrough
+cpu_mode = {{ compute.get('cpu_mode', 'host-passthrough') }}
 virt_type = kvm
 inject_partition=-2
 inject_password=True
