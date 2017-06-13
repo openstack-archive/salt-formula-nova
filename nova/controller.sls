@@ -93,15 +93,15 @@ rule_{{ name }}_absent:
 
 {%- endfor %}
 
-{%- if not grains.get('noservices', False) %}
-
 {%- if controller.version in ["mitaka", "newton", "ocata"] %}
 nova_controller_sync_apidb:
   cmd.run:
   - name: nova-manage api_db sync
+  {%- if grains.get('noservices') %}
+  - onlyif: /bin/false
+  {%- endif %}
   - require:
     - file: /etc/nova/nova.conf
-{%- endif %}
 
 {%- if controller.version in ["newton", "ocata"] %}
 nova_controller_online_data_migrations:
