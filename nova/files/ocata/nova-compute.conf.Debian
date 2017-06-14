@@ -165,7 +165,7 @@ rootwrap_config=/etc/nova/rootwrap.conf
 # * ``hyperv.HyperVDriver``
 #  (string value)
 #compute_driver=<None>
-compute_driver = libvirt.LibvirtDriver
+compute_driver = {{ compute.get('compute_driver', 'libvirt.LibvirtDriver') }}
 
 #
 # Allow destination machine to match source for resize. Useful when
@@ -382,7 +382,7 @@ vif_plugging_timeout=300
 # backing files will not be used.
 #  (boolean value)
 #use_cow_images=true
-{%- if compute.image.use_cow is defined %}
+{%- if compute.image is defined and compute.image.use_cow is defined %}
 use_cow_images = {{ compute.image.use_cow }}
 {%- endif %}
 
@@ -574,7 +574,11 @@ reserved_host_memory_mb = {{ compute.get('reserved_host_memory_mb', '512') }}
 # * Any valid positive integer or float value
 #  (floating point value)
 # Minimum value: 0
+{%- if compute.ram_allocation_ratio is defined %}
+ram_allocation_ratio = {{ compute.ram_allocation_ratio }}
+{%- else  %}
 #ram_allocation_ratio=0.0
+{%- endif %}
 
 #
 # This option helps you specify virtual disk to physical disk
@@ -1253,7 +1257,7 @@ block_device_allocate_retries_interval=10
 #  (string value)
 # Allowed values: iso9660, vfat
 #config_drive_format=iso9660
-config_drive_format=vfat
+config_drive_format={{ compute.get('config_drive_format', 'vfat') }}
 
 #
 # Force injection to take place on a config drive
@@ -5003,7 +5007,9 @@ catalog_info=volumev2:cinderv2:internalURL
 #   (i.e. "http://10.0.1.0:9292" or "https://my.glance.server/image").
 #  (list value)
 #api_servers=<None>
+{%- if compute.image is defined %}
 api_servers=http://{{ compute.image.host }}:9292
+{% endif %}
 
 #
 # Enable insecure SSL (https) requests to glance.
@@ -5454,6 +5460,7 @@ api_servers=http://{{ compute.image.host }}:9292
 #filesystems =
 
 
+{% if compute.ironic is defined -%}
 [ironic]
 #
 # Configuration options for Ironic driver (Bare Metal).
@@ -5471,7 +5478,7 @@ api_servers=http://{{ compute.image.host }}:9292
 #
 
 # URL override for the Ironic API endpoint. (string value)
-#api_endpoint=http://ironic.example.org:6385/
+api_endpoint=http://{{ compute.ironic.host }}:{{ compute.ironic.port }}
 
 #
 # The number of times to retry when a request conflicts.
@@ -5517,13 +5524,13 @@ api_servers=http://{{ compute.image.host }}:9292
 
 # Authentication type to load (string value)
 # Deprecated group/name - [ironic]/auth_plugin
-#auth_type=<None>
+auth_type={{ compute.ironic.auth_type }}
 
 # Config Section from which to load plugin specific options (string value)
 #auth_section=<None>
 
 # Authentication URL (string value)
-#auth_url=<None>
+auth_url=http://{{ compute.identity.host }}:{{ compute.identity.port }}/v3
 
 # Domain ID to scope to (string value)
 #domain_id=<None>
@@ -5535,13 +5542,13 @@ api_servers=http://{{ compute.image.host }}:9292
 #project_id=<None>
 
 # Project name to scope to (string value)
-#project_name=<None>
+project_name={{ compute.identity.tenant }}
 
 # Domain ID containing project (string value)
 #project_domain_id=<None>
 
 # Domain name containing project (string value)
-#project_domain_name=<None>
+project_domain_name={{ compute.ironic.project_domain_name }}
 
 # Trust ID (string value)
 #trust_id=<None>
@@ -5551,16 +5558,17 @@ api_servers=http://{{ compute.image.host }}:9292
 
 # Username (string value)
 # Deprecated group/name - [ironic]/user-name
-#username=<None>
+username={{ compute.ironic.user }}
 
 # User's domain id (string value)
 #user_domain_id=<None>
 
 # User's domain name (string value)
-#user_domain_name=<None>
+user_domain_name={{ compute.ironic.user_domain_name }}
 
 # User's password (string value)
-#password=<None>
+password={{ compute.ironic.password }}
+{%- endif %}
 
 
 [key_manager]
@@ -9036,7 +9044,9 @@ os_region_name = {{ compute.identity.region }}
 # * update html5proxy_base_url
 # * update server_proxyclient_address
 enabled = false
+{%- if compute.vncproxy_url is defined %}
 html5proxy_base_url = {{ compute.vncproxy_url }}/spice_auto.html
+{%- endif %}
 #
 # From nova.conf
 #
@@ -9817,10 +9827,16 @@ html5proxy_base_url = {{ compute.vncproxy_url }}/spice_auto.html
 # From nova.conf
 #
 enabled = true
+{%- if compute.vncproxy_url is defined %}
 novncproxy_base_url={{ compute.vncproxy_url }}/vnc_auto.html
+{%- endif %}
+{%- if compute.bind is defined and compute.bind.vnc_port is defined %}
 novncproxy_port={{ compute.bind.vnc_port }}
+{%- endif %}
 vncserver_listen=0.0.0.0
+{%- if compute.bind is defined and compute.bind.vnc_address is defined %}
 vncserver_proxyclient_address={{ compute.bind.vnc_address }}
+{%- endif %}
 keymap = {{ compute.get('vnc_keymap', 'en-us') }}
 
 #
