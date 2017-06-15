@@ -68,8 +68,6 @@ user_nova_bash:
   file.managed:
   - source: salt://nova/files/{{ compute.version }}/nova-compute.conf.{{ grains.os_family }}
   - template: jinja
-  - watch_in:
-    - service: nova_compute_services
   - require:
     - pkg: nova_compute_packages
 {%- endif %}
@@ -78,6 +76,8 @@ nova_compute_services:
   service.running:
   - enable: true
   - names: {{ compute.services }}
+  - watch:
+    - file: /etc/nova/nova.conf
 
 {%- set ident = compute.identity %}
 
