@@ -93,47 +93,16 @@ rule_{{ name }}_absent:
 
 {%- endfor %}
 
-{%- if controller.version in ["mitaka", "newton", "ocata"] %}
-nova_controller_sync_apidb:
-  cmd.run:
-  - name: nova-manage api_db sync
-  {%- if grains.get('noservices') %}
-  - onlyif: /bin/false
-  {%- endif %}
-  - require:
-    - file: /etc/nova/nova.conf
-
-{%- if controller.version in ["newton", "ocata"] %}
-nova_controller_online_data_migrations:
-  cmd.run:
-  - name: nova-manage db online_data_migrations
-{%- endif %}
-
-nova_controller_syncdb:
-  cmd.run:
-  - names:
-    - nova-manage db sync
-  - require:
-    - file: /etc/nova/nova.conf
-
 {%- if controller.version in ["ocata"] %}
 
 nova_controller_map_cell0:
   cmd.run:
   - name: nova-manage cell_v2 map_cell0
-  - require:
-    - cmd: nova_controller_sync_apidb
-  - require_in:
-    - cmd: nova_controller_syncdb
 
 nova_cell1_create:
   cmd.run:
   - name: nova-manage cell_v2 create_cell --name=cell1
   - unless: 'nova-manage cell_v2 list_cells | grep cell1'
-  - require:
-    - cmd: nova_controller_sync_apidb
-  - require_in:
-    - cmd: nova_controller_syncdb
 
 nova_placement_service_mask:
   file.symlink:
@@ -159,6 +128,53 @@ placement_config:
      - name: /etc/apache2/sites-enabled/nova-placement-api.conf
      - target: /etc/apache2/sites-available/nova-placement-api.conf
 
+nova_controller_discover_hosts:
+  cmd.run:
+  - name: nova-manage cell_v2 discover_hosts
+  - require:
+    - cmd: nova_controller_map_cell0
+    - cmd: nova_cell1_create
+
+nova_controller_map_instances:
+  novang.map_instances:
+  - name: 'cell1'
+  - require:
+    - cmd: nova_controller_discover_hosts
+    - pkg: nova_controller_packages
+
+{%- endif %}
+
+{%- if controller.version in ["mitaka", "newton", "ocata"] %}
+nova_controller_sync_apidb:
+  cmd.run:
+  - name: nova-manage api_db sync
+  {%- if grains.get('noservices') %}
+  - onlyif: /bin/false
+  {%- endif %}
+  - require:
+    - file: /etc/nova/nova.conf
+
+{%- endif %}
+
+nova_controller_syncdb:
+  cmd.run:
+  - names:
+    - nova-manage db sync
+  - require:
+    - file: /etc/nova/nova.conf
+
+{%- if controller.version in ["mitaka", "newton", "ocata"] %}
+
+nova_controller_online_data_migrations:
+  cmd.run:
+  - name: nova-manage db online_data_migrations
+  - require:
+    - cmd: nova_controller_syncdb
+
+{%- endif %}
+
+{%- if controller.version in ["ocata"] %}
+
 nova_apache_restart:
   service.running:
   - enable: true
@@ -181,8 +197,6 @@ nova_controller_services:
   - watch:
     - file: /etc/nova/nova.conf
     - file: /etc/nova/api-paste.ini
-
-{%- endif %}
 
 {%- if grains.get('virtual_subtype', None) == "Docker" %}
 

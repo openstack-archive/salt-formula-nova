@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
-Nova state that ensures that defined flavor is present
+Custom Nova state
 '''
 import logging
 import collections
@@ -12,7 +12,7 @@ def __virtual__():
     '''
     Only load if the nova module is in __salt__
     '''
-    return 'novang' if 'novang.flavor_list' in __salt__ else False
+    return 'novang'
 
 
 def flavor_present(name, flavor_id=0, ram=0, disk=0, vcpus=1, profile=None):
@@ -32,6 +32,28 @@ def flavor_present(name, flavor_id=0, ram=0, disk=0, vcpus=1, profile=None):
         __salt__['novang.flavor_create'](name, flavor_id, ram, disk, vcpus, profile)
         ret['comment'] = 'Flavor {0} has been created'.format(name)
         ret['changes']['Flavor'] = 'Created'
+    return ret
+
+
+def map_instances(name='cell1'):
+    '''
+    Ensures that the nova instances are mapped to cell
+    '''
+    ret = {'name': name,
+           'changes': {},
+           'result': False,
+           'comment': 'Cell "{0}" does not exists'.format(name)}
+    cell_uuid = __salt__['cmd.shell']('nova-manage cell_v2 list_cells 2>&- | grep ' + name + ' | tr -d \"\n\" | awk \'{print $4}\'')
+    if not cell_uuid:
+        try:
+            __salt__['cmd.shell']('nova-manage cell_v2 map_instances --cell_uuid ' + cell_uuid)
+            ret['result'] = True
+            ret['comment'] = 'Instances were mapped to cell named {0}'.format(name)
+            ret['changes']['Instances'] = 'Mapped to cell named {0}'.format(name)
+        except:
+            ret['result'] = False
+            ret['comment'] = 'Error while mapping instances to cell named {0}'.format(name)
+            ret['changes']['Instances'] = 'Failed to map to cell named {0}'.format(name)
     return ret
 
 
