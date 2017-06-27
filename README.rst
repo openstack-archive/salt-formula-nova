@@ -440,6 +440,21 @@ Configurable pillar data:
       workaround:
         disable_libvirt_livesnapshot: False
 
+Config drive options
+--------------------
+
+See example below on how to configure the options for the config drive.
+
+.. code-block:: yaml
+
+  nova:
+    compute:
+      config_drive:
+        forced: True  # Default: True
+        cdrom: True  # Default: False
+        format: iso9660  # Default: vfat
+        inject_password: False  # Default: False
+
 
 Documentation and Bugs
 ======================
