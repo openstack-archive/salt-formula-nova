@@ -12,7 +12,7 @@ def __virtual__():
     '''
     Only load if the nova module is in __salt__
     '''
-    return 'novang' if 'nova.flavor_list' in __salt__ else False
+    return 'novang' if 'novang.flavor_list' in __salt__ else False
 
 
 def flavor_present(name, flavor_id=0, ram=0, disk=0, vcpus=1, profile=None):
@@ -23,13 +23,13 @@ def flavor_present(name, flavor_id=0, ram=0, disk=0, vcpus=1, profile=None):
            'changes': {},
            'result': True,
            'comment': 'Flavor "{0}" already exists'.format(name)}
-    project = __salt__['nova.flavor_list'](profile)
+    project = __salt__['novang.flavor_list'](profile)
     if 'Error' in project:
         pass
     elif name in project:
         pass
     else:
-        __salt__['nova.flavor_create'](name, flavor_id, ram, disk, vcpus, profile)
+        __salt__['novang.flavor_create'](name, flavor_id, ram, disk, vcpus, profile)
         ret['comment'] = 'Flavor {0} has been created'.format(name)
         ret['changes']['Flavor'] = 'Created'
     return ret
@@ -92,7 +92,7 @@ def instance_present(name, flavor, image, networks, security_groups=None, profil
     existing_instances = __salt__['novang.server_list'](profile, tenant_name)
     if name in existing_instances:
         return ret
-    existing_flavors = __salt__['nova.flavor_list'](profile)
+    existing_flavors = __salt__['novang.flavor_list'](profile)
     if flavor in existing_flavors:
         flavor_id = existing_flavors[flavor]['id']
     else:
@@ -101,7 +101,7 @@ def instance_present(name, flavor, image, networks, security_groups=None, profil
                 'result': False,
                 'comment': 'Flavor "{0}" doesn\'t exists'.format(flavor)}
 
-    existing_image = __salt__['nova.image_list'](image, profile)
+    existing_image = __salt__['novang.image_list'](image, profile)
     if not existing_image:
         return {'name': name,
                 'changes': {},
@@ -181,3 +181,4 @@ def _no_change(name, resource, test=False):
         changes_dict['comment'] = \
             '{0} {1} is in correct state'.format(resource, name)
     return changes_dict
+
