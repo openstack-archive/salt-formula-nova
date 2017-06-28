@@ -493,6 +493,42 @@ def sanatize_novaclient(kwargs):
     return ret
 
 
+def _format_v2_endpoints(endpoints_v2, services):
+    catalog = []
+    for endpoint_v2 in endpoints_v2:
+        endpoints = []
+        endpoint = endpoint_v2.copy()
+        if 'internalurl' in endpoint:
+            internalurl = endpoint.pop('internalurl')
+            endpoint['internalURL'] = internalurl
+
+        if 'adminurl' in endpoint:
+            adminurl = endpoint.pop('adminurl')
+            endpoint['adminURL'] = adminurl
+
+        if 'publicurl' in endpoint:
+            publicurl = endpoint.pop('publicurl')
+            endpoint['publicURL'] = publicurl
+ 
+        etype = endpoint.pop('type', '')
+        ename = endpoint.pop('name', '')
+        if endpoint.get('service_id', None) and not etype and not ename:
+            service = [s for s in services if s.get('id', '') == endpoint.get('service_id')]
+            etype = service[0].get('type', '')
+            ename = service[0].get('name', '')
+
+        entry = {
+            'type': etype,
+            'name': ename,
+            'id': endpoint.pop('id'),
+            'region': endpoint.get('region'),
+            'endpoints': [endpoint]
+        }
+        catalog.append(entry)
+ 
+    return catalog
+
+
 # Function alias to not shadow built-ins
 class SaltNova(object):
     '''
@@ -582,9 +618,11 @@ class SaltNova(object):
             self._v3_setup(region_name)
         else:
             if OCATA:
-                msg = 'Method service_catalog is no longer present in python-novaclient >= 7.0.0'
-                raise Exception(msg)
-            self.catalog = conn.client.service_catalog.catalog['access']['serviceCatalog']
+                endpoints_v2 = conn.client.session.get('/endpoints', endpoint_filter={'service_type': 'identity', 'interface': 'admin'}).json().get('endpoints', [])
+                services = conn.client.session.get('/OS-KSADM/services', endpoint_filter={'service_type': 'identity', 'interface': 'admin'}).json().get('OS-KSADM:services', [])
+                self.catalog = _format_v2_endpoints(endpoints_v2, services)
+            else:
+                self.catalog = conn.client.service_catalog.catalog['access']['serviceCatalog']
             self._v2_setup(region_name)
 
     def _old_init(self, username, project_id, auth_url, region_name, password, os_auth_plugin, **kwargs):
@@ -675,7 +713,11 @@ class SaltNova(object):
                     [('region', region_name), ('interface', 'public')]
                 )['url']
 
-            self.volume_conn = client.Client(version=self.version, session=self.session, **self.client_kwargs)
+            if hasattr(self, 'session'):
+                self.volume_conn = client.Client(version=self.version, session=self.session, **self.client_kwargs)
+            else:
+                self.volume_conn = client.Client(**self.kwargs)
+
             if hasattr(self, 'extensions'):
                 self.expand_extensions()
         else:
@@ -704,7 +746,11 @@ class SaltNova(object):
                     region_name
                 )['publicURL']
 
-            self.volume_conn = client.Client(**self.kwargs)
+            if hasattr(self, 'session'):
+                self.volume_conn = client.Client(version=self.version, session=self.session, **self.client_kwargs)
+            else:
+                self.volume_conn = client.Client(**self.kwargs)
+
             if hasattr(self, 'extensions'):
                 self.expand_extensions()
         else:
