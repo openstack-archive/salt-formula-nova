@@ -11,4 +11,5 @@ agent:
     http_response:
       nova-api:
         address: "http://{{ controller.bind.private_address|replace('0.0.0.0', '127.0.0.1') }}:8774/"
+        expected_code: 200
 {%- endif %}
