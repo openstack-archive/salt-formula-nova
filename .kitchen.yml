@@ -32,11 +32,7 @@ provisioner:
         "*":
           - linux_repo_openstack
           - nova
-    nova:
-      controller:
-        version: <%= ENV['OS_VERSION'] || 'mitaka' %>
-      compute:
-        version: <%= ENV['OS_VERSION'] || 'mitaka' %>
+          - release
   pillars-from-files:
     linux_repo_openstack.sls: tests/pillar/repo_mcp_openstack_<%= ENV['OS_VERSION'] || 'mitaka' %>.sls
 
@@ -56,10 +52,20 @@ suites:
     provisioner:
       pillars-from-files:
         nova.sls: tests/pillar/compute_cluster.sls
+      pillars:
+        release.sls:
+          nova:
+            compute:
+              version: <%= ENV['OS_VERSION'] || 'mitaka' %>
 
   - name: control_cluster
     provisioner:
       pillars-from-files:
         nova.sls: tests/pillar/control_cluster.sls
+      pillars:
+        release.sls:
+          nova:
+            controller:
+              version: <%= ENV['OS_VERSION'] || 'mitaka' %>
 
 # vim: ft=yaml sw=2 ts=2 sts=2 tw=125

@@ -1,5 +1,6 @@
 {%- from "nova/map.jinja" import compute with context %}
-{%- if compute.enabled %}
+
+{%- if compute.get('enabled') %}
 
 nova_compute_packages:
   pkg.installed:
@@ -63,7 +64,7 @@ user_nova_bash:
 
 {%- endif %}
 
-{%- if pillar.nova.controller is not defined %}
+{%- if not pillar.nova.get('controller',{}).get('enabled') %}
 /etc/nova/nova.conf:
   file.managed:
   - source: salt://nova/files/{{ compute.version }}/nova-compute.conf.{{ grains.os_family }}

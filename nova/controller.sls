@@ -1,6 +1,6 @@
 {% from "nova/map.jinja" import controller with context %}
 
-{%- if controller.enabled %}
+{%- if controller.get('enabled') %}
 
 {%- if grains.os_family == 'Debian' %}
 debconf-set-prerequisite:
@@ -69,6 +69,20 @@ contrail_nova_packages:
   - require:
     - pkg: nova_controller_packages
 
+{% if controller.get('policy', {}) and controller.version not in ['liberty', 'mitaka', 'newton'] %}
+{# nova no longer ships with a default policy.json #}
+
+/etc/nova/policy.json:
+  file.managed:
+    - contents: '{}'
+    - replace: False
+    - user: nova
+    - group: nova
+    - require:
+      - pkg: nova_controller_packages
+
+{% endif %}
+
 {%- for name, rule in controller.get('policy', {}).iteritems() %}
 
 {%- if rule != None %}
@@ -79,6 +93,9 @@ rule_{{ name }}_present:
   - rule: {{ rule }}
   - require:
     - pkg: nova_controller_packages
+    {% if controller.version not in ['liberty', 'mitaka', 'newton'] %}
+    - file: /etc/nova/policy.json
+    {% endif%}
 
 {%- else %}
 
@@ -88,6 +105,9 @@ rule_{{ name }}_absent:
   - name: {{ name }}
   - require:
     - pkg: nova_controller_packages
+    {% if controller.version not in ['liberty', 'mitaka', 'newton'] %}
+    - file: /etc/nova/policy.json
+    {% endif%}
 
 {%- endif %}
 
@@ -120,10 +140,16 @@ nova_controller_db_sync_version_334:
 nova_controller_map_cell0:
   cmd.run:
   - name: nova-manage cell_v2 map_cell0
+  {%- if grains.get('noservices') %}
+  - onlyif: /bin/false
+  {%- endif %}
 
 nova_cell1_create:
   cmd.run:
   - name: nova-manage cell_v2 create_cell --name=cell1
+  {%- if grains.get('noservices') %}
+  - onlyif: /bin/false
+  {%- endif %}
   - unless: 'nova-manage cell_v2 list_cells | grep cell1'
 
 nova_placement_service_mask:
@@ -153,6 +179,9 @@ placement_config:
 nova_controller_discover_hosts:
   cmd.run:
   - name: nova-manage cell_v2 discover_hosts
+  {%- if grains.get('noservices') %}
+  - onlyif: /bin/false
+  {%- endif %}
   - require:
     - cmd: nova_controller_map_cell0
     - cmd: nova_cell1_create
@@ -160,6 +189,9 @@ nova_controller_discover_hosts:
 nova_controller_map_instances:
   novang.map_instances:
   - name: 'cell1'
+  {%- if grains.get('noservices') %}
+  - onlyif: /bin/false
+  {%- endif %}
   - require:
     - cmd: nova_controller_discover_hosts
     - pkg: nova_controller_packages
@@ -182,6 +214,9 @@ nova_controller_syncdb:
   cmd.run:
   - names:
     - nova-manage db sync
+  {%- if grains.get('noservices') %}
+  - onlyif: /bin/false
+  {%- endif %}
   - require:
     - file: /etc/nova/nova.conf
 
@@ -190,6 +225,9 @@ nova_controller_syncdb:
 nova_controller_online_data_migrations:
   cmd.run:
   - name: nova-manage db online_data_migrations
+  {%- if grains.get('noservices') %}
+  - onlyif: /bin/false
+  {%- endif %}
   - require:
     - cmd: nova_controller_syncdb
 
@@ -201,6 +239,9 @@ nova_apache_restart:
   service.running:
   - enable: true
   - name: apache2
+  {%- if grains.get('noservices') %}
+  - onlyif: /bin/false
+  {%- endif %}
   - require:
     - cmd: nova_controller_syncdb
   - watch:
@@ -214,6 +255,9 @@ nova_controller_services:
   service.running:
   - enable: true
   - names: {{ controller.services }}
+  {%- if grains.get('noservices') %}
+  - onlyif: /bin/false
+  {%- endif %}
   - require:
     - cmd: nova_controller_syncdb
   - watch:
