@@ -44,7 +44,7 @@ def map_instances(name='cell1'):
            'result': False,
            'comment': 'Cell "{0}" does not exists'.format(name)}
     cell_uuid = __salt__['cmd.shell']('nova-manage cell_v2 list_cells 2>&- | grep ' + name + ' | tr -d \"\n\" | awk \'{print $4}\'')
-    if not cell_uuid:
+    if cell_uuid:
         try:
             __salt__['cmd.shell']('nova-manage cell_v2 map_instances --cell_uuid ' + cell_uuid)
             ret['result'] = True
