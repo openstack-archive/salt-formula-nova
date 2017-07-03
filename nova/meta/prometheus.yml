@@ -20,6 +20,156 @@ server:
         summary: "Endpoint check for '{{ $labels.service }}' is down"
         description: >-
             Endpoint check for '{{ $labels.service }}' is down for 2 minutes
+    NovaSomeServicesDown:
+      if: >-
+        openstack_nova_services{state="down",service=~"nova-cert|nova-conductor|nova-consoleauth|nova-scheduler"} > 0 and ignoring(state) openstack_nova_services{state="up",service=~"nova-cert|nova-conductor|nova-consoleauth|nova-scheduler"} >= 2
+      for: 2m
+      labels:
+        severity: warning
+        service: "{{ $labels.service }}"
+      annotations:
+        summary: "Some {{ $labels.service }} services down"
+        description: >-
+            {{ $value }} '{{ $labels.service }}' service(s) is/are down for 2 minutes
+    NovaOnlyOneServiceUp:
+      if: >-
+        openstack_nova_services{state="up",service=~"nova-cert|nova-conductor|nova-consoleauth|nova-scheduler"} == 1 and ignoring(state) openstack_nova_services{state=~"down|disabled",service=~"nova-cert|nova-conductor|nova-consoleauth|nova-scheduler"} > 0
+      for: 2m
+      labels:
+        severity: critical
+        service: "{{ $labels.service }}"
+      annotations:
+        summary: "Only one {{ $labels.service }} service up"
+        description: >-
+            Only one '{{ $labels.service }}' service is up for 2 minutes
+    NovaAllServicesDown:
+      if: >-
+        openstack_nova_services{state="up",service=~"nova-cert|nova-conductor|nova-consoleauth|nova-scheduler"} == 0
+      for: 2m
+      labels:
+        severity: down
+        service: "{{ $labels.service }}"
+      annotations:
+        summary: "All {{ $labels.service }} services down"
+        description: >-
+            All '{{ $labels.service }}' services are down for 2 minutes
+    NovaSomeComputesDown:
+      if: >-
+        openstack_nova_services{state="down",service=~"nova-compute"} > 0
+      for: 2m
+      labels:
+        severity: warning
+        service: "{{ $labels.service }}"
+      annotations:
+        summary: "Some {{ $labels.service }} services down"
+        description: >-
+            {{ $value }} '{{ $labels.service }}' service(s) is/are down for 2 minutes
+    NovaMajorityComputesDown:
+      if: >-
+        openstack_nova_services_percent{state="down",service=~"nova-compute"} > 50
+      for: 2m
+      labels:
+        severity: critical
+        service: "{{ $labels.service }}"
+      annotations:
+        summary: "Only one {{ $labels.service }} service up"
+        description: >-
+            Only one '{{ $labels.service }}' service is up for 2 minutes
+    NovaAllComputesDown:
+      if: >-
+        openstack_nova_services{state="up",service=~"nova-compute"} == 0
+      for: 2m
+      labels:
+        severity: down
+        service: "{{ $labels.service }}"
+      annotations:
+        summary: "All {{ $labels.service }} services down"
+        description: >-
+            All '{{ $labels.service }}' services are down for 2 minutes
+    NovaTotalFreeVCPUsLow:
+      if: >-
+        (100.0 * openstack_nova_total_free_vcpus) / (openstack_nova_total_free_vcpus + openstack_nova_total_used_vcpus) < 10.0
+      for: 1m
+      labels:
+        severity: warning
+      annotations:
+        summary: "VCPU low limit for new instances"
+        description: >-
+            VPCU low limit for 1 minutes
+    NovaTotalFreeMemoryLow:
+      if: >-
+        (100.0 * openstack_nova_total_free_ram) / (openstack_nova_total_free_ram + openstack_nova_total_used_ram) < 10.0
+      for: 1m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Memory low limit for new instances"
+        description: >-
+            Memory low limit for 1 minutes
+    NovaTotalFreeVCPUsShortage:
+      if: >-
+        (100.0 * openstack_nova_total_free_vcpus) / (openstack_nova_total_free_vcpus + openstack_nova_total_used_vcpus) < 2.0
+      for: 1m
+      labels:
+        severity: critical
+      annotations:
+        summary: "VCPU shortage for new instances"
+        description: >-
+            VPCU shortage for 1 minutes
+    NovaTotalFreeMemoryShortage:
+      if: >-
+        (100.0 * openstack_nova_total_free_ram) / (openstack_nova_total_free_ram + openstack_nova_total_used_ram) < 2.0
+      for: 1m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Memory shortage for new instances"
+        description: >-
+            Memory shortage for 1 minutes
+    NovaAggregatesFreeVCPUsLow:
+      if: >-
+        (100.0 * openstack_nova_aggregate_free_vcpus) / (openstack_nova_aggregate_free_vcpus + openstack_nova_aggregate_used_vcpus) < 10.0
+      for: 1m
+      labels:
+        severity: warning
+        aggregate: "{{ $labels.aggregate }}"
+      annotations:
+        summary: "VCPU low limit for new instances on aggregate {{ $labels.aggregate }}"
+        description: >-
+            VPCU low limit for 1 minutes on aggregate {{ $labels.aggregate }}
+    NovaAggregatesFreeMemoryLow:
+      if: >-
+        (100.0 * openstack_nova_aggregate_free_ram) / (openstack_nova_aggregate_free_ram + openstack_nova_aggregate_used_ram) < 10.0
+      for: 1m
+      labels:
+        severity: warning
+        aggregate: "{{ $labels.aggregate }}"
+      annotations:
+        summary: "Memory low limit for new instances on aggregate {{ $labels.aggregate }}"
+        description: >-
+            Memory low limit for 1 minutes on aggregate {{ $labels.aggregate }}
+    NovaAggregatesFreeVCPUsShortage:
+      if: >-
+        (100.0 * openstack_nova_aggregate_free_vcpus) / (openstack_nova_aggregate_free_vcpus + openstack_nova_aggregate_used_vcpus) < 2.0
+      for: 1m
+      labels:
+        severity: critical
+        aggregate: "{{ $labels.aggregate }}"
+      annotations:
+        summary: "VCPU shortage for new instances on aggregate {{ $labels.aggregate }}"
+        description: >-
+            VPCU shortage for 1 minutes on aggregate {{ $labels.aggregate }}
+    NovaAggregatesFreeMemoryShortage:
+      if: >-
+        (100.0 * openstack_nova_aggregate_free_ram) / (openstack_nova_aggregate_free_ram + openstack_nova_aggregate_used_ram) < 2.0
+      for: 1m
+      labels:
+        severity: critical
+        aggregate: "{{ $labels.aggregate }}"
+      annotations:
+        summary: "Memory shortage for new instances on aggregate {{ $labels.aggregate }}"
+        description: >-
+            Memory shortage for 1 minutes on aggregate {{ $labels.aggregate }}
 {%- endraw %}
 {%- endif %}
     NovaErrorLogsTooHigh:
@@ -35,6 +185,19 @@ server:
         description: 'The rate of errors in {{ $labels.service }} logs over the last 5 minutes is too high on node {{ $labels.host }} (current value={{ $value }}, threshold={%- endraw %}{{ log_threshold }}).'
 
 {%- if is_compute %}
+{%- raw %}
+    NovaLibvirtDown:
+      if: >-
+        max(libvirt_up) by (host) == 0
+      for: 2m
+      labels:
+        severity: down
+        service: "libvirt"
+      annotations:
+        summary: "libvirt check on '{{ $labels.host }}' is down"
+        description: >-
+            libvirt check on '{{ $labels.host }}' is down for 2 minutes
+{%- endraw %}
 {%- from "prometheus/map.jinja" import exporters with context %}
 {%- if exporters %}
   target:
