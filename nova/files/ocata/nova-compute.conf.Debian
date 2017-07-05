@@ -646,6 +646,7 @@ ram_allocation_ratio = {{ compute.ram_allocation_ratio }}
 #   Any string representing directory path.
 #  (string value)
 #instances_path=$state_path/instances
+instances_path = {{ compute.instances_path }}
 
 #
 # This option enables periodic compute.instance.exists notifications. Each

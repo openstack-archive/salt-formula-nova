@@ -273,6 +273,25 @@ Nova with ephemeral configured with Ceph
 Client role
 -----------
 
+Nova configured with NFS
+
+.. code-block:: yaml
+
+    nova:
+      compute:
+        instances_path: /mnt/nova/instances
+
+    linux:
+      storage:
+        enabled: true
+        mount:
+          nfs_nova:
+            enabled: true
+            path: ${nova:compute:instances_path}
+            device: 172.31.35.145:/data
+            file_system: nfs
+            opts: rw,vers=3
+
 Nova flavors
 
 .. code-block:: yaml

@@ -96,6 +96,8 @@ notify_on_state_change = vm_and_task_state
 
 {% endif %}
 
+instances_path = {{ compute.instances_path }}
+
 {%- if compute.notification is defined %}
 notification_driver = {{ compute.notification.driver }}
 

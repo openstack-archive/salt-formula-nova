@@ -107,6 +107,8 @@ notification_driver = messagingv2
 
 {% endif %}
 
+instances_path = {{ compute.instances_path }}
+
 {%- if compute.notification is defined %}
 notification_driver = {{ compute.notification.driver }}
 
