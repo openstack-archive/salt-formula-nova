@@ -30,8 +30,9 @@ user_nova:
   - name: nova
   - home: /var/lib/nova
   - shell: /bin/false
-  - uid: 303
-  - gid: 303
+  {# note: nova uid/gid values would not be evaluated after user is created. #}
+  - uid: {{ controller.get('nova_uid', 303) }}
+  - gid: {{ controller.get('nova_gid', 303) }}
   - system: True
   - require_in:
     - pkg: nova_controller_packages
@@ -39,7 +40,8 @@ user_nova:
 group_nova:
   group.present:
     - name: nova
-    - gid: 303
+    {# note: nova gid value would not be evaluated after user is created. #}
+    - gid: {{ controller.get('nova_gid', 303) }}
     - system: True
     - require_in:
       - user: user_nova
