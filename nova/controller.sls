@@ -95,6 +95,28 @@ rule_{{ name }}_absent:
 
 {%- if controller.version in ["ocata"] %}
 
+{#- the following api_db sync --version 20 happens only if the current api_db version is < 20 #}
+
+nova_controller_api_db_sync_version_20:
+  novang.api_db_version_present:
+  - version: "20"
+  {%- if grains.get('noservices') %}
+  - onlyif: /bin/false
+  {%- endif %}
+  - require:
+    - file: /etc/nova/nova.conf
+
+{#- the following db sync --version 334 happens only if the current db version is < 334 #}
+
+nova_controller_db_sync_version_334:
+  novang.db_version_present:
+  - version: "334"
+  {%- if grains.get('noservices') %}
+  - onlyif: /bin/false
+  {%- endif %}
+  - require:
+    - file: /etc/nova/nova.conf
+
 nova_controller_map_cell0:
   cmd.run:
   - name: nova-manage cell_v2 map_cell0

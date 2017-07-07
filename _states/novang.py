@@ -57,6 +57,62 @@ def map_instances(name='cell1'):
     return ret
 
 
+def api_db_version_present(name=None, version="20"):
+    '''
+    Ensures that specific api_db version is present
+    '''
+    ret = {'name': 'api_db --version',
+           'changes': {},
+           'result': True,
+           'comment': 'Current Api_db version is not < than "{0}".'.format(version)}
+    api_db_version = __salt__['cmd.shell']('nova-manage api_db version 2>/dev/null')
+    try:
+        api_db_version = int(api_db_version)
+    except:
+        # nova is not installed
+        ret = _no_change('api_db --version', None, test=True)
+        return ret
+    if api_db_version < version:
+        try:
+            __salt__['cmd.shell']('nova-manage api_db sync --version ' + version)
+            ret['result'] = True
+            ret['comment'] = 'Nova-manage api_db sync --version {0} was successfuly executed'.format(version)
+            ret['changes']['api_db'] = 'api_db sync --version {0}'.format(version)
+        except:
+            ret['result'] = False
+            ret['comment'] = 'Error while executing nova-manage api_db sync --version {0}'.format(version)
+            ret['changes']['api_db'] = 'Failed to execute api_db sync --version {0}'.format(version)
+    return ret
+
+
+def db_version_present(name=None, version="334"):
+    '''
+    Ensures that specific api_db version is present
+    '''
+    ret = {'name': 'db --version',
+           'changes': {},
+           'result': True,
+           'comment': 'Current db version is not < than "{0}".'.format(version)}
+    db_version = __salt__['cmd.shell']('nova-manage db version 2>/dev/null')
+    try:
+        db_version = int(db_version)
+    except:
+        # nova is not installed
+        ret = _no_change('db --version', None, test=True)
+        return ret
+
+    if db_version < version:
+        try:
+            __salt__['cmd.shell']('nova-manage db sync --version ' + version)
+            ret['result'] = True
+            ret['comment'] = 'Nova-manage db sync --version {0} was successfuly executed'.format(version)
+            ret['changes']['db'] = 'db sync --version {0}'.format(version)
+        except:
+            ret['result'] = False
+            ret['comment'] = 'Error while executing nova-manage db sync --version {0}'.format(version)
+            ret['changes']['db'] = 'Failed to execute db sync --version {0}'.format(version)
+    return ret
+
 def quota_present(tenant_name, profile, name=None, **kwargs):
     '''
     Ensures that the nova quota exists
