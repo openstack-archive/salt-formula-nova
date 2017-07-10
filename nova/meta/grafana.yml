@@ -1,11 +1,22 @@
 dashboard:
-  nova:
+  nova_prometheus:
+    datasource: prometheus
+    format: json
+    template: nova/files/grafana_dashboards/nova_prometheus.json
+  hypervisor_prometheus:
+    datasource: prometheus
+    format: json
+    template: nova/files/grafana_dashboards/hypervisor_prometheus.json
+  nova_influxdb:
+    datasource: influxdb
     format: json
     template: nova/files/grafana_dashboards/nova_influxdb.json
-  hypervisor:
+  hypervisor_influxdb:
+    datasource: influxdb
     format: json
     template: nova/files/grafana_dashboards/hypervisor_influxdb.json
   service_level:
+    datasource: influxdb
     row:
       nova-service-level:
         title: Nova Service Levels
@@ -67,6 +78,7 @@ dashboard:
                 rawQuery: true
                 query: SELECT count(max) FROM openstack_nova_http_response_times WHERE environment_label = '$environment' AND http_status = '5xx' AND $timeFilter
   main:
+    datasource: influxdb
     row:
       ost-control-plane:
         title: OpenStack Control Plane
