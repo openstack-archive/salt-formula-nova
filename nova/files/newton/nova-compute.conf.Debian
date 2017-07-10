@@ -201,3 +201,6 @@ username={{ compute.ironic.user }}
 user_domain_name={{ compute.ironic.get('user_domain_name', 'Default') }}
 password={{ compute.ironic.password }}
 {%- endif %}
+
+[workarounds]
+disable_libvirt_livesnapshot={{ compute.get('workarounds', {}).get('disable_libvirt_livesnapshot', True)|lower }}
