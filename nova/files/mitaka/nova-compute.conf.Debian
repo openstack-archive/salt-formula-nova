@@ -186,5 +186,7 @@ timeout=30
 os_region_name = {{ compute.identity.region }}
 catalog_info=volumev2:cinderv2:internalURL
 
+{%- if compute.workaround is defined %}
 [workarounds]
-disable_libvirt_livesnapshot={{ compute.get('workarounds', {}).get('disable_libvirt_livesnapshot', True)|lower }}
+disable_libvirt_livesnapshot={{ compute.workaround.get('disable_libvirt_livesnapshot', True)|lower }}
+{%- endif %}

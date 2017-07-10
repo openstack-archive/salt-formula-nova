@@ -437,7 +437,7 @@ Configurable pillar data:
 
   nova:
     compute:
-      workarounds:
+      workaround:
         disable_libvirt_livesnapshot: False
 
 

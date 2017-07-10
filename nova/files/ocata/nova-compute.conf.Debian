@@ -10059,7 +10059,7 @@ keymap = {{ compute.get('vnc_keymap', 'en-us') }}
 #   there is a new enough libvirt and the backend storage supports it)
 #  (boolean value)
 #disable_libvirt_livesnapshot=true
-disable_libvirt_livesnapshot={{ compute.get('workarounds', {}).get('disable_libvirt_livesnapshot', True)|lower }}
+disable_libvirt_livesnapshot={{ compute.get('workaround', {}).get('disable_libvirt_livesnapshot', True)|lower }}
 
 #
 # Enable handling of events emitted from compute drivers.
