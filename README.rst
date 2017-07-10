@@ -412,6 +412,34 @@ things. Defaults to host-passthrough.
     compute:
       cpu_mode: host-model
 
+Nova compute workarounds
+------------------------
+
+Live snapshotting is disabled by default in nova. To enable this, it needs a manual switch.
+
+From manual:
+
+.. code-block:: yaml
+
+  # When using libvirt 1.2.2 live snapshots fail intermittently under load
+  # (likely related to concurrent libvirt/qemu operations). This config
+  # option provides a mechanism to disable live snapshot, in favor of cold
+  # snapshot, while this is resolved. Cold snapshot causes an instance
+  # outage while the guest is going through the snapshotting process.
+  #
+  # For more information, refer to the bug report:
+  #
+  #   https://bugs.launchpad.net/nova/+bug/1334398
+
+Configurable pillar data:
+
+.. code-block:: yaml
+
+  nova:
+    compute:
+      workaround:
+        disable_libvirt_livesnapshot: False
+
 
 Documentation and Bugs
 ======================
