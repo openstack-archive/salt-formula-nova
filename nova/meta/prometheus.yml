@@ -33,4 +33,37 @@ server:
       annotations:
         summary: 'Too many errors in {{ $labels.service }} logs'
         description: 'The rate of errors in {{ $labels.service }} logs over the last 5 minutes is too high on node {{ $labels.host }} (current value={{ $value }}, threshold={%- endraw %}{{ log_threshold }}).'
+
+{%- if is_compute %}
+{%- from "prometheus/map.jinja" import exporters with context %}
+{%- if exporters %}
+  target:
+    static:
+  {%- for exporter, parameters in exporters.iteritems() %}
+    {%- if parameters.get('enabled', False) %}
+      {%- set host = grains.get('host', "") %}
+      {%- if parameters.bind is defined %}
+        {%- if parameters.bind.get('address', '0.0.0.0') == '0.0.0.0' %}
+          {%- set address = grains['fqdn_ip4'][0] %}
+        {%- else %}
+          {%- set address = parameters.bind.address %}
+        {%- endif %}
+      {%- endif %}
+      {%- if address is defined and parameters.bind.port is defined %}
+      {{ exporter }}_exporter:
+        endpoint:
+          - address: {{ address }}
+            port: {{ parameters.bind.port }}
+        {%- if host is defined and host|length > 0 %}
+        metric_relabel:
+          - regex: {{ address }}:{{ parameters.bind.port }}
+            replacement: {{ host }}
+            source_labels: "instance"
+            target_label: "host"
+        {%- endif %}
+      {%- endif %}
+    {%- endif %}
+  {%- endfor %}
+{%- endif %}
+{%- endif %}
 {%- endif %}
