@@ -10527,6 +10527,9 @@ api_paste_config=/etc/nova/api-paste.ini
 # Time in secs to wait for a block device to be created (integer value)
 # Minimum value: 1
 #block_device_creation_timeout=10
+{%- if controller.block_device_creation_timeout is defined %}
+block_device_creation_timeout = {{ controller.block_device_creation_timeout }}
+{%- endif  %}
 
 #
 # Maximum size in bytes of kernel or ramdisk images.
