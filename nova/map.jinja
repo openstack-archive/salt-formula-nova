@@ -38,50 +38,67 @@
     },
 }, merge=pillar.nova.get('client', {})) %}
 
-{% set compute = salt['grains.filter_by']({
-    'Debian': {
-        'pkgs': ['nova-common', 'nova-compute-kvm', 'python-novaclient', 'pm-utils', 'sysfsutils', 'sg3-utils', 'libvirt-bin', 'python-memcache', 'qemu-kvm','python-guestfs', 'gettext-base'],
-        'services': ['nova-compute'],
-        'libvirt_config': 'libvirtd.conf',
-        'libvirt_bin': '/etc/default/libvirt-bin',
-        'libvirt_service': 'libvirt-bin',
-        'bind': compute_bind_defaults,
-        'debug': false,
-        'libvirt': [],
-        'instances_path': '$state_path/instances',
-        'notification': false,
-        'availability_zone': None,
-        'aggregates': [],
-        'identity': {
-            'region': 'RegionOne'
-        },
-        'network': {
-            'region': 'RegionOne'
-        },
-        'heal_instance_info_cache_interval': '60',
-    },
-    'RedHat': {
-        'pkgs': ['openstack-nova-compute', 'python-novaclient', 'python-nova', 'sysfsutils', 'sg3_utils'],
-        'services': ['messagebus', 'openstack-nova-compute', 'libvirtd'],
-        'libvirt_config': 'libvirt.conf',
-        'libvirt_bin': '/etc/sysconfig/libvirtd',
-        'libvirt_service': 'libvirtd',
-        'bind': compute_bind_defaults,
-        'debug': false,
-        'libvirt': [],
-        'notification': false,
-        'availability_zone': None,
-        'identity': {
-            'region': 'RegionOne'
-        },
-        'network': {
-            'region': 'RegionOne'
-        },
-        'heal_instance_info_cache_interval': '60',
-    },
-}, merge=pillar.nova.get('compute', {})) %}
+{%- load_yaml as compute_defaults %}
+Debian:
+  pkgs:
+  - nova-common
+  - nova-compute-kvm
+  - python-novaclient
+  - pm-utils
+  - sysfsutils
+  - sg3-utils
+  - libvirt-bin
+  - python-memcache
+  - qemu-kvm
+  - python-guestfs
+  - gettext-base
+  {%- if pillar.nova.compute is defined and pillar.nova.compute.get('networking', 'default') == "contrail" and pillar.nova.compute.get('version', 'ocata') not in ["juno", "kilo", "liberty", "mitaka", "newton"] %}
+  - contrail-nova-driver
+  {%- endif %}
+  services:
+  - nova-compute
+  libvirt_config: libvirtd.conf
+  libvirt_bin: "/etc/default/libvirt-bin"
+  libvirt_service: libvirt-bin
+  bind: compute_bind_defaults
+  debug: false
+  libvirt: []
+  instances_path: "$state_path/instances"
+  notification: false
+  availability_zone:
+  aggregates: []
+  identity:
+    region: RegionOne
+  network:
+    region: RegionOne
+  heal_instance_info_cache_interval: '60'
+RedHat:
+  pkgs:
+  - openstack-nova-compute
+  - python-novaclient
+  - python-nova
+  - sysfsutils
+  - sg3_utils
+  services:
+  - messagebus
+  - openstack-nova-compute
+  - libvirtd
+  libvirt_config: libvirt.conf
+  libvirt_bin: "/etc/sysconfig/libvirtd"
+  libvirt_service: libvirtd
+  bind: compute_bind_defaults
+  debug: false
+  libvirt: []
+  notification: false
+  availability_zone:
+  identity:
+    region: RegionOne
+  network:
+    region: RegionOne
+  heal_instance_info_cache_interval: '60'
+{%- endload %}
 
-
+{% set compute = salt["grains.filter_by"](compute_defaults, merge=pillar.nova.get("compute", {})) %}
 
 {% set monitoring = salt['grains.filter_by']({
     'default': {
