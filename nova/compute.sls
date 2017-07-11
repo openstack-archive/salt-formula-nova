@@ -133,8 +133,9 @@ user_nova_compute:
   {%- else %}
   - shell: /bin/false
   {%- endif %}
-  - uid: 303
-  - gid: 303
+  {# note: nova uid/gid values would not be evaluated after user is created. #}
+  - uid: {{ compute.get('nova_uid', 303) }}
+  - gid: {{ compute.get('nova_gid', 303) }}
   - system: True
   - groups:
     {%- if salt['group.info']('libvirtd') %}
@@ -150,7 +151,8 @@ user_nova_compute:
 group_nova_compute:
   group.present:
     - name: nova
-    - gid: 303
+    {# note: nova gid value would not be evaluated after user is created. #}
+    - gid: {{ compute.get('nova_gid', 303) }}
     - system: True
     - require_in:
       - user: user_nova_compute
