@@ -1257,7 +1257,7 @@ block_device_allocate_retries_interval=10
 #  (string value)
 # Allowed values: iso9660, vfat
 #config_drive_format=iso9660
-config_drive_format={{ compute.get('config_drive_format', 'vfat') }}
+config_drive_format={{ compute.get('config_drive_format', compute.get('config_drive', {}).get('format', 'vfat')) }}
 
 #
 # Force injection to take place on a config drive
@@ -1285,7 +1285,7 @@ config_drive_format={{ compute.get('config_drive_format', 'vfat') }}
 #   installation.
 #  (boolean value)
 #force_config_drive=false
-force_config_drive=true
+force_config_drive={{ compute.get('config_drive', {}).get('forced', True)|lower }}
 
 #
 # Name or path of the tool used for ISO image creation
@@ -5346,6 +5346,7 @@ api_servers=http://{{ compute.image.host }}:9292
 #   drive by setting the force_config_drive option to 'True'.
 #  (boolean value)
 #config_drive_cdrom=false
+config_drive_cdrom={{ compute.get('config_drive', {}).get('cdrom', False)|lower }}
 
 #
 # Configuration drive inject password
@@ -5359,6 +5360,7 @@ api_servers=http://{{ compute.image.host }}:9292
 # * Currently, the only accepted config_drive_format is 'iso9660'.
 #  (boolean value)
 #config_drive_inject_password=false
+config_drive_inject_password={{ compute.get('config_drive', {}).get('inject_password', False)|lower }}
 
 #
 # Volume attach retry count
