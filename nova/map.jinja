@@ -1,3 +1,8 @@
+{%- set system_cacerts_file = salt['grains.filter_by']({
+    'Debian': '/etc/ssl/certs/ca-certificates.crt',
+    'RedHat': '/etc/pki/tls/certs/ca-bundle.crt'
+})%}
+
 {% set compute_bind_defaults = {
     'vnc_address': '10.0.0.10',
     'vnc_port': '6080',

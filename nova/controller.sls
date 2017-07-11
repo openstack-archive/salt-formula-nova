@@ -1,4 +1,4 @@
-{% from "nova/map.jinja" import controller with context %}
+{% from "nova/map.jinja" import controller, system_cacerts_file with context %}
 
 {%- if controller.get('enabled') %}
 
@@ -23,6 +23,20 @@ nova_consoleproxy_debconf:
 nova_controller_packages:
   pkg.installed:
   - names: {{ controller.pkgs }}
+
+{%- if controller.message_queue.get('ssl',{}).get('enabled',False)  %}
+rabbitmq_ca:
+{%- if controller.message_queue.ssl.cacert is defined %}
+  file.managed:
+    - name: {{ controller.message_queue.ssl.cacert_file }}
+    - contents_pillar: nova:controller:message_queue:ssl:cacert
+    - mode: 0444
+    - makedirs: true
+{%- else %}
+  file.exists:
+   - name: {{ controller.message_queue.ssl.get('cacert_file', system_cacerts_file) }}
+{%- endif %}
+{%- endif %}
 
 {%- if not salt['user.info']('nova') %}
 user_nova:
@@ -278,6 +292,9 @@ nova_controller_services:
   - watch:
     - file: /etc/nova/nova.conf
     - file: /etc/nova/api-paste.ini
+    {%- if controller.message_queue.get('ssl',{}).get('enabled',False) %}
+    - file: rabbitmq_ca
+    {%- endif %}
 
 {%- if grains.get('virtual_subtype', None) == "Docker" %}
 

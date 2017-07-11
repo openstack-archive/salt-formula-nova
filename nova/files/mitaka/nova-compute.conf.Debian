@@ -1,4 +1,4 @@
-{%- from "nova/map.jinja" import compute with context %}
+{%- from "nova/map.jinja" import compute, system_cacerts_file with context %}
 
 [DEFAULT]
 logdir=/var/log/nova
@@ -152,15 +152,17 @@ auth_url=http://{{ compute.identity.host }}:35357
 memcached_servers={%- for member in compute.cache.members %}{{ member.host }}:11211{% if not loop.last %},{% endif %}{%- endfor %}
 {%- endif %}
 
+{%- set rabbit_port = compute.message_queue.get('port', 5671 if compute.message_queue.get('ssl',{}).get('enabled', False) else 5672) %}
+
 [oslo_messaging_rabbit]
 {%- if compute.message_queue.members is defined %}
 rabbit_hosts = {% for member in compute.message_queue.members -%}
-                   {{ member.host }}:{{ member.get('port', 5672) }}
+                   {{ member.host }}:{{ member.get('port', rabbit_port) }}
                    {%- if not loop.last -%},{%- endif -%}
                {%- endfor -%}
 {%- else %}
 rabbit_host = {{ compute.message_queue.host }}
-rabbit_port = {{ compute.message_queue.port }}
+rabbit_port = {{ rabbit_port}}
 {%- endif %}
 
 rabbit_userid = {{ compute.message_queue.user }}
@@ -169,6 +171,24 @@ rabbit_virtual_host = {{ compute.message_queue.virtual_host }}
 rpc_conn_pool_size = 300
 rabbit_retry_interval = 1
 rabbit_retry_backoff = 2
+
+{# rabbitmq ssl configuration #}
+{%- if compute.message_queue.get('ssl',{}).get('enabled', False) %}
+[oslo_messaging_rabbit]
+rabbit_use_ssl=true
+
+{%- if compute.message_queue.ssl.version is defined %}
+kombu_ssl_version = {{ compute.message_queue.ssl.version }}
+{%- elif salt['grains.get']('pythonversion') > [2,7,8] %}
+kombu_ssl_version = TLSv1_2
+{%- endif %}
+
+{%- if compute.message_queue.ssl.cacert_file is defined %}
+kombu_ssl_ca_certs = {{ compute.message_queue.ssl.cacert_file }}
+{%- else %}
+kombu_ssl_ca_certs={{ system_cacerts_file }}
+{%- endif %}
+{%- endif %}
 
 [glance]
 api_servers=http://{{ compute.image.host }}:9292

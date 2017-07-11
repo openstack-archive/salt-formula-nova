@@ -1,4 +1,4 @@
-{%- from "nova/map.jinja" import controller with context %}
+{%- from "nova/map.jinja" import controller, system_cacerts_file with context %}
 [DEFAULT]
 
 #
@@ -3035,15 +3035,18 @@ zmq_linger=30
 #rpc_response_timeout=60
 rpc_response_timeout=3600
 
+{%- set rabbit_port = controller.message_queue.get('port', 5671 if controller.message_queue.get('ssl',{}).get('enabled', False) else 5672) %}
+
 {%- if controller.message_queue.members is defined %}
 transport_url = rabbit://{% for member in controller.message_queue.members -%}
-                             {{ controller.message_queue.user }}:{{ controller.message_queue.password }}@{{ member.host }}:{{ member.get('port', 5672) }}
+                             {{ controller.message_queue.user }}:{{ controller.message_queue.password }}@{{ member.host }}:{{ member.get('port', rabbit_port) }}
                              {%- if not loop.last -%},{%- endif -%}
                          {%- endfor -%}
                              /{{ controller.message_queue.virtual_host }}
 {%- else %}
-transport_url = rabbit://{{ controller.message_queue.user }}:{{ controller.message_queue.password }}@{{ controller.message_queue.host }}:{{ controller.message_queue.port }}/{{ controller.message_queue.virtual_host }}
+transport_url = rabbit://{{ controller.message_queue.user }}:{{ controller.message_queue.password }}@{{ controller.message_queue.host }}:{{ rabbit_port}}/{{ controller.message_queue.virtual_host }}
 {%- endif %}
+
 
 # DEPRECATED: The messaging driver to use, defaults to rabbit. Other drivers
 # include amqp and zmq. (string value)
@@ -7929,6 +7932,22 @@ rpc_conn_pool_size = 300
 # message (floating point value)
 #rpc_retry_delay=0.25
 
+{# rabbitmq ssl configuration #}
+{%- if controller.message_queue.get('ssl',{}).get('enabled', False) %}
+rabbit_use_ssl=true
+
+{%- if controller.message_queue.ssl.version is defined %}
+kombu_ssl_version = {{ controller.message_queue.ssl.version }}
+{%- elif salt['grains.get']('pythonversion') > [2,7,8] %}
+kombu_ssl_version = TLSv1_2
+{%- endif %}
+
+{%- if controller.message_queue.ssl.cacert_file is defined %}
+kombu_ssl_ca_certs = {{ controller.message_queue.ssl.cacert_file }}
+{%- else %}
+kombu_ssl_ca_certs = {{ system_cacerts_file }}
+{%- endif %}
+{%- endif %}
 
 [oslo_messaging_zmq]
 

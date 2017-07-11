@@ -1,4 +1,4 @@
-{%- from "nova/map.jinja" import compute with context %}
+{%- from "nova/map.jinja" import compute, system_cacerts_file with context %}
 
 {%- if compute.get('enabled') %}
 
@@ -71,6 +71,21 @@ user_nova_bash:
   - template: jinja
   - require:
     - pkg: nova_compute_packages
+
+{%- if compute.message_queue.get('ssl',{}).get('enabled',False)  %}
+rabbitmq_ca:
+{%- if compute.message_queue.ssl.cacert is defined %}
+  file.managed:
+    - name: {{ compute.message_queue.ssl.cacert_file }}
+    - contents_pillar: nova:compute:message_queue:ssl:cacert
+    - mode: 0444
+    - makedirs: true
+{%- else %}
+  file.exists:
+   - name: {{ compute.message_queue.ssl.get('cacert_file', system_cacerts_file) }}
+{%- endif %}
+{%- endif %}
+
 {%- endif %}
 
 nova_compute_services:
@@ -79,6 +94,9 @@ nova_compute_services:
   - names: {{ compute.services }}
   - watch:
     - file: /etc/nova/nova.conf
+  {%- if compute.message_queue.get('ssl',{}).get('enabled',False) %}
+    - file: rabbitmq_ca
+  {%- endif %}
 
 {%- set ident = compute.identity %}
 
