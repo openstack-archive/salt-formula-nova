@@ -137,6 +137,16 @@ nova_controller_db_sync_version_334:
   - require:
     - file: /etc/nova/nova.conf
 
+{#- the following db online_data_migrations executes only if the current db version == 334 && api_db version == 20 #}
+
+online_data_migrations_for_apidb20_and_db334:
+  novang.online_data_migrations_present:
+  - api_db_version: "20"
+  - db_version: "334"
+  - require:
+    - novang: nova_controller_api_db_sync_version_20
+    - novang: nova_controller_db_sync_version_334
+
 nova_controller_map_cell0:
   cmd.run:
   - name: nova-manage cell_v2 map_cell0

@@ -68,13 +68,14 @@ def api_db_version_present(name=None, version="20"):
     api_db_version = __salt__['cmd.shell']('nova-manage api_db version 2>/dev/null')
     try:
         api_db_version = int(api_db_version)
+        version = int(version)
     except:
         # nova is not installed
         ret = _no_change('api_db --version', None, test=True)
         return ret
     if api_db_version < version:
         try:
-            __salt__['cmd.shell']('nova-manage api_db sync --version ' + version)
+            __salt__['cmd.shell']('nova-manage api_db sync --version ' + str(version))
             ret['result'] = True
             ret['comment'] = 'Nova-manage api_db sync --version {0} was successfuly executed'.format(version)
             ret['changes']['api_db'] = 'api_db sync --version {0}'.format(version)
@@ -96,6 +97,7 @@ def db_version_present(name=None, version="334"):
     db_version = __salt__['cmd.shell']('nova-manage db version 2>/dev/null')
     try:
         db_version = int(db_version)
+        version = int(version)
     except:
         # nova is not installed
         ret = _no_change('db --version', None, test=True)
@@ -103,7 +105,7 @@ def db_version_present(name=None, version="334"):
 
     if db_version < version:
         try:
-            __salt__['cmd.shell']('nova-manage db sync --version ' + version)
+            __salt__['cmd.shell']('nova-manage db sync --version ' + str(version))
             ret['result'] = True
             ret['comment'] = 'Nova-manage db sync --version {0} was successfuly executed'.format(version)
             ret['changes']['db'] = 'db sync --version {0}'.format(version)
@@ -111,6 +113,37 @@ def db_version_present(name=None, version="334"):
             ret['result'] = False
             ret['comment'] = 'Error while executing nova-manage db sync --version {0}'.format(version)
             ret['changes']['db'] = 'Failed to execute db sync --version {0}'.format(version)
+    return ret
+
+def online_data_migrations_present(name=None, api_db_version="20", db_version="334"):
+    '''
+    Ensures that online_data_migrations are enforced if specific version of api_db and db is present
+    '''
+    ret = {'name': 'online_data_migrations',
+           'changes': {},
+           'result': True,
+           'comment': 'Current api_db version != {0} a db version != {1}.'.format(api_db_version, db_version)}
+    cur_api_db_version = __salt__['cmd.shell']('nova-manage api_db version 2>/dev/null')
+    cur_db_version = __salt__['cmd.shell']('nova-manage db version 2>/dev/null')
+    try:
+        cur_api_db_version = int(cur_api_db_version)
+        cur_db_version = int(cur_db_version)
+        api_db_version = int(api_db_version)
+        db_version = int(db_version)
+    except:
+        # nova is not installed
+        ret = _no_change('online_data_migrations', None, test=True)
+        return ret
+    if cur_api_db_version == api_db_version and cur_db_version == db_version:
+        try:
+            __salt__['cmd.shell']('nova-manage db online_data_migrations')
+            ret['result'] = True
+            ret['comment'] = 'nova-manage db online_data_migrations was successfuly executed'
+            ret['changes']['online_data_migrations'] = 'online_data_migrations on api_db version {0} and db version {1}'.format(api_db_version, db_version)
+        except:
+            ret['result'] = False
+            ret['comment'] = 'Error while executing nova-manage db online_data_migrations'
+            ret['changes']['online_data_migrations'] = 'Failed to execute online_data_migrations on api_db version {0} and db version {1}'.format(api_db_version, db_version)
     return ret
 
 def quota_present(tenant_name, profile, name=None, **kwargs):
