@@ -5,6 +5,29 @@
 {%- set is_compute = compute.get('enabled', False) %}
 
 {%- if is_controller or is_compute %}
+{%- if is_compute and
+       exporters is defined %}
+{%- set packages = exporters.get('libvirt', {}).get('packages', ('libvirt-exporter', )) %}
+  {%- load_yaml as new_exporters_cfg %}
+exporters:
+  libvirt:
+    enabled: true
+{%- if packages is defined %}
+    packages:
+    {% for pkg in packages %}
+    - {{ pkg }}
+    {% endfor %}
+{%- endif %}
+    services:
+      qemu:
+        enabled: true
+        bind:
+          address: 0.0.0.0
+          port: 9177
+  {%- endload %}
+{{ new_exporters_cfg|yaml(False) }}
+{%- endif %}
+
 server:
   alert:
 {%- if is_controller %}
@@ -198,35 +221,8 @@ server:
         description: >-
             libvirt check on '{{ $labels.host }}' is down for 2 minutes
 {%- endraw %}
-{%- from "prometheus/map.jinja" import exporters with context %}
-{%- if exporters %}
-  target:
-    static:
-  {%- for exporter, parameters in exporters.iteritems() %}
-    {%- if parameters.get('enabled', False) %}
-      {%- set host = grains.get('host', "") %}
-      {%- if parameters.bind is defined %}
-        {%- if parameters.bind.get('address', '0.0.0.0') == '0.0.0.0' %}
-          {%- set address = grains['fqdn_ip4'][0] %}
-        {%- else %}
-          {%- set address = parameters.bind.address %}
-        {%- endif %}
-      {%- endif %}
-      {%- if address is defined and parameters.bind.port is defined %}
-      {{ exporter }}_exporter:
-        endpoint:
-          - address: {{ address }}
-            port: {{ parameters.bind.port }}
-        {%- if host is defined and host|length > 0 %}
-        metric_relabel:
-          - regex: {{ address }}:{{ parameters.bind.port }}
-            replacement: {{ host }}
-            source_labels: "instance"
-            target_label: "host"
-        {%- endif %}
-      {%- endif %}
-    {%- endif %}
-  {%- endfor %}
+{%- if exporters is defined %}
+{%- include "prometheus/_exporters_config.sls" %}
 {%- endif %}
 {%- endif %}
 {%- endif %}
