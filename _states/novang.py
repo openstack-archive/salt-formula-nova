@@ -251,6 +251,23 @@ def instance_present(name, flavor, image, networks, security_groups=None, profil
             'result': True,
             'comment': 'Instance "{0}" was successfuly created'.format(name)}
 
+
+def keypair_present(name, pub_file, profile=None):
+    """
+    Ensures that the Nova key-pair exists
+    """
+
+    existing_keypairs = __salt__['novang.keypair_list'](profile)
+    if name in existing_keypairs:
+        return _already_exists(name, 'Keypair')
+    else:
+        res = __salt__['novang.keypair_add'](name, pubfile=pub_file,
+                                             profile=profile)
+        if res and res['name'] == name:
+            return _created(name, 'Keypair', res)
+        return _create_failed(name, 'Keypair')
+
+
 def _already_exists(name, resource):
     changes_dict = {'name': name,
                     'changes': {},
@@ -293,3 +310,11 @@ def _no_change(name, resource, test=False):
             '{0} {1} is in correct state'.format(resource, name)
     return changes_dict
 
+
+def _create_failed(name, resource):
+    changes_dict = {'name': name,
+                    'changes': {},
+                    'comment': '{0} {1} failed to create'.format(resource,
+                                                                 name),
+                    'result': False}
+    return changes_dict
