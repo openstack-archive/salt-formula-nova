@@ -151,3 +151,10 @@ libvirt_inject_partition=-2
 
 [cinder]
 catalog_info=volumev2:cinderv2:internalURL
+
+{%- if compute.upgrade_levels is defined %}
+[upgrade_levels]
+{%- for key, value in compute.upgrade_levels.iteritems() %}
+{{ key }}={{ value }}
+{%- endfor %}
+{%- endif -%}

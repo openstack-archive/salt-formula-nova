@@ -214,3 +214,10 @@ libvirt_inject_partition=-2
 
 [vnc]
 keymap = {{ compute.get('vnc_keymap', 'en-us') }}
+
+{%- if compute.upgrade_levels is defined %}
+[upgrade_levels]
+{%- for key, value in compute.upgrade_levels.iteritems() %}
+{{ key }}={{ value }}
+{%- endfor %}
+{%- endif -%}

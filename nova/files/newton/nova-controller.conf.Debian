@@ -263,3 +263,10 @@ allow_methods = {{ controller.cors.allow_methods }}
 {% if controller.cors.allow_headers is defined %}
 allow_headers = {{ controller.cors.allow_headers }}
 {% endif %}
+
+{%- if controller.upgrade_levels is defined %}
+[upgrade_levels]
+{%- for key, value in controller.upgrade_levels.iteritems() %}
+{{ key }}={{ value }}
+{%- endfor %}
+{%- endif -%}

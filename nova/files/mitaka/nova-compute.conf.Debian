@@ -197,3 +197,10 @@ catalog_info=volumev2:cinderv2:internalURL
 [workarounds]
 disable_libvirt_livesnapshot={{ compute.workaround.get('disable_libvirt_livesnapshot', True)|lower }}
 {%- endif %}
+
+{%- if compute.upgrade_levels is defined %}
+[upgrade_levels]
+{%- for key, value in compute.upgrade_levels.iteritems() %}
+{{ key }}={{ value }}
+{%- endfor %}
+{%- endif -%}

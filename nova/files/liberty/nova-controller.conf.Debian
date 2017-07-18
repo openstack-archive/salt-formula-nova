@@ -224,3 +224,10 @@ catalog_info=volumev2:cinderv2:internalURL
 
 [vnc]
 keymap = {{ controller.get('vnc_keymap', 'en-us') }}
+
+{%- if controller.upgrade_levels is defined %}
+[upgrade_levels]
+{%- for key, value in controller.upgrade_levels.iteritems() %}
+{{ key }}={{ value }}
+{%- endfor %}
+{%- endif -%}

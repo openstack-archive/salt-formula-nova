@@ -9395,6 +9395,11 @@ html5proxy_base_url = {{ controller.vncproxy_url }}/spice_auto.html
 
 
 [upgrade_levels]
+{%- if controller.upgrade_levels is defined %}
+{%- for key, value in controller.upgrade_levels.iteritems() %}
+{{ key }}={{ value }}
+{%- endfor %}
+{%- endif -%}
 #
 # upgrade_levels options are used to set version cap for RPC
 # messages sent between different nova services.

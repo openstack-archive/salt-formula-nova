@@ -213,3 +213,10 @@ catalog_info=volumev2:cinderv2:internalURL
 
 [wsgi]
 api_paste_config=/etc/nova/api-paste.ini
+
+{%- if controller.upgrade_levels is defined %}
+[upgrade_levels]
+{%- for key, value in controller.upgrade_levels.iteritems() %}
+{{ key }}={{ value }}
+{%- endfor %}
+{%- endif -%}

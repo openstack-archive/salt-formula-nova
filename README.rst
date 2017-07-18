@@ -346,6 +346,20 @@ Aggregates
             - aggregate1
             - aggregate2
 
+Upgrade levels
+
+.. code-block:: yaml
+
+    nova:
+      controller:
+        upgrade_levels:
+          compute: juno
+
+    nova:
+      compute:
+        upgrade_levels:
+          compute: juno
+
 SR-IOV
 ------
 

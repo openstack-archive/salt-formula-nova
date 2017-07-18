@@ -62,3 +62,5 @@ nova:
       'context_is_admin': 'role:admin or role:administrator'
       'compute:create': 'rule:admin_or_owner'
       'compute:create:attach_network':
+    upgrade_levels:
+      compute: liberty

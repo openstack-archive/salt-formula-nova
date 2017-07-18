@@ -66,3 +66,5 @@ nova:
         port: 11211
     libvirt:
       hw_disk_discard: unmap
+    upgrade_levels:
+      compute: liberty
