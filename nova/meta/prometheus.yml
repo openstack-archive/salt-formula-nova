@@ -1,5 +1,4 @@
-{% from "nova/map.jinja" import controller with context %}
-{% from "nova/map.jinja" import compute with context %}
+{% from "nova/map.jinja" import controller, compute, monitoring with context %}
 
 {%- set is_controller = controller.get('enabled', False) %}
 {%- set is_compute = compute.get('enabled', False) %}
@@ -196,7 +195,7 @@ server:
 {%- endraw %}
 {%- endif %}
     NovaErrorLogsTooHigh:
-      {%- set log_threshold = prometheus_server.get('alert', {}).get('NovaErrorLogsTooHigh', {}).get('var', {}).get('threshold', 0.2 ) %}
+      {%- set log_threshold = monitoring.error_log_rate.warn|float %}
       if: >-
         sum(rate(log_messages{service="nova",level=~"error|emergency|fatal"}[5m])) without (level) > {{ log_threshold }}
 {%- raw %}

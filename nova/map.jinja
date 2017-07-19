@@ -89,5 +89,8 @@
               'warn': '15%',
               'crit': '5%',
         },
+        'error_log_rate': {
+              'warn': 0.2,
+        },
     },
 }, grain='os_family', merge=salt['pillar.get']('nova:monitoring')) %}
