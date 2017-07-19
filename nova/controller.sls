@@ -145,6 +145,9 @@ online_data_migrations_for_apidb20_and_db334:
   novang.online_data_migrations_present:
   - api_db_version: "20"
   - db_version: "334"
+  {%- if grains.get('noservices') %}
+  - onlyif: /bin/false
+  {%- endif %}
   - require:
     - novang: nova_controller_api_db_sync_version_20
     - novang: nova_controller_db_sync_version_334
