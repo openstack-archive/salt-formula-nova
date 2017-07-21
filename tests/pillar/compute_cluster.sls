@@ -70,3 +70,9 @@ nova:
     upgrade_levels:
       compute: liberty
     libvirt_service_group: libvirtd
+    lvm:
+      ephemeral: yes
+      images_volume_group: nova_vg
+      volume_clear: zero
+      volume_clear_size: 0
+

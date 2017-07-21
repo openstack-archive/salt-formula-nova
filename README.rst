@@ -285,7 +285,33 @@ Nova with ephemeral configured with Ceph
           rbd_pool: nova
           rbd_user: nova
           secret_uuid: 03006edd-d957-40a3-ac4c-26cd254b3731
+      ....
 
+Nova with ephemeral configured with LVM
+
+.. code-block:: yaml
+
+    nova:
+      compute:
+        enabled: true
+        ...
+        lvm:
+          ephemeral: yes
+          images_volume_group: nova_vg
+
+    linux:
+      storage:
+        lvm:
+          nova_vg:
+            name: nova_vg
+            devices:
+              - /dev/sdf
+              - /dev/sdd
+              - /dev/sdg
+              - /dev/sde
+              - /dev/sdc
+              - /dev/sdj
+              - /dev/sdh
 
 Client role
 -----------

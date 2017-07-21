@@ -134,6 +134,15 @@ rbd_user={{ compute.ceph.rbd_user }}
 rbd_secret_uuid={{ compute.ceph.secret_uuid }}
 libvirt_inject_password=false
 libvirt_inject_key=false
+{%- elif compute.get('lvm', {}).ephemeral is defined %}
+images_type=lvm
+images_volume_group={{ compute.lvm.images_volume_group }}
+{%- if compute.lvm.volume_clear is defined %}
+volume_clear={{ compute.lvm.volume_clear }}
+{%- endif %}
+{%- if compute.lvm.volume_clear_size is defined %}
+volume_clear_size={{ compute.lvm.volume_clear_size }}
+{%- endif %}
 {%- endif %}
 {%- if compute.libvirt.hw_disk_discard is defined %}
 hw_disk_discard={{ compute.libvirt.hw_disk_discard }}
