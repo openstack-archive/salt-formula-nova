@@ -48,7 +48,7 @@ platforms:
 
 suites:
 
-  - name: compute_cluster_<%= ENV['OS_VERSION'] || 'ocata' %>
+  - name: compute_cluster
     provisioner:
       pillars-from-files:
         nova.sls: tests/pillar/compute_cluster.sls
@@ -58,7 +58,7 @@ suites:
             compute:
               version: <%= ENV['OS_VERSION'] || 'ocata' %>
 
-  - name: control_cluster_<%= ENV['OS_VERSION'] || 'ocata' %>
+  - name: control_cluster
     provisioner:
       pillars-from-files:
         nova.sls: tests/pillar/control_cluster.sls
