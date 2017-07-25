@@ -68,3 +68,4 @@ nova:
       hw_disk_discard: unmap
     upgrade_levels:
       compute: liberty
+    libvirt_service_group: libvirtd
