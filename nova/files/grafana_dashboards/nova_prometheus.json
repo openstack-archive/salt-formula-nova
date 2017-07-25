@@ -69,7 +69,7 @@
           "tableColumn": "",
           "targets": [
             {
-              "expr": "min(openstack_api_check_status{service=~\"nova.api\"})",
+              "expr": "min(openstack_api_check_status{service=\"nova\"})",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "{{ service }}",
