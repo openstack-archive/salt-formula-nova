@@ -43,8 +43,12 @@ user_nova_bash:
   - name: nova
   - home: /var/lib/nova
   - shell: /bin/bash
+{%- if compute.user.groups is defined %}
+  - groups: {{ compute.user.groups }}
+{%- else %}
   - groups:
     - libvirtd
+{%- endif %}
 
 /var/lib/nova/.ssh/id_rsa:
   file.managed:
