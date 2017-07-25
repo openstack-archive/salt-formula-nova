@@ -24,6 +24,9 @@ pci_passthrough_whitelist = {"devname":"{{ sriov.devname }}","physical_network":
 {%- if compute.image.use_cow is defined %}
 use_cow_images = {{ compute.image.use_cow }}
 {%- endif %}
+{%- if compute.my_ip is defined %}
+my_ip={{ compute.my_ip }}
+{%- endif %}
 
 reserved_host_memory_mb = {{ compute.get('reserved_host_memory_mb', '512') }}
 

@@ -163,6 +163,7 @@ Nova controller services on compute node
         - hosts_with_ssd
         security_group: true
         resume_guests_state_on_host_boot: False
+        my_ip: 10.1.0.16
         bind:
           vnc_address: 172.20.0.100
           vnc_port: 6080

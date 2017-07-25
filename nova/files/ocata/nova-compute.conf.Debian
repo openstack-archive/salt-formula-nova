@@ -1514,6 +1514,9 @@ force_config_drive={{ compute.get('config_drive', {}).get('forced', True)|lower 
 # * vpn_ip
 #  (string value)
 #my_ip=10.89.104.70
+{%- if compute.my_ip is defined %}
+my_ip={{ compute.my_ip }}
+{%- endif %}
 
 #
 # The IP address which is used to connect to the block storage network.

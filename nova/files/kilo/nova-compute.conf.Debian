@@ -17,6 +17,9 @@ api_paste_config=/etc/nova/api-paste.ini
 volumes_path=/var/lib/nova/volumes
 enabled_apis=ec2,osapi_compute,metadata
 vnc_keymap = {{ compute.get('vnc_keymap', 'en-us') }}
+{%- if compute.my_ip is defined %}
+my_ip={{ compute.my_ip }}
+{%- endif %}
 
 
 {%- if compute.image.use_cow is defined %}
