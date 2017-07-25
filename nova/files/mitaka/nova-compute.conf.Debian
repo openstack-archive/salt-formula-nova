@@ -30,6 +30,9 @@ use_cow_images = {{ compute.image.use_cow }}
 {%- if compute.my_ip is defined %}
 my_ip={{ compute.my_ip }}
 {%- endif %}
+{%- if compute.host is defined %}
+host={{ compute.host }}
+{%- endif %}
 
 remove_unused_original_minimum_age_seconds=86400
 image_service=nova.image.glance.GlanceImageService

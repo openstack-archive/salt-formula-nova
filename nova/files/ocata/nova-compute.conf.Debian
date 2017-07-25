@@ -1539,6 +1539,9 @@ my_ip={{ compute.my_ip }}
 # * String with hostname, FQDN or IP address. Default is hostname of this host.
 #  (string value)
 #host=lcy01-22
+{%- if compute.host is defined %}
+host={{ compute.host }}
+{%- endif %}
 
 #
 # Assign IPv6 and IPv4 addresses when creating instances.
