@@ -201,4 +201,4 @@ libvirt_inject_partition=-2
 {%- for key, value in compute.upgrade_levels.iteritems() %}
 {{ key }}={{ value }}
 {%- endfor %}
-{%- endif -%}
+{%- endif %}

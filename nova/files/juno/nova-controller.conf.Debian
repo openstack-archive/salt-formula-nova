@@ -160,4 +160,4 @@ catalog_info=volumev2:cinderv2:internalURL
 {%- for key, value in controller.upgrade_levels.iteritems() %}
 {{ key }}={{ value }}
 {%- endfor %}
-{%- endif -%}
+{%- endif %}

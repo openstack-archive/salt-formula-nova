@@ -219,4 +219,4 @@ api_paste_config=/etc/nova/api-paste.ini
 {%- for key, value in controller.upgrade_levels.iteritems() %}
 {{ key }}={{ value }}
 {%- endfor %}
-{%- endif -%}
+{%- endif %}

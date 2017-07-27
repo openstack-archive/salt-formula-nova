@@ -260,4 +260,4 @@ allow_headers = {{ controller.cors.allow_headers }}
 {%- for key, value in controller.upgrade_levels.iteritems() %}
 {{ key }}={{ value }}
 {%- endfor %}
-{%- endif -%}
+{%- endif %}

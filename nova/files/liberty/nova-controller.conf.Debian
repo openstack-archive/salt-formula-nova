@@ -230,4 +230,4 @@ keymap = {{ controller.get('vnc_keymap', 'en-us') }}
 {%- for key, value in controller.upgrade_levels.iteritems() %}
 {{ key }}={{ value }}
 {%- endfor %}
-{%- endif -%}
+{%- endif %}

@@ -223,4 +223,4 @@ keymap = {{ compute.get('vnc_keymap', 'en-us') }}
 {%- for key, value in compute.upgrade_levels.iteritems() %}
 {{ key }}={{ value }}
 {%- endfor %}
-{%- endif -%}
+{%- endif %}

@@ -206,4 +206,4 @@ disable_libvirt_livesnapshot={{ compute.workaround.get('disable_libvirt_livesnap
 {%- for key, value in compute.upgrade_levels.iteritems() %}
 {{ key }}={{ value }}
 {%- endfor %}
-{%- endif -%}
+{%- endif %}
