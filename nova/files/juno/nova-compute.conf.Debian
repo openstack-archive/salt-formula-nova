@@ -18,6 +18,9 @@ enabled_apis=ec2,osapi_compute,metadata
 {%- if compute.my_ip is defined %}
 my_ip={{ compute.my_ip }}
 {%- endif %}
+{%- if compute.host is defined %}
+host={{ compute.host }}
+{%- endif %}
 
 allow_resize_to_same_host=True
 

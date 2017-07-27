@@ -208,6 +208,7 @@ Nova controller services on compute node
         qemu:
           max_files: 4096
           max_processes: 4096
+        host: node-12.domain.tld
 
 Group membership for user nova (upgrade related)
 

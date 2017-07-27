@@ -20,7 +20,9 @@ vnc_keymap = {{ compute.get('vnc_keymap', 'en-us') }}
 {%- if compute.my_ip is defined %}
 my_ip={{ compute.my_ip }}
 {%- endif %}
-
+{%- if compute.host is defined %}
+host={{ compute.host }}
+{%- endif %}
 
 {%- if compute.image.use_cow is defined %}
 use_cow_images = {{ compute.image.use_cow }}
