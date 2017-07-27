@@ -209,6 +209,18 @@ Nova controller services on compute node
           max_files: 4096
           max_processes: 4096
 
+Group membership for user nova (upgrade related)
+
+.. code-block:: yaml
+
+    nova:
+      compute:
+        enabled: true
+        ...
+        user:
+          groups:
+          - libvirt
+
 Nova services on compute node with OpenContrail
 
 .. code-block:: yaml
