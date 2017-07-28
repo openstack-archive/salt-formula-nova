@@ -1,3 +1,5 @@
+{% from "nova/map.jinja" import controller with context %}
+{%- set apache_wsgi = controller.get('enabled') and controller.version not in ('juno', 'kilo', 'liberty', 'mitaka', 'newton') %}
 log_collector:
   decoder:
     nova:
@@ -10,6 +12,16 @@ log_collector:
       engine: sandbox
       module_file: /usr/share/lma_collector/decoders/libvirt_log.lua
       module_dir: /usr/share/lma_collector/common;/usr/share/heka/lua_modules
+    {%- endif %}
+    {%- if apache_wsgi %}
+    nova_placement_wsgi:
+      engine: sandbox
+      module_file: /usr/share/lma_collector/decoders/apache_wsgi_log.lua
+      module_dir: /usr/share/lma_collector/common;/usr/share/heka/lua_modules
+      config:
+        logger: openstack.nova_placement
+        apache_log_pattern: >-
+          %v:%p %h %l %u %t \"%r\" %>s %D %O \"%{Referer}i\" \"%{User-Agent}i\"
     {%- endif %}
   splitter:
     nova:
@@ -31,6 +43,16 @@ log_collector:
       file_match: 'libvirt/libvirtd.log'
       differentiator: ['libvirt']
       decoder: "libvirt_decoder"
+      splitter: "TokenSplitter"
+    {%- endif %}
+    {%- if apache_wsgi %}
+    nova_placement_wsgi_log:
+      engine: logstreamer
+      log_directory: "/var/log/apache2"
+      file_match: 'nova_placement_access\.log'
+      differentiator: ['nova-placement-wsgi']
+      priority: ["^Seq"]
+      decoder: "nova_placement_wsgi_decoder"
       splitter: "TokenSplitter"
     {%- endif %}
 metric_collector:
