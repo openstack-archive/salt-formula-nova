@@ -143,7 +143,7 @@ cpu_mode = {{ compute.get('cpu_mode', 'host-passthrough') }}
 virt_type = kvm
 inject_partition=-2
 inject_password=False
-disk_cachemodes="network=writeback,block=none"
+disk_cachemodes="{{ compute.get('disk_cachemodes', 'network=writeback,block=none') }}"
 libvirt_inject_password=True
 block_migration_flag=VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE,VIR_MIGRATE_NON_SHARED_INC
 live_migration_flag=VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE,VIR_MIGRATE_PERSIST_DEST

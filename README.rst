@@ -157,6 +157,7 @@ Nova controller services on compute node
         version: juno
         enabled: true
         virtualization: kvm
+        disk_cachemodes: network=writeback,block=none
         availability_zone: availability_zone_01
         aggregates:
         - hosts_with_fc

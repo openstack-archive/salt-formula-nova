@@ -7,6 +7,7 @@ nova:
       mount_points:
       - path: /mnt/hugepages_1GB
     virtualization: kvm
+    disk_cachemodes: network=writeback,block=none
     heal_instance_info_cache_interval: 60
     vncproxy_url: openstack:6080
     report_interval: 60
