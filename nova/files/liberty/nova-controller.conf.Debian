@@ -221,6 +221,9 @@ service_metadata_proxy=True
 [cinder]
 os_region_name = {{ controller.identity.region }}
 catalog_info=volumev2:cinderv2:internalURL
+{%- if controller.cross_az_attach is defined %}
+cross_az_attach={{ controller.cross_az_attach }}
+{%- endif %}
 
 [vnc]
 keymap = {{ controller.get('vnc_keymap', 'en-us') }}

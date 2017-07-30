@@ -195,6 +195,9 @@ timeout=30
 [cinder]
 os_region_name = {{ compute.identity.region }}
 catalog_info=volumev2:cinderv2:internalURL
+{%- if compute.cross_az_attach is defined %}
+cross_az_attach={{ compute.cross_az_attach }}
+{%- endif %}
 
 {%- if compute.workaround is defined %}
 [workarounds]

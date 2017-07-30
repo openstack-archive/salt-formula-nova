@@ -154,6 +154,9 @@ libvirt_inject_partition=-2
 
 [cinder]
 catalog_info=volumev2:cinderv2:internalURL
+{%- if compute.cross_az_attach is defined %}
+cross_az_attach={{ compute.cross_az_attach }}
+{%- endif %}
 
 {%- if compute.upgrade_levels is defined %}
 [upgrade_levels]

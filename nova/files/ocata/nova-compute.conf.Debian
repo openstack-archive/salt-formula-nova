@@ -4119,6 +4119,9 @@ catalog_info=volumev2:cinderv2:internalURL
 # By default there is no availability zone restriction on volume attach.
 #  (boolean value)
 #cross_az_attach=true
+{%- if compute.cross_az_attach is defined %}
+cross_az_attach={{ compute.cross_az_attach }}
+{%- endif %}
 
 
 [cloudpipe]

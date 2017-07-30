@@ -4103,7 +4103,9 @@ os_region_name = {{ controller.identity.region }}
 # By default there is no availability zone restriction on volume attach.
 #  (boolean value)
 #cross_az_attach=true
-
+{%- if controller.cross_az_attach is defined %}
+cross_az_attach={{ controller.cross_az_attach }}
+{%- endif %}
 
 [cloudpipe]
 

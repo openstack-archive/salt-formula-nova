@@ -26,6 +26,7 @@ Nova services on the controller node
         cpu_allocation_ratio: 8.0
         ram_allocation_ratio: 1.0
         disk_allocation_ratio: 1.0
+        cross_az_attach: false
         workers: 8
         report_interval: 60
         bind:
@@ -157,6 +158,7 @@ Nova controller services on compute node
         version: juno
         enabled: true
         virtualization: kvm
+        cross_az_attach: false
         disk_cachemodes: network=writeback,block=none
         availability_zone: availability_zone_01
         aggregates:
