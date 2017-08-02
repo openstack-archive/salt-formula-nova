@@ -39,7 +39,12 @@ nova_openstack_flavor_{{ flavor_name }}:
 nova_keypair_{{ keypair_name }}:
   novang.keypair_present:
     - name: {{ keypair_name }}
+    {%- if keypair.pub_file is defined %}
     - pub_file: {{ keypair.pub_file }}
+    {%- endif %}
+    {%- if keypair.pub_key is defined %}
+    - pub_key: {{ keypair.pub_key }}
+    {%- endif %}
     - profile: {{ identity_name }}
 {%- endfor %}
 
