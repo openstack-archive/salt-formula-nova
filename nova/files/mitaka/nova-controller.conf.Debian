@@ -180,7 +180,7 @@ db_max_retries = 3
 db_retry_interval = 1
 connection_debug = 10
 pool_timeout = 120
-connection = {{ controller.database.engine }}+pymysql://{{ controller.database.user }}:{{ controller.database.password }}@{{ controller.database.host }}/{{ controller.database.name }}
+connection = {{ controller.database.engine }}+pymysql://{{ controller.database.user }}:{{ controller.database.password }}@{{ controller.database.host }}/{{ controller.database.name }}{%- if controller.database.get('ssl',{}).get('enabled',False) %}?ssl_ca={{ controller.database.ssl.get('cacert_file', system_cacerts_file) }}{% endif %}
 
 [api_database]
 idle_timeout = 180
@@ -193,7 +193,7 @@ db_max_retries = 3
 db_retry_interval = 1
 connection_debug = 10
 pool_timeout = 120
-connection = {{ controller.database.engine }}+pymysql://{{ controller.database.user }}:{{ controller.database.password }}@{{ controller.database.host }}/{{ controller.database.name }}_api
+connection = {{ controller.database.engine }}+pymysql://{{ controller.database.user }}:{{ controller.database.password }}@{{ controller.database.host }}/{{ controller.database.name }}_api{%- if controller.database.get('ssl',{}).get('enabled',False) %}?ssl_ca={{ controller.database.ssl.get('cacert_file', system_cacerts_file) }}{% endif %}
 
 [glance]
 

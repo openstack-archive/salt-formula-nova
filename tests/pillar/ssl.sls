@@ -4,11 +4,17 @@ include:
 
 nova:
   controller:
+    database:
+      ssl:
+        enabled: True
     message_queue:
       port: 5671
       ssl:
         enabled: True
   compute:
+    database:
+      ssl:
+        enabled: True
     message_queue:
       port: 5671
       ssl:

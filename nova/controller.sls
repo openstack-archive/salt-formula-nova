@@ -277,6 +277,9 @@ nova_apache_restart:
     - file: /etc/nova/nova.conf
     - file: /etc/nova/api-paste.ini
     - file: /etc/apache2/sites-available/nova-placement-api.conf
+    {%- if controller.database.get('ssl',{}).get('enabled',False)  %}
+    - file: mysql_ca
+    {% endif %}
 
 {%- endif %}
 
@@ -295,6 +298,9 @@ nova_controller_services:
     {%- if controller.message_queue.get('ssl',{}).get('enabled',False) %}
     - file: rabbitmq_ca
     {%- endif %}
+    {%- if controller.database.get('ssl',{}).get('enabled',False)  %}
+    - file: mysql_ca
+    {% endif %}
 
 {%- if grains.get('virtual_subtype', None) == "Docker" %}
 
@@ -305,6 +311,24 @@ nova_entrypoint:
   - source: salt://nova/files/entrypoint.sh
   - mode: 755
 
+{%- endif %}
+
+{%- if controller.database.get('ssl',{}).get('enabled',False)  %}
+mysql_ca:
+{%- if controller.database.ssl.cacert is defined %}
+  file.managed:
+    - name: {{ controller.database.ssl.cacert_file }}
+    - contents_pillar: nova:controller:database:ssl:cacert
+    - mode: 0444
+    - makedirs: true
+    - require_in:
+      - file: /etc/nova/nova.conf
+{%- else %}
+  file.exists:
+   - name: {{ controller.database.ssl.get('cacert_file', system_cacerts_file) }}
+   - require_in:
+     - file: /etc/nova/nova.conf
+{%- endif %}
 {%- endif %}
 
 {%- endif %}
