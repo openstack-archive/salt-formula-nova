@@ -19,7 +19,7 @@ log_collector:
       module_file: /usr/share/lma_collector/decoders/apache_wsgi_log.lua
       module_dir: /usr/share/lma_collector/common;/usr/share/heka/lua_modules
       config:
-        logger: openstack.nova_placement
+        logger: openstack.nova
         apache_log_pattern: >-
           %v:%p %h %l %u %t \"%r\" %>s %D %O \"%{Referer}i\" \"%{User-Agent}i\"
     {%- endif %}
