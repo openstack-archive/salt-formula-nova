@@ -114,6 +114,7 @@ server:
       for: 1m
       labels:
         severity: warning
+        service: nova
       annotations:
         summary: "VCPU low limit for new instances"
         description: >-
@@ -124,6 +125,7 @@ server:
       for: 1m
       labels:
         severity: warning
+        service: nova
       annotations:
         summary: "Memory low limit for new instances"
         description: >-
@@ -134,6 +136,7 @@ server:
       for: 1m
       labels:
         severity: critical
+        service: nova
       annotations:
         summary: "VCPU shortage for new instances"
         description: >-
@@ -144,6 +147,7 @@ server:
       for: 1m
       labels:
         severity: critical
+        service: nova
       annotations:
         summary: "Memory shortage for new instances"
         description: >-
@@ -154,6 +158,7 @@ server:
       for: 1m
       labels:
         severity: warning
+        service: nova
         aggregate: "{{ $labels.aggregate }}"
       annotations:
         summary: "VCPU low limit for new instances on aggregate {{ $labels.aggregate }}"
@@ -165,6 +170,7 @@ server:
       for: 1m
       labels:
         severity: warning
+        service: nova
         aggregate: "{{ $labels.aggregate }}"
       annotations:
         summary: "Memory low limit for new instances on aggregate {{ $labels.aggregate }}"
@@ -176,6 +182,7 @@ server:
       for: 1m
       labels:
         severity: critical
+        service: nova
         aggregate: "{{ $labels.aggregate }}"
       annotations:
         summary: "VCPU shortage for new instances on aggregate {{ $labels.aggregate }}"
@@ -187,6 +194,7 @@ server:
       for: 1m
       labels:
         severity: critical
+        service: nova
         aggregate: "{{ $labels.aggregate }}"
       annotations:
         summary: "Memory shortage for new instances on aggregate {{ $labels.aggregate }}"
