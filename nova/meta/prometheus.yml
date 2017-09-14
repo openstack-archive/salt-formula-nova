@@ -33,7 +33,7 @@ server:
 {% raw %}
     NovaAPIDown:
       if: >-
-        max(openstack_api_check_status{service=~"nova.+"}) by (service) == 0
+        openstack_api_check_status{service=~"nova.*|placement"} == 0
       for: 2m
       labels:
         severity: down
