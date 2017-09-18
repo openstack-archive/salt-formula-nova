@@ -146,6 +146,61 @@ Configuration of policy.json file
           # Add key without value to remove line from policy.json
           'compute:create:attach_network':
 
+
+Client-side RabbitMQ TLS configuration:
+---------------------------------------
+
+To enable TLS for oslo.messaging you need to provide the CA certificate.
+
+By default system-wide CA certs is used. Nothing should be specified except `ssl.enabled`.
+
+.. code-block:: yaml
+
+  nova:
+    controller:
+      ....
+      message_queue:
+        ssl:
+          enabled: True
+
+
+
+Use `cacert_file` option to specify the CA-cert file path explicitly:
+
+.. code-block:: yaml
+
+  nova:
+    controller:
+      ....
+      message_queue:
+        ssl:
+          enabled: True
+          cacert_file: /etc/ssl/rabbitmq-ca.pem
+
+To manage content of the `cacert_file` use the `cacert` option:
+
+.. code-block:: yaml
+
+  nova:
+    controller:
+      ....
+      message_queue:
+        ssl:
+          enabled: True
+          cacert: |
+
+          -----BEGIN CERTIFICATE-----
+                    ...
+          -----END CERTIFICATE-------
+
+          cacert_file: /etc/openstack/rabbitmq-ca.pem
+
+
+Notice:
+ * The `message_queue.port` is set to **5671** (AMQPS) by default if `ssl.enabled=True`.
+ * Use `message_queue.ssl.version` if you need to specify protocol version. By default is TLSv1 for python < 2.7.9 and TLSv1_2 for version above.
+
+
 Compute nodes
 -------------
 
@@ -258,7 +313,7 @@ Client-side RabbitMQ HA setup
 .. code-block:: yaml
 
    nova:
-     controller:
+     compute:
        ....
        message_queue:
          engine: rabbitmq
@@ -270,7 +325,6 @@ Client-side RabbitMQ HA setup
          password: pwd
          virtual_host: '/openstack'
       ....
-
 
 Nova with ephemeral configured with Ceph
 
