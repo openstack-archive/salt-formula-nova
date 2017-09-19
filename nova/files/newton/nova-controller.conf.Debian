@@ -21,7 +21,6 @@ ram_allocation_ratio = {{ controller.ram_allocation_ratio }}
 disk_allocation_ratio = {{ controller.disk_allocation_ratio }}
 scheduler_default_filters = {{ controller.scheduler_default_filters }}
 scheduler_available_filters = nova.scheduler.filters.all_filters
-scheduler_available_filters = nova.scheduler.filters.pci_passthrough_filter.PciPassthroughFilter
 {% for filter in controller.get('scheduler_custom_filters', []) %}
 scheduler_available_filters = {{ filter }}
 {% endfor %}
@@ -38,7 +37,7 @@ max_age=0
 scheduler_max_attempts=3
 max_io_ops_per_host=8
 max_instances_per_host=50
-scheduler_host_manager=host_manager
+scheduler_host_manager={{ controller.get('scheduler_host_manager', 'host_manager') }}
 use_forwarded_for=False
 reservation_expire=86400
 compute_driver = libvirt.LibvirtDriver
