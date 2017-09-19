@@ -17,7 +17,12 @@ api_paste_config=/etc/nova/api-paste.ini
 volumes_path=/var/lib/nova/volumes
 enabled_apis=ec2,osapi_compute,metadata
 vnc_keymap = {{ compute.get('vnc_keymap', 'en-us') }}
-
+{%- if compute.my_ip is defined %}
+my_ip={{ compute.my_ip }}
+{%- endif %}
+{%- if compute.host is defined %}
+host={{ compute.host }}
+{%- endif %}
 
 {%- if compute.image.use_cow is defined %}
 use_cow_images = {{ compute.image.use_cow }}
@@ -95,6 +100,8 @@ instance_usage_audit_period = hour
 notify_on_state_change = vm_and_task_state
 
 {% endif %}
+
+instances_path = {{ compute.instances_path }}
 
 {%- if compute.notification is defined %}
 notification_driver = {{ compute.notification.driver }}
@@ -176,6 +183,9 @@ timeout=30
 [cinder]
 os_region_name = {{ compute.identity.region }}
 catalog_info=volumev2:cinderv2:internalURL
+{%- if compute.cross_az_attach is defined %}
+cross_az_attach={{ compute.cross_az_attach }}
+{%- endif %}
 
 {%- if compute.get('ceph', {}).ephemeral is defined %}
 [libvirt]
@@ -187,4 +197,11 @@ rbd_secret_uuid={{ compute.ceph.secret_uuid }}
 libvirt_inject_password=false
 libvirt_inject_key=false
 libvirt_inject_partition=-2
+{%- endif %}
+
+{%- if compute.upgrade_levels is defined %}
+[upgrade_levels]
+{%- for key, value in compute.upgrade_levels.iteritems() %}
+{{ key }}={{ value }}
+{%- endfor %}
 {%- endif %}

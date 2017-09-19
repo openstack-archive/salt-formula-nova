@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
-Nova state that ensures that defined flavor is present
+Custom Nova state
 '''
 import logging
 import collections
@@ -12,7 +12,7 @@ def __virtual__():
     '''
     Only load if the nova module is in __salt__
     '''
-    return 'novang' if 'nova.flavor_list' in __salt__ else False
+    return 'novang'
 
 
 def flavor_present(name, flavor_id=0, ram=0, disk=0, vcpus=1, profile=None):
@@ -23,17 +23,128 @@ def flavor_present(name, flavor_id=0, ram=0, disk=0, vcpus=1, profile=None):
            'changes': {},
            'result': True,
            'comment': 'Flavor "{0}" already exists'.format(name)}
-    project = __salt__['nova.flavor_list'](profile)
+    project = __salt__['novang.flavor_list'](profile)
     if 'Error' in project:
         pass
     elif name in project:
         pass
     else:
-        __salt__['nova.flavor_create'](name, flavor_id, ram, disk, vcpus, profile)
+        __salt__['novang.flavor_create'](name, flavor_id, ram, disk, vcpus, profile)
         ret['comment'] = 'Flavor {0} has been created'.format(name)
         ret['changes']['Flavor'] = 'Created'
     return ret
 
+
+def map_instances(name='cell1'):
+    '''
+    Ensures that the nova instances are mapped to cell
+    '''
+    ret = {'name': name,
+           'changes': {},
+           'result': False,
+           'comment': 'Cell "{0}" does not exists'.format(name)}
+    cell_uuid = __salt__['cmd.shell']('nova-manage cell_v2 list_cells 2>&- | grep ' + name + ' | tr -d \"\n\" | awk \'{print $4}\'')
+    if cell_uuid:
+        try:
+            __salt__['cmd.shell']('nova-manage cell_v2 map_instances --cell_uuid ' + cell_uuid)
+            ret['result'] = True
+            ret['comment'] = 'Instances were mapped to cell named {0}'.format(name)
+            ret['changes']['Instances'] = 'Mapped to cell named {0}'.format(name)
+        except:
+            ret['result'] = False
+            ret['comment'] = 'Error while mapping instances to cell named {0}'.format(name)
+            ret['changes']['Instances'] = 'Failed to map to cell named {0}'.format(name)
+    return ret
+
+
+def api_db_version_present(name=None, version="20"):
+    '''
+    Ensures that specific api_db version is present
+    '''
+    ret = {'name': 'api_db --version',
+           'changes': {},
+           'result': True,
+           'comment': 'Current Api_db version is not < than "{0}".'.format(version)}
+    api_db_version = __salt__['cmd.shell']('nova-manage api_db version 2>/dev/null')
+    try:
+        api_db_version = int(api_db_version)
+        version = int(version)
+    except:
+        # nova is not installed
+        ret = _no_change('api_db --version', None, test=True)
+        return ret
+    if api_db_version < version:
+        try:
+            __salt__['cmd.shell']('nova-manage api_db sync --version ' + str(version))
+            ret['result'] = True
+            ret['comment'] = 'Nova-manage api_db sync --version {0} was successfuly executed'.format(version)
+            ret['changes']['api_db'] = 'api_db sync --version {0}'.format(version)
+        except:
+            ret['result'] = False
+            ret['comment'] = 'Error while executing nova-manage api_db sync --version {0}'.format(version)
+            ret['changes']['api_db'] = 'Failed to execute api_db sync --version {0}'.format(version)
+    return ret
+
+
+def db_version_present(name=None, version="334"):
+    '''
+    Ensures that specific api_db version is present
+    '''
+    ret = {'name': 'db --version',
+           'changes': {},
+           'result': True,
+           'comment': 'Current db version is not < than "{0}".'.format(version)}
+    db_version = __salt__['cmd.shell']('nova-manage db version 2>/dev/null')
+    try:
+        db_version = int(db_version)
+        version = int(version)
+    except:
+        # nova is not installed
+        ret = _no_change('db --version', None, test=True)
+        return ret
+
+    if db_version < version:
+        try:
+            __salt__['cmd.shell']('nova-manage db sync --version ' + str(version))
+            ret['result'] = True
+            ret['comment'] = 'Nova-manage db sync --version {0} was successfuly executed'.format(version)
+            ret['changes']['db'] = 'db sync --version {0}'.format(version)
+        except:
+            ret['result'] = False
+            ret['comment'] = 'Error while executing nova-manage db sync --version {0}'.format(version)
+            ret['changes']['db'] = 'Failed to execute db sync --version {0}'.format(version)
+    return ret
+
+def online_data_migrations_present(name=None, api_db_version="20", db_version="334"):
+    '''
+    Ensures that online_data_migrations are enforced if specific version of api_db and db is present
+    '''
+    ret = {'name': 'online_data_migrations',
+           'changes': {},
+           'result': True,
+           'comment': 'Current api_db version != {0} a db version != {1}.'.format(api_db_version, db_version)}
+    cur_api_db_version = __salt__['cmd.shell']('nova-manage api_db version 2>/dev/null')
+    cur_db_version = __salt__['cmd.shell']('nova-manage db version 2>/dev/null')
+    try:
+        cur_api_db_version = int(cur_api_db_version)
+        cur_db_version = int(cur_db_version)
+        api_db_version = int(api_db_version)
+        db_version = int(db_version)
+    except:
+        # nova is not installed
+        ret = _no_change('online_data_migrations', None, test=True)
+        return ret
+    if cur_api_db_version == api_db_version and cur_db_version == db_version:
+        try:
+            __salt__['cmd.shell']('nova-manage db online_data_migrations')
+            ret['result'] = True
+            ret['comment'] = 'nova-manage db online_data_migrations was successfuly executed'
+            ret['changes']['online_data_migrations'] = 'online_data_migrations on api_db version {0} and db version {1}'.format(api_db_version, db_version)
+        except:
+            ret['result'] = False
+            ret['comment'] = 'Error while executing nova-manage db online_data_migrations'
+            ret['changes']['online_data_migrations'] = 'Failed to execute online_data_migrations on api_db version {0} and db version {1}'.format(api_db_version, db_version)
+    return ret
 
 def quota_present(tenant_name, profile, name=None, **kwargs):
     '''
@@ -92,7 +203,7 @@ def instance_present(name, flavor, image, networks, security_groups=None, profil
     existing_instances = __salt__['novang.server_list'](profile, tenant_name)
     if name in existing_instances:
         return ret
-    existing_flavors = __salt__['nova.flavor_list'](profile)
+    existing_flavors = __salt__['novang.flavor_list'](profile)
     if flavor in existing_flavors:
         flavor_id = existing_flavors[flavor]['id']
     else:
@@ -101,7 +212,7 @@ def instance_present(name, flavor, image, networks, security_groups=None, profil
                 'result': False,
                 'comment': 'Flavor "{0}" doesn\'t exists'.format(flavor)}
 
-    existing_image = __salt__['nova.image_list'](image, profile)
+    existing_image = __salt__['novang.image_list'](image, profile)
     if not existing_image:
         return {'name': name,
                 'changes': {},
@@ -139,6 +250,23 @@ def instance_present(name, flavor, image, networks, security_groups=None, profil
             'changes': {},
             'result': True,
             'comment': 'Instance "{0}" was successfuly created'.format(name)}
+
+
+def keypair_present(name, pub_file=None, pub_key=None, profile=None):
+    """
+    Ensures that the Nova key-pair exists
+    """
+
+    existing_keypairs = __salt__['novang.keypair_list'](profile)
+    if name in existing_keypairs:
+        return _already_exists(name, 'Keypair')
+    else:
+        res = __salt__['novang.keypair_add'](name, pubfile=pub_file,
+                                             pubkey=pub_key, profile=profile)
+        if res and res['name'] == name:
+            return _created(name, 'Keypair', res)
+        return _create_failed(name, 'Keypair')
+
 
 def _already_exists(name, resource):
     changes_dict = {'name': name,
@@ -180,4 +308,13 @@ def _no_change(name, resource, test=False):
     else:
         changes_dict['comment'] = \
             '{0} {1} is in correct state'.format(resource, name)
+    return changes_dict
+
+
+def _create_failed(name, resource):
+    changes_dict = {'name': name,
+                    'changes': {},
+                    'comment': '{0} {1} failed to create'.format(resource,
+                                                                 name),
+                    'result': False}
     return changes_dict

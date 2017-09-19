@@ -1,0 +1,6 @@
+suites:
+
+  - name: <%= ENV['SUITE'] %>
+    provisioner:
+      pillars-from-files:
+        nova.sls: tests/pillar/<%= ENV['SUITE'] %>.sls

@@ -33,6 +33,23 @@ nova_openstack_flavor_{{ flavor_name }}:
 
 {%- endif %}
 
+{%- if identity.keypair is defined %}
+
+{%- for keypair_name, keypair in identity.keypair.iteritems() %}
+nova_keypair_{{ keypair_name }}:
+  novang.keypair_present:
+    - name: {{ keypair_name }}
+    {%- if keypair.pub_file is defined %}
+    - pub_file: {{ keypair.pub_file }}
+    {%- endif %}
+    {%- if keypair.pub_key is defined %}
+    - pub_key: {{ keypair.pub_key }}
+    {%- endif %}
+    - profile: {{ identity_name }}
+{%- endfor %}
+
+{%- endif %}
+
 {%- if identity.availability_zones is defined %}
 
 {%- for availability_zone_name in identity.availability_zones %}

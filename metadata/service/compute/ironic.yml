@@ -1,0 +1,52 @@
+applications:
+- nova
+classes:
+- service.nova.support
+parameters:
+  nova:
+    compute:
+      version: ${_param:nova_version}
+      enabled: true
+      compute_driver: 'ironic.IronicDriver'
+      ram_allocation_ratio: 1.0
+      force_config_drive: True
+      config_drive_format: 'iso9660'
+      database:
+        engine: mysql
+        host: ${_param:cluster_vip_address}
+        port: 3306
+        name: nova
+        user: nova
+        password: ${_param:mysql_nova_password}
+      identity:
+        engine: keystone
+        region: RegionOne
+        host: ${_param:cluster_vip_address}
+        port: 35357
+        user: nova
+        password: ${_param:keystone_nova_password}
+        tenant: service
+      message_queue:
+        engine: rabbitmq
+        host: ${_param:cluster_vip_address}
+        port: 5672
+        user: openstack
+        password: ${_param:rabbitmq_openstack_password}
+        virtual_host: '/openstack'
+      image:
+        engine: glance
+        host: ${_param:cluster_vip_address}
+        port: 9292
+      network:
+        engine: neutron
+        region: RegionOne
+        host: ${_param:cluster_vip_address}
+        port: 9696
+      ironic:
+        region: RegionOne
+        host: ${_param:ironic_service_host}
+        port: 6385
+        user: ironic
+        tenant: service
+        password: ${_param:keystone_ironic_password}
+        auth_type: password

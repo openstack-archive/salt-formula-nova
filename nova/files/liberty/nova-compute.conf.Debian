@@ -24,6 +24,12 @@ pci_passthrough_whitelist = {"devname":"{{ sriov.devname }}","physical_network":
 {%- if compute.image.use_cow is defined %}
 use_cow_images = {{ compute.image.use_cow }}
 {%- endif %}
+{%- if compute.my_ip is defined %}
+my_ip={{ compute.my_ip }}
+{%- endif %}
+{%- if compute.host is defined %}
+host={{ compute.host }}
+{%- endif %}
 
 reserved_host_memory_mb = {{ compute.get('reserved_host_memory_mb', '512') }}
 
@@ -99,6 +105,8 @@ service_down_time = 90
 instance_usage_audit = True
 instance_usage_audit_period = hour
 {% endif %}
+
+instances_path = {{ compute.instances_path }}
 
 {%- if compute.get('notification', {}).notify_on is defined %}
 {%- for key, value in compute.notification.notify_on.iteritems() %}
@@ -190,10 +198,13 @@ timeout=30
 [cinder]
 os_region_name = {{ compute.identity.region }}
 catalog_info=volumev2:cinderv2:internalURL
+{%- if compute.cross_az_attach is defined %}
+cross_az_attach={{ compute.cross_az_attach }}
+{%- endif %}
 
 {%- if compute.get('ceph', {}).ephemeral is defined %}
 [libvirt]
-disk_cachemodes="network=writeback,block=none"
+disk_cachemodes="{{ compute.get('disk_cachemodes', 'network=writeback,block=none') }}"
 cpu_mode=host-passthrough
 virt_type=kvm
 live_migration_flag=VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE,VIR_MIGRATE_PERSIST_DEST
@@ -209,3 +220,10 @@ libvirt_inject_partition=-2
 
 [vnc]
 keymap = {{ compute.get('vnc_keymap', 'en-us') }}
+
+{%- if compute.upgrade_levels is defined %}
+[upgrade_levels]
+{%- for key, value in compute.upgrade_levels.iteritems() %}
+{{ key }}={{ value }}
+{%- endfor %}
+{%- endif %}

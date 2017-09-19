@@ -38,7 +38,7 @@ max_instances_per_host=50
 scheduler_host_manager=host_manager
 use_forwarded_for=False
 reservation_expire=86400
-compute_driver = nova.virt.libvirt.LibvirtDriver
+compute_driver = libvirt.LibvirtDriver
 rootwrap_config = /etc/nova/rootwrap.conf
 auth_strategy = keystone
 firewall_driver=nova.virt.firewall.NoopFirewallDriver
@@ -210,6 +210,16 @@ service_metadata_proxy=True
 [cinder]
 os_region_name = {{ controller.identity.region }}
 catalog_info=volumev2:cinderv2:internalURL
+{%- if controller.cross_az_attach is defined %}
+cross_az_attach={{ controller.cross_az_attach }}
+{%- endif %}
 
 [wsgi]
 api_paste_config=/etc/nova/api-paste.ini
+
+{%- if controller.upgrade_levels is defined %}
+[upgrade_levels]
+{%- for key, value in controller.upgrade_levels.iteritems() %}
+{{ key }}={{ value }}
+{%- endfor %}
+{%- endif %}

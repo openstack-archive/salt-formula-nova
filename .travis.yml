@@ -17,16 +17,21 @@ install:
   - bundle install
 
 env:
-  - PLATFORM=trevorj/salty-whales:trusty OS_VERSION=mitaka
-  - PLATFORM=trevorj/salty-whales:xenial OS_VERSION=mitaka
-  - PLATFORM=trevorj/salty-whales:xenial OS_VERSION=newton
+  - PLATFORM=trevorj/salty-whales:trusty OS_VERSION=mitaka SUITE=compute_cluster
+  - PLATFORM=trevorj/salty-whales:trusty OS_VERSION=mitaka SUITE=control_cluster
+  - PLATFORM=trevorj/salty-whales:xenial OS_VERSION=mitaka SUITE=compute_cluster
+  - PLATFORM=trevorj/salty-whales:xenial OS_VERSION=mitaka SUITE=control_cluster
+  - PLATFORM=trevorj/salty-whales:xenial OS_VERSION=newton SUITE=compute_cluster
+  - PLATFORM=trevorj/salty-whales:xenial OS_VERSION=newton SUITE=control_cluster
+  - PLATFORM=trevorj/salty-whales:xenial OS_VERSION=ocata SUITE=compute_cluster
+  - PLATFORM=trevorj/salty-whales:xenial OS_VERSION=ocata SUITE=control_cluster
 
 before_script:
   - set -o pipefail
   - make test | tail
 
 script:
-  - test ! -e .kitchen.yml || bundle exec kitchen test -t tests/integration
+  -  KITCHEN_LOCAL_YAML=.kitchen.travis.yml bundle exec kitchen test -t tests/integration
 
 notifications:
   webhooks:

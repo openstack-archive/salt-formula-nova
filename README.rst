@@ -26,6 +26,7 @@ Nova services on the controller node
         cpu_allocation_ratio: 8.0
         ram_allocation_ratio: 1.0
         disk_allocation_ratio: 1.0
+        cross_az_attach: false
         workers: 8
         report_interval: 60
         bind:
@@ -145,6 +146,61 @@ Configuration of policy.json file
           # Add key without value to remove line from policy.json
           'compute:create:attach_network':
 
+
+Client-side RabbitMQ TLS configuration:
+---------------------------------------
+
+To enable TLS for oslo.messaging you need to provide the CA certificate.
+
+By default system-wide CA certs is used. Nothing should be specified except `ssl.enabled`.
+
+.. code-block:: yaml
+
+  nova:
+    controller:
+      ....
+      message_queue:
+        ssl:
+          enabled: True
+
+
+
+Use `cacert_file` option to specify the CA-cert file path explicitly:
+
+.. code-block:: yaml
+
+  nova:
+    controller:
+      ....
+      message_queue:
+        ssl:
+          enabled: True
+          cacert_file: /etc/ssl/rabbitmq-ca.pem
+
+To manage content of the `cacert_file` use the `cacert` option:
+
+.. code-block:: yaml
+
+  nova:
+    controller:
+      ....
+      message_queue:
+        ssl:
+          enabled: True
+          cacert: |
+
+          -----BEGIN CERTIFICATE-----
+                    ...
+          -----END CERTIFICATE-------
+
+          cacert_file: /etc/openstack/rabbitmq-ca.pem
+
+
+Notice:
+ * The `message_queue.port` is set to **5671** (AMQPS) by default if `ssl.enabled=True`.
+ * Use `message_queue.ssl.version` if you need to specify protocol version. By default is TLSv1 for python < 2.7.9 and TLSv1_2 for version above.
+
+
 Compute nodes
 -------------
 
@@ -157,12 +213,15 @@ Nova controller services on compute node
         version: juno
         enabled: true
         virtualization: kvm
+        cross_az_attach: false
+        disk_cachemodes: network=writeback,block=none
         availability_zone: availability_zone_01
         aggregates:
         - hosts_with_fc
         - hosts_with_ssd
         security_group: true
         resume_guests_state_on_host_boot: False
+        my_ip: 10.1.0.16
         bind:
           vnc_address: 172.20.0.100
           vnc_port: 6080
@@ -207,6 +266,19 @@ Nova controller services on compute node
         qemu:
           max_files: 4096
           max_processes: 4096
+        host: node-12.domain.tld
+
+Group membership for user nova (upgrade related)
+
+.. code-block:: yaml
+
+    nova:
+      compute:
+        enabled: true
+        ...
+        user:
+          groups:
+          - libvirt
 
 Nova services on compute node with OpenContrail
 
@@ -241,7 +313,7 @@ Client-side RabbitMQ HA setup
 .. code-block:: yaml
 
    nova:
-     controller:
+     compute:
        ....
        message_queue:
          engine: rabbitmq
@@ -253,7 +325,6 @@ Client-side RabbitMQ HA setup
          password: pwd
          virtual_host: '/openstack'
       ....
-
 
 Nova with ephemeral configured with Ceph
 
@@ -268,10 +339,55 @@ Nova with ephemeral configured with Ceph
           rbd_pool: nova
           rbd_user: nova
           secret_uuid: 03006edd-d957-40a3-ac4c-26cd254b3731
+      ....
 
+Nova with ephemeral configured with LVM
+
+.. code-block:: yaml
+
+    nova:
+      compute:
+        enabled: true
+        ...
+        lvm:
+          ephemeral: yes
+          images_volume_group: nova_vg
+
+    linux:
+      storage:
+        lvm:
+          nova_vg:
+            name: nova_vg
+            devices:
+              - /dev/sdf
+              - /dev/sdd
+              - /dev/sdg
+              - /dev/sde
+              - /dev/sdc
+              - /dev/sdj
+              - /dev/sdh
 
 Client role
 -----------
+
+Nova configured with NFS
+
+.. code-block:: yaml
+
+    nova:
+      compute:
+        instances_path: /mnt/nova/instances
+
+    linux:
+      storage:
+        enabled: true
+        mount:
+          nfs_nova:
+            enabled: true
+            path: ${nova:compute:instances_path}
+            device: 172.31.35.145:/data
+            file_system: nfs
+            opts: rw,vers=3
 
 Nova flavors
 
@@ -325,6 +441,20 @@ Aggregates
             aggregates:
             - aggregate1
             - aggregate2
+
+Upgrade levels
+
+.. code-block:: yaml
+
+    nova:
+      controller:
+        upgrade_levels:
+          compute: juno
+
+    nova:
+      compute:
+        upgrade_levels:
+          compute: juno
 
 SR-IOV
 ------
@@ -399,16 +529,71 @@ In order to actually utilize this feature, the following metadata must be set on
   glance image-update --property hw_scsi_model=virtio-scsi <image>
   glance image-update --property hw_disk_bus=scsi <image>
 
+
 Scheduler Host Manager
 ----------------------
 
 Specify a custom host manager.
+
+libvirt CPU mode
+----------------
+
+Allow setting the model of CPU that is exposed to a VM. This allows better
+support live migration between hypervisors with different hardware, among other
+things. Defaults to host-passthrough.
+
 
 .. code-block:: yaml
 
   nova:
     controller:
       scheduler_host_manager: ironic_host_manager
+
+    compute:
+      cpu_mode: host-model
+
+Nova compute workarounds
+------------------------
+
+Live snapshotting is disabled by default in nova. To enable this, it needs a manual switch.
+
+From manual:
+
+.. code-block:: yaml
+
+  # When using libvirt 1.2.2 live snapshots fail intermittently under load
+  # (likely related to concurrent libvirt/qemu operations). This config
+  # option provides a mechanism to disable live snapshot, in favor of cold
+  # snapshot, while this is resolved. Cold snapshot causes an instance
+  # outage while the guest is going through the snapshotting process.
+  #
+  # For more information, refer to the bug report:
+  #
+  #   https://bugs.launchpad.net/nova/+bug/1334398
+
+Configurable pillar data:
+
+.. code-block:: yaml
+
+  nova:
+    compute:
+      workaround:
+        disable_libvirt_livesnapshot: False
+
+Config drive options
+--------------------
+
+See example below on how to configure the options for the config drive.
+
+.. code-block:: yaml
+
+  nova:
+    compute:
+      config_drive:
+        forced: True  # Default: True
+        cdrom: True  # Default: False
+        format: iso9660  # Default: vfat
+        inject_password: False  # Default: False
 
 
 Documentation and Bugs

@@ -1,4 +1,4 @@
-{%- from "nova/map.jinja" import controller with context %}
+{%- from "nova/map.jinja" import controller, system_cacerts_file with context %}
 [DEFAULT]
 
 #
@@ -3035,15 +3035,18 @@ zmq_linger=30
 #rpc_response_timeout=60
 rpc_response_timeout=3600
 
+{%- set rabbit_port = controller.message_queue.get('port', 5671 if controller.message_queue.get('ssl',{}).get('enabled', False) else 5672) %}
+
 {%- if controller.message_queue.members is defined %}
 transport_url = rabbit://{% for member in controller.message_queue.members -%}
-                             {{ controller.message_queue.user }}:{{ controller.message_queue.password }}@{{ member.host }}:{{ member.get('port', 5672) }}
+                             {{ controller.message_queue.user }}:{{ controller.message_queue.password }}@{{ member.host }}:{{ member.get('port', rabbit_port) }}
                              {%- if not loop.last -%},{%- endif -%}
                          {%- endfor -%}
                              /{{ controller.message_queue.virtual_host }}
 {%- else %}
-transport_url = rabbit://{{ controller.message_queue.user }}:{{ controller.message_queue.password }}@{{ controller.message_queue.host }}:{{ controller.message_queue.port }}/{{ controller.message_queue.virtual_host }}
+transport_url = rabbit://{{ controller.message_queue.user }}:{{ controller.message_queue.password }}@{{ controller.message_queue.host }}:{{ rabbit_port}}/{{ controller.message_queue.virtual_host }}
 {%- endif %}
+
 
 # DEPRECATED: The messaging driver to use, defaults to rabbit. Other drivers
 # include amqp and zmq. (string value)
@@ -3413,7 +3416,7 @@ db_max_retries = 3
 db_retry_interval = 1
 connection_debug = 10
 pool_timeout = 120
-connection = {{ controller.database.engine }}+pymysql://{{ controller.database.user }}:{{ controller.database.password }}@{{ controller.database.host }}/{{ controller.database.name }}_api?charset=utf8
+connection = {{ controller.database.engine }}+pymysql://{{ controller.database.user }}:{{ controller.database.password }}@{{ controller.database.host }}/{{ controller.database.name }}_api?charset=utf8{%- if controller.database.get('ssl',{}).get('enabled',False) %}&ssl_ca={{ controller.database.ssl.get('cacert_file', system_cacerts_file) }}{% endif %}
 
 # The SQLAlchemy connection string to use to connect to the database. (string
 # value)
@@ -4103,7 +4106,9 @@ os_region_name = {{ controller.identity.region }}
 # By default there is no availability zone restriction on volume attach.
 #  (boolean value)
 #cross_az_attach=true
-
+{%- if controller.cross_az_attach is defined %}
+cross_az_attach={{ controller.cross_az_attach }}
+{%- endif %}
 
 [cloudpipe]
 
@@ -4453,7 +4458,7 @@ db_max_retries = 3
 db_retry_interval = 1
 connection_debug = 10
 pool_timeout = 120
-connection = {{ controller.database.engine }}+pymysql://{{ controller.database.user }}:{{ controller.database.password }}@{{ controller.database.host }}/{{ controller.database.name }}?charset=utf8
+connection = {{ controller.database.engine }}+pymysql://{{ controller.database.user }}:{{ controller.database.password }}@{{ controller.database.host }}/{{ controller.database.name }}?charset=utf8{%- if controller.database.get('ssl',{}).get('enabled',False) %}&ssl_ca={{ controller.database.ssl.get('cacert_file', system_cacerts_file) }}{% endif %}
 
 # If True, SQLite uses synchronous mode. (boolean value)
 # Deprecated group/name - [DEFAULT]/sqlite_synchronous
@@ -7070,7 +7075,7 @@ auth_type=v3password
 project_domain_name = Default
 user_domain_name = Default
 auth_url = http://{{ controller.identity.host }}:35357/v3
-{% if pillar.neutron is defined %}
+{% if pillar.neutron is defined and pillar.neutron.server is defined %}
 password={{ pillar.neutron.server.identity.password }}
 project_name={{ pillar.neutron.server.identity.tenant }}
 username={{ pillar.neutron.server.identity.user }}
@@ -7929,6 +7934,22 @@ rpc_conn_pool_size = 300
 # message (floating point value)
 #rpc_retry_delay=0.25
 
+{# rabbitmq ssl configuration #}
+{%- if controller.message_queue.get('ssl',{}).get('enabled', False) %}
+rabbit_use_ssl=true
+
+{%- if controller.message_queue.ssl.version is defined %}
+kombu_ssl_version = {{ controller.message_queue.ssl.version }}
+{%- elif salt['grains.get']('pythonversion') > [2,7,8] %}
+kombu_ssl_version = TLSv1_2
+{%- endif %}
+
+{%- if controller.message_queue.ssl.cacert_file is defined %}
+kombu_ssl_ca_certs = {{ controller.message_queue.ssl.cacert_file }}
+{%- else %}
+kombu_ssl_ca_certs = {{ system_cacerts_file }}
+{%- endif %}
+{%- endif %}
 
 [oslo_messaging_zmq]
 
@@ -9395,6 +9416,11 @@ html5proxy_base_url = {{ controller.vncproxy_url }}/spice_auto.html
 
 
 [upgrade_levels]
+{%- if controller.upgrade_levels is defined %}
+{%- for key, value in controller.upgrade_levels.iteritems() %}
+{{ key }}={{ value }}
+{%- endfor %}
+{%- endif %}
 #
 # upgrade_levels options are used to set version cap for RPC
 # messages sent between different nova services.
@@ -10527,6 +10553,9 @@ api_paste_config=/etc/nova/api-paste.ini
 # Time in secs to wait for a block device to be created (integer value)
 # Minimum value: 1
 #block_device_creation_timeout=10
+{%- if controller.block_device_creation_timeout is defined %}
+block_device_creation_timeout = {{ controller.block_device_creation_timeout }}
+{%- endif  %}
 
 #
 # Maximum size in bytes of kernel or ramdisk images.

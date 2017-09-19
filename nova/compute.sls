@@ -1,5 +1,6 @@
-{%- from "nova/map.jinja" import compute with context %}
-{%- if compute.enabled %}
+{%- from "nova/map.jinja" import compute, system_cacerts_file with context %}
+
+{%- if compute.get('enabled') %}
 
 nova_compute_packages:
   pkg.installed:
@@ -29,47 +30,6 @@ vm.swappiness:
     - service: nova_compute_services
 {%- endif %}
 
-{%- if not salt['user.info']('nova') %}
-# MOS9 libvirt fix to create group
-group_libvirtd:
-  group.present:
-    - name: libvirtd
-    - system: True
-    - require_in:
-      - user: user_nova_compute
-
-user_nova_compute:
-  user.present:
-  - name: nova
-  - home: /var/lib/nova
-  {%- if compute.user is defined %}
-  - shell: /bin/bash
-  {%- else %}
-  - shell: /bin/false
-  {%- endif %}
-  - uid: 303
-  - gid: 303
-  - system: True
-  - groups:
-    {%- if salt['group.info']('libvirtd') %}
-    - libvirtd
-    {%- endif %}
-    - nova
-  - require_in:
-    - pkg: nova_compute_packages
-    {%- if compute.user is defined %}
-    - file: /var/lib/nova/.ssh/id_rsa
-    {%- endif %}
-
-group_nova_compute:
-  group.present:
-    - name: nova
-    - gid: 303
-    - system: True
-    - require_in:
-      - user: user_nova_compute
-{%- endif %}
-
 {%- if compute.user is defined %}
 
 nova_auth_keys:
@@ -83,8 +43,12 @@ user_nova_bash:
   - name: nova
   - home: /var/lib/nova
   - shell: /bin/bash
+{%- if compute.user.groups is defined %}
+  - groups: {{ compute.user.groups }}
+{%- else %}
   - groups:
     - libvirtd
+{%- endif %}
 
 /var/lib/nova/.ssh/id_rsa:
   file.managed:
@@ -104,21 +68,39 @@ user_nova_bash:
 
 {%- endif %}
 
-{%- if pillar.nova.controller is not defined %}
+{%- if not pillar.nova.get('controller',{}).get('enabled') %}
 /etc/nova/nova.conf:
   file.managed:
   - source: salt://nova/files/{{ compute.version }}/nova-compute.conf.{{ grains.os_family }}
   - template: jinja
-  - watch_in:
-    - service: nova_compute_services
   - require:
     - pkg: nova_compute_packages
+
+{%- if compute.message_queue.get('ssl',{}).get('enabled',False)  %}
+rabbitmq_ca:
+{%- if compute.message_queue.ssl.cacert is defined %}
+  file.managed:
+    - name: {{ compute.message_queue.ssl.cacert_file }}
+    - contents_pillar: nova:compute:message_queue:ssl:cacert
+    - mode: 0444
+    - makedirs: true
+{%- else %}
+  file.exists:
+   - name: {{ compute.message_queue.ssl.get('cacert_file', system_cacerts_file) }}
+{%- endif %}
+{%- endif %}
+
 {%- endif %}
 
 nova_compute_services:
   service.running:
   - enable: true
   - names: {{ compute.services }}
+  - watch:
+    - file: /etc/nova/nova.conf
+  {%- if compute.message_queue.get('ssl',{}).get('enabled',False) %}
+    - file: rabbitmq_ca
+  {%- endif %}
 
 {%- set ident = compute.identity %}
 
@@ -155,6 +137,49 @@ Add_compute_to_aggregate_{{ aggregate }}:
 
 {%- if compute.virtualization == 'kvm' %}
 
+{%- if not salt['user.info']('nova') %}
+# MOS9 libvirt fix to create group
+group_libvirtd:
+  group.present:
+    - name: libvirtd
+    - system: True
+    - require_in:
+      - user: user_nova_compute
+
+user_nova_compute:
+  user.present:
+  - name: nova
+  - home: /var/lib/nova
+  {%- if compute.user is defined %}
+  - shell: /bin/bash
+  {%- else %}
+  - shell: /bin/false
+  {%- endif %}
+  {# note: nova uid/gid values would not be evaluated after user is created. #}
+  - uid: {{ compute.get('nova_uid', 303) }}
+  - gid: {{ compute.get('nova_gid', 303) }}
+  - system: True
+  - groups:
+    {%- if salt['group.info']('libvirtd') %}
+    - libvirtd
+    {%- endif %}
+    - nova
+  - require_in:
+    - pkg: nova_compute_packages
+    {%- if compute.user is defined %}
+    - file: /var/lib/nova/.ssh/id_rsa
+    {%- endif %}
+
+group_nova_compute:
+  group.present:
+    - name: nova
+    {# note: nova gid value would not be evaluated after user is created. #}
+    - gid: {{ compute.get('nova_gid', 303) }}
+    - system: True
+    - require_in:
+      - user: user_nova_compute
+{%- endif %}
+
 {% if compute.ceph is defined %}
 
 ceph_package:
@@ -189,7 +214,6 @@ ceph_virsh_secret_set_value:
   - template: jinja
   - require:
     - pkg: nova_compute_packages
-{%- if not grains.get('noservices', False) %}
   - watch_in:
     - service: {{ compute.libvirt_service }}
 
@@ -203,7 +227,6 @@ libvirt_restart_systemd:
   - require_in:
     - service: {{ compute.libvirt_service }}
 
-{%- endif %}
 {%- endif %}
 {%- endif %}
 
@@ -228,17 +251,18 @@ virsh net-undefine default:
     - pkg: nova_compute_packages
   - onlyif: "virsh net-list | grep default"
 
-{%- if not grains.get('noservices', False) %}
 {{ compute.libvirt_service }}:
   service.running:
   - enable: true
+  {%- if grains.get('noservices') %}
+  - onlyif: /bin/false
+  {%- endif %}
   - require:
     - pkg: nova_compute_packages
     - cmd: virsh net-undefine default
   - watch:
     - file: /etc/libvirt/{{ compute.libvirt_config }}
     - file: /etc/libvirt/qemu.conf
-{%- endif %}
 
 {%- if grains.get('init', None) == "upstart" %}
 # MOS9 libvirt fix for upstart

@@ -15,6 +15,12 @@ ec2_private_dns_show_ip=False
 api_paste_config=/etc/nova/api-paste.ini
 volumes_path=/var/lib/nova/volumes
 enabled_apis=ec2,osapi_compute,metadata
+{%- if compute.my_ip is defined %}
+my_ip={{ compute.my_ip }}
+{%- endif %}
+{%- if compute.host is defined %}
+host={{ compute.host }}
+{%- endif %}
 
 allow_resize_to_same_host=True
 
@@ -107,6 +113,8 @@ notification_driver = messagingv2
 
 {% endif %}
 
+instances_path = {{ compute.instances_path }}
+
 {%- if compute.notification is defined %}
 notification_driver = {{ compute.notification.driver }}
 
@@ -146,3 +154,13 @@ libvirt_inject_partition=-2
 
 [cinder]
 catalog_info=volumev2:cinderv2:internalURL
+{%- if compute.cross_az_attach is defined %}
+cross_az_attach={{ compute.cross_az_attach }}
+{%- endif %}
+
+{%- if compute.upgrade_levels is defined %}
+[upgrade_levels]
+{%- for key, value in compute.upgrade_levels.iteritems() %}
+{{ key }}={{ value }}
+{%- endfor %}
+{%- endif %}

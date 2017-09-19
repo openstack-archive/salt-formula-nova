@@ -1,4 +1,4 @@
-{%- from "nova/map.jinja" import controller with context %}
+{%- from "nova/map.jinja" import controller, system_cacerts_file with context %}
 [DEFAULT]
 verbose = True
 log-dir = /var/log/nova
@@ -105,15 +105,17 @@ topics = {{ controller.notification.topics }}
 driver=messagingv2
 {%- endif %}
 
+{%- set rabbit_port = controller.message_queue.get('port', 5671 if controller.message_queue.get('ssl',{}).get('enabled', False) else 5672) %}
+
 [oslo_messaging_rabbit]
 {%- if controller.message_queue.members is defined %}
 rabbit_hosts = {% for member in controller.message_queue.members -%}
-                   {{ member.host }}:{{ member.get('port', 5672) }}
+                   {{ member.host }}:{{ member.get('port', rabbit_port) }}
                    {%- if not loop.last -%},{%- endif -%}
                {%- endfor -%}
 {%- else %}
 rabbit_host = {{ controller.message_queue.host }}
-rabbit_port = {{ controller.message_queue.port }}
+rabbit_port = {{ rabbit_port }}
 {%- endif %}
 
 rabbit_userid = {{ controller.message_queue.user }}
@@ -123,6 +125,24 @@ rabbit_virtual_host = {{ controller.message_queue.virtual_host }}
 rabbit_retry_interval = 1
 rabbit_retry_backoff = 2
 rpc_conn_pool_size = 300
+
+{# rabbitmq ssl configuration #}
+{%- if controller.message_queue.get('ssl',{}).get('enabled', False) %}
+[oslo_messaging_rabbit]
+rabbit_use_ssl=true
+
+{%- if controller.message_queue.ssl.version is defined %}
+kombu_ssl_version = {{ controller.message_queue.ssl.version }}
+{%- elif salt['grains.get']('pythonversion') > [2,7,8] %}
+kombu_ssl_version = TLSv1_2
+{%- endif %}
+
+{%- if controller.message_queue.ssl.cacert_file is defined %}
+kombu_ssl_ca_certs = {{ controller.message_queue.ssl.cacert_file }}
+{%- else %}
+kombu_ssl_ca_certs={{ system_cacerts_file }}
+{%- endif %}
+{%- endif %}
 
 [cache]
 {%- if controller.cache is defined %}
@@ -160,7 +180,7 @@ db_max_retries = 3
 db_retry_interval = 1
 connection_debug = 10
 pool_timeout = 120
-connection = {{ controller.database.engine }}+pymysql://{{ controller.database.user }}:{{ controller.database.password }}@{{ controller.database.host }}/{{ controller.database.name }}
+connection = {{ controller.database.engine }}+pymysql://{{ controller.database.user }}:{{ controller.database.password }}@{{ controller.database.host }}/{{ controller.database.name }}{%- if controller.database.get('ssl',{}).get('enabled',False) %}?ssl_ca={{ controller.database.ssl.get('cacert_file', system_cacerts_file) }}{% endif %}
 
 [api_database]
 idle_timeout = 180
@@ -173,7 +193,7 @@ db_max_retries = 3
 db_retry_interval = 1
 connection_debug = 10
 pool_timeout = 120
-connection = {{ controller.database.engine }}+pymysql://{{ controller.database.user }}:{{ controller.database.password }}@{{ controller.database.host }}/{{ controller.database.name }}_api
+connection = {{ controller.database.engine }}+pymysql://{{ controller.database.user }}:{{ controller.database.password }}@{{ controller.database.host }}/{{ controller.database.name }}_api{%- if controller.database.get('ssl',{}).get('enabled',False) %}?ssl_ca={{ controller.database.ssl.get('cacert_file', system_cacerts_file) }}{% endif %}
 
 [glance]
 
@@ -184,7 +204,7 @@ auth_type = password
 project_domain_name = default
 user_domain_name = default
 auth_url = http://{{ controller.identity.host }}:35357
-{% if pillar.neutron is defined %}
+{% if pillar.neutron is defined and pillar.neutron.server is defined %}
 password={{ pillar.neutron.server.identity.password }}
 project_name={{ pillar.neutron.server.identity.tenant }}
 username={{ pillar.neutron.server.identity.user }}
@@ -205,6 +225,9 @@ service_metadata_proxy=True
 [cinder]
 os_region_name = {{ controller.identity.region }}
 catalog_info=volumev2:cinderv2:internalURL
+{%- if controller.cross_az_attach is defined %}
+cross_az_attach={{ controller.cross_az_attach }}
+{%- endif %}
 
 [vnc]
 keymap = {{ controller.get('vnc_keymap', 'en-us') }}
@@ -254,3 +277,10 @@ allow_methods = {{ controller.cors.allow_methods }}
 {% if controller.cors.allow_headers is defined %}
 allow_headers = {{ controller.cors.allow_headers }}
 {% endif %}
+
+{%- if controller.upgrade_levels is defined %}
+[upgrade_levels]
+{%- for key, value in controller.upgrade_levels.iteritems() %}
+{{ key }}={{ value }}
+{%- endfor %}
+{%- endif %}

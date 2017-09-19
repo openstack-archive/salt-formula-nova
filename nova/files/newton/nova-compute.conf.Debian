@@ -1,4 +1,4 @@
-{%- from "nova/map.jinja" import compute with context %}
+{%- from "nova/map.jinja" import compute, system_cacerts_file with context %}
 
 [DEFAULT]
 logdir=/var/log/nova
@@ -11,11 +11,12 @@ volumes_path=/var/lib/nova/volumes
 compute_manager=nova.compute.manager.ComputeManager
 network_device_mtu=65000
 use_neutron = True
-config_drive_format=vfat
-force_config_drive=True
+config_drive_format={{ compute.get('config_drive_format', compute.get('config_drive', {}).get('format', 'vfat')) }}
+config_drive_cdrom={{ compute.get('config_drive', {}).get('cdrom', False)|lower }}
+force_config_drive={{ compute.get('config_drive', {}).get('forced', True)|lower }}
+config_drive_inject_password={{ compute.get('config_drive', {}).get('inject_password', False)|lower }}
 force_raw_images=True
 notify_api_faults=False
-allow_resize_to_same_host=True
 security_group_api=neutron
 vif_plugging_is_fatal=True
 vif_plugging_timeout=300
@@ -27,6 +28,12 @@ pci_passthrough_whitelist = {"devname":"{{ sriov.devname }}","physical_network":
 {%- endif %}
 {%- if compute.image.use_cow is defined %}
 use_cow_images = {{ compute.image.use_cow }}
+{%- endif %}
+{%- if compute.my_ip is defined %}
+my_ip={{ compute.my_ip }}
+{%- endif %}
+{%- if compute.host is defined %}
+host={{ compute.host }}
 {%- endif %}
 
 remove_unused_original_minimum_age_seconds=86400
@@ -43,7 +50,10 @@ allow_resize_to_same_host=True
 auth_strategy = keystone
 
 neutron_url_timeout = 300
-compute_driver = libvirt.LibvirtDriver
+compute_driver = {{ compute.get('compute_driver', 'libvirt.LibvirtDriver') }}
+{%- if compute.ram_allocation_ratio is defined %}
+ram_allocation_ratio = {{ compute.ram_allocation_ratio }}
+{%- endif %}
 
 heal_instance_info_cache_interval = {{ compute.heal_instance_info_cache_interval }}
 
@@ -61,22 +71,24 @@ block_device_allocate_retries_interval=10
 resume_guests_state_on_host_boot = {{ compute.get('resume_guests_state_on_host_boot', True) }}
 service_down_time = 90
 
+{%- set rabbit_port = compute.message_queue.get('port', 5671 if compute.message_queue.get('ssl',{}).get('enabled', False) else 5672) %}
+
 {%- if compute.message_queue.members is defined %}
 transport_url = rabbit://{% for member in compute.message_queue.members -%}
-                             {{ compute.message_queue.user }}:{{ compute.message_queue.password }}@{{ member.host }}:{{ member.get('port', 5672) }}
+                             {{ compute.message_queue.user }}:{{ compute.message_queue.password }}@{{ member.host }}:{{ member.get('port', rabbit_port) }}
                              {%- if not loop.last -%},{%- endif -%}
                          {%- endfor -%}
                              /{{ compute.message_queue.virtual_host }}
 {%- else %}
-transport_url = rabbit://{{ compute.message_queue.user }}:{{ compute.message_queue.password }}@{{ compute.message_queue.host }}:{{ controller.message_queue.port }}{{ compute.message_queue.virtual_host }}
+transport_url = rabbit://{{ compute.message_queue.user }}:{{ compute.message_queue.password }}@{{ compute.message_queue.host }}:{{ rabbit_port }}/{{ compute.message_queue.virtual_host }}
 {%- endif %}
-
-rpc_backend=rabbit
 
 {% if pillar.ceilometer is defined %}
 instance_usage_audit = True
 instance_usage_audit_period = hour
 {%- endif %}
+
+instances_path = {{ compute.instances_path }}
 
 {%- if compute.get('notification', {}).notify_on is defined %}
 {%- for key, value in compute.notification.notify_on.iteritems() %}
@@ -84,6 +96,24 @@ notify_on_{{ key }} = {{ value }}
 {%- endfor %}
 {%- elif pillar.ceilometer is defined %}
 notify_on_state_change = vm_and_task_state
+{%- endif %}
+
+{# rabbitmq ssl configuration #}
+{%- if compute.message_queue.get('ssl',{}).get('enabled', False) %}
+[oslo_messaging_rabbit]
+rabbit_use_ssl=true
+
+{%- if compute.message_queue.ssl.version is defined %}
+kombu_ssl_version = {{ compute.message_queue.ssl.version }}
+{%- elif salt['grains.get']('pythonversion') > [2,7,8] %}
+kombu_ssl_version = TLSv1_2
+{%- endif %}
+
+{%- if compute.message_queue.ssl.cacert_file is defined %}
+kombu_ssl_ca_certs = {{ compute.message_queue.ssl.cacert_file }}
+{%- else %}
+kombu_ssl_ca_certs={{ system_cacerts_file }}
+{%- endif %}
 {%- endif %}
 
 [oslo_concurrency]
@@ -101,15 +131,23 @@ driver = messagingv2
 
 [vnc]
 enabled = true
+{%- if compute.vncproxy_url is defined %}
 novncproxy_base_url={{ compute.vncproxy_url }}/vnc_auto.html
+{%- endif %}
+{%- if compute.get('bind', {}).get('vnc_port') %}
 novncproxy_port={{ compute.bind.vnc_port }}
+{%- endif %}
 vncserver_listen=0.0.0.0
+{%- if compute.get('bind', {}).get('vnc_address') %}
 vncserver_proxyclient_address={{ compute.bind.vnc_address }}
+{%- endif %}
 keymap = {{ compute.get('vnc_keymap', 'en-us') }}
 
 [spice]
 enabled = false
+{%- if compute.vncproxy_url is defined %}
 html5proxy_base_url = {{ compute.vncproxy_url }}/spice_auto.html
+{%- endif %}
 
 [cache]
 {%- if compute.cache is defined %}
@@ -119,11 +157,11 @@ memcache_servers={%- for member in compute.cache.members %}{{ member.host }}:112
 {%- endif %}
 
 [libvirt]
-cpu_mode = host-passthrough
+cpu_mode = {{ compute.get('cpu_mode', 'host-passthrough') }}
 virt_type = kvm
 inject_partition=-2
 inject_password=False
-disk_cachemodes="network=writeback,block=none"
+disk_cachemodes="{{ compute.get('disk_cachemodes', 'network=writeback,block=none') }}"
 libvirt_inject_password=True
 block_migration_flag=VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE,VIR_MIGRATE_NON_SHARED_INC
 live_migration_flag=VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE,VIR_MIGRATE_PERSIST_DEST
@@ -139,6 +177,15 @@ rbd_user={{ compute.ceph.rbd_user }}
 rbd_secret_uuid={{ compute.ceph.secret_uuid }}
 libvirt_inject_password=false
 libvirt_inject_key=false
+{%- elif compute.get('lvm', {}).ephemeral is defined %}
+images_type=lvm
+images_volume_group={{ compute.lvm.images_volume_group }}
+{%- if compute.lvm.volume_clear is defined %}
+volume_clear={{ compute.lvm.volume_clear }}
+{%- endif %}
+{%- if compute.lvm.volume_clear_size is defined %}
+volume_clear_size={{ compute.lvm.volume_clear_size }}
+{%- endif %}
 {%- endif %}
 {%- if compute.libvirt.hw_disk_discard is defined %}
 hw_disk_discard={{ compute.libvirt.hw_disk_discard }}
@@ -167,8 +214,9 @@ memcached_servers={%- for member in compute.cache.members %}{{ member.host }}:11
 
 
 [glance]
-api_servers={{ compute.image.host }}:9292
-host={{ compute.image.host }}
+{%- if compute.image is defined %}
+api_servers=http://{{ compute.image.host }}:9292
+{%- endif %}
 
 [neutron]
 username={{ compute.network.user }}
@@ -186,4 +234,30 @@ timeout=30
 [cinder]
 os_region_name = {{ compute.identity.region }}
 catalog_info=volumev2:cinderv2:internalURL
+{%- if compute.cross_az_attach is defined %}
+cross_az_attach={{ compute.cross_az_attach }}
+{%- endif %}
 
+{%- if compute.ironic is defined %}
+[ironic]
+api_endpoint=http://{{ compute.ironic.host }}:{{ compute.ironic.get('port', 6385) }}
+auth_type={{ compute.ironic.auth_type }}
+auth_url=http://{{ compute.identity.host }}:{{ compute.identity.port }}/v3
+project_name={{ compute.identity.get('tenant', 'service') }}
+project_domain_name={{ compute.ironic.get('project_domain_name', 'Default') }}
+username={{ compute.ironic.user }}
+user_domain_name={{ compute.ironic.get('user_domain_name', 'Default') }}
+password={{ compute.ironic.password }}
+{%- endif %}
+
+{%- if compute.workaround is defined %}
+[workarounds]
+disable_libvirt_livesnapshot={{ compute.workaround.get('disable_libvirt_livesnapshot', True)|lower }}
+{%- endif %}
+
+{%- if compute.upgrade_levels is defined %}
+[upgrade_levels]
+{%- for key, value in compute.upgrade_levels.iteritems() %}
+{{ key }}={{ value }}
+{%- endfor %}
+{%- endif %}

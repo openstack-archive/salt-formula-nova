@@ -1,0 +1,6 @@
+applications:
+  - nova
+parameters:
+  nova:
+    client:
+      enabled: true

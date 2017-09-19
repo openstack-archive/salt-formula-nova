@@ -154,3 +154,13 @@ connection = {{ controller.database.engine }}://{{ controller.database.user }}:{
 
 [cinder]
 catalog_info=volumev2:cinderv2:internalURL
+{%- if controller.cross_az_attach is defined %}
+cross_az_attach={{ controller.cross_az_attach }}
+{%- endif %}
+
+{%- if controller.upgrade_levels is defined %}
+[upgrade_levels]
+{%- for key, value in controller.upgrade_levels.iteritems() %}
+{{ key }}={{ value }}
+{%- endfor %}
+{%- endif %}

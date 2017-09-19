@@ -42,7 +42,7 @@ nova:
       password: password
       virtual_host: '/openstack'
     glance:
-      host: 
+      host:
       port: 9292
     network:
       engine: neutron
@@ -59,7 +59,8 @@ nova:
       filter_factory: 'keystonemiddleware.audit:filter_factory'
       map_file: '/etc/pycadf/nova_api_audit_map.conf'
     policy:
-      context_is_admin: 'role:admin or role:administrator'
+      'context_is_admin': 'role:admin or role:administrator'
       'compute:create': 'rule:admin_or_owner'
       'compute:create:attach_network':
-
+    upgrade_levels:
+      compute: liberty
