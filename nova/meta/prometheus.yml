@@ -42,6 +42,17 @@ server:
         summary: "Endpoint check for '{{ $labels.service }}' is down"
         description: >-
             Endpoint check for '{{ $labels.service }}' is down for 2 minutes
+    NovaAPIServiceDown:
+      if: >-
+        http_response_status{service=~"nova-api"} == 0
+      for: 2m
+      labels:
+        severity: down
+        service: "{{ $labels.service }}"
+      annotations:
+        summary: "HTTP check for '{{ $labels.service }}' down"
+        description: >-
+            The HTTP check for '{{ $labels.service }}' is down on {{ $labels.host }} for 2 minutes.
     NovaSomeServicesDown:
       if: >-
         openstack_nova_services{state="down",service=~"nova-cert|nova-conductor|nova-consoleauth|nova-scheduler"} > 0 and ignoring(state) openstack_nova_services{state="up",service=~"nova-cert|nova-conductor|nova-consoleauth|nova-scheduler"} >= 2
