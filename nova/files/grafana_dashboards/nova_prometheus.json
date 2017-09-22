@@ -22,8 +22,8 @@
           "colorValue": true,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
-            "rgba(237, 129, 40, 0.89)",
-            "rgba(50, 172, 45, 0.97)"
+            "rgba(50, 172, 45, 0.97)",
+            "rgba(237, 129, 40, 0.89)"
           ],
           "datasource": "prometheus",
           "format": "none",
@@ -62,7 +62,7 @@
               "to": "null"
             }
           ],
-          "span": 2,
+          "span": 3,
           "sparkline": {
             "fillColor": "rgba(31, 118, 189, 0.18)",
             "full": false,
@@ -80,7 +80,7 @@
               "step": 60
             }
           ],
-          "thresholds": "1,0",
+          "thresholds": "0.5,1.5",
           "title": "API Availability",
           "type": "singlestat",
           "valueFontSize": "80%",
@@ -92,13 +92,18 @@
             },
             {
               "op": "=",
+              "text": "DOWN",
+              "value": "0"
+            },
+            {
+              "op": "=",
               "text": "OK",
               "value": "1"
             },
             {
               "op": "=",
-              "text": "DOWN",
-              "value": "0"
+              "text": "UNKNOWN",
+              "value": "2"
             }
           ],
           "valueName": "current"
@@ -245,7 +250,7 @@
               "step": 60
             }
           ],
-          "thresholds": "1,0",
+          "thresholds": "",
           "title": "Nova API backends",
           "type": "singlestat",
           "valueFontSize": "80%",
@@ -254,16 +259,6 @@
               "op": "=",
               "text": "N/A",
               "value": "null"
-            },
-            {
-              "op": "=",
-              "text": "OK",
-              "value": "1"
-            },
-            {
-              "op": "=",
-              "text": "DOWN",
-              "value": "0"
             }
           ],
           "valueName": "current"
@@ -314,7 +309,7 @@
               "to": "null"
             }
           ],
-          "span": 2,
+          "span": 3,
           "sparkline": {
             "fillColor": "rgba(31, 118, 189, 0.18)",
             "full": false,
@@ -332,7 +327,7 @@
               "step": 60
             }
           ],
-          "thresholds": "1,0",
+          "thresholds": "",
           "title": "Nova Metadata API backends",
           "type": "singlestat",
           "valueFontSize": "80%",
@@ -341,16 +336,6 @@
               "op": "=",
               "text": "N/A",
               "value": "null"
-            },
-            {
-              "op": "=",
-              "text": "OK",
-              "value": "1"
-            },
-            {
-              "op": "=",
-              "text": "DOWN",
-              "value": "0"
             }
           ],
           "valueName": "current"
@@ -419,7 +404,7 @@
               "step": 60
             }
           ],
-          "thresholds": "1,0",
+          "thresholds": "",
           "title": "Nova NoVNC API backends",
           "type": "singlestat",
           "valueFontSize": "80%",
@@ -428,16 +413,6 @@
               "op": "=",
               "text": "N/A",
               "value": "null"
-            },
-            {
-              "op": "=",
-              "text": "OK",
-              "value": "1"
-            },
-            {
-              "op": "=",
-              "text": "DOWN",
-              "value": "0"
             }
           ],
           "valueName": "current"
