@@ -198,12 +198,27 @@ ceph_virsh_secret_define:
   - require:
     - file: /etc/secret.xml
 
+{%- set client_cinder_key = salt['grains.get']("ceph:ceph_keyring:"+compute.ceph.client_cinder_key+":key", '') %}
+
+{%- if client_cinder_key != '' %}
+
+ceph_virsh_secret_set_value:
+  cmd.run:
+  - name: "virsh secret-set-value --secret {{ compute.ceph.secret_uuid }} --base64 {{ client_cinder_key }} "
+  - unless: "virsh secret-get-value {{ compute.ceph.secret_uuid }} | grep {{ client_cinder_key }}"
+  - require:
+    - cmd: ceph_virsh_secret_define
+
+{% else %}
+
 ceph_virsh_secret_set_value:
   cmd.run:
   - name: "virsh secret-set-value --secret {{ compute.ceph.secret_uuid }} --base64 {{ compute.ceph.client_cinder_key }} "
   - unless: "virsh secret-get-value {{ compute.ceph.secret_uuid }} | grep {{ compute.ceph.client_cinder_key }}"
   - require:
     - cmd: ceph_virsh_secret_define
+
+{% endif %}
 
 {% endif %}
 
