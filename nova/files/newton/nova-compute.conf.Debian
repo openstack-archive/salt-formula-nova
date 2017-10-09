@@ -12,7 +12,6 @@ compute_manager=nova.compute.manager.ComputeManager
 network_device_mtu=65000
 use_neutron = True
 config_drive_format={{ compute.get('config_drive_format', compute.get('config_drive', {}).get('format', 'vfat')) }}
-config_drive_cdrom={{ compute.get('config_drive', {}).get('cdrom', False)|lower }}
 force_config_drive={{ compute.get('config_drive', {}).get('forced', True)|lower }}
 config_drive_inject_password={{ compute.get('config_drive', {}).get('inject_password', False)|lower }}
 force_raw_images=True
@@ -261,3 +260,6 @@ disable_libvirt_livesnapshot={{ compute.workaround.get('disable_libvirt_livesnap
 {{ key }}={{ value }}
 {%- endfor %}
 {%- endif %}
+
+[hyperv]
+config_drive_cdrom={{ compute.get('config_drive', {}).get('cdrom', False)|lower }}
