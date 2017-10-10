@@ -6147,6 +6147,9 @@ connection_uri={{ compute.libvirt.uri }}
 # * A valid IP address or hostname, else None.
 #  (string value)
 #live_migration_inbound_addr=<None>
+{%- if compute.libvirt.migration_inbound_addr is defined %}
+live_migration_inbound_addr = {{ compute.libvirt.migration_inbound_addr }}
+{%- endif %}
 
 # DEPRECATED:
 # Live migration target URI to use.

@@ -122,6 +122,9 @@ disk_cachemodes="{{ compute.get('disk_cachemodes', 'network=writeback,block=none
 libvirt_inject_password=True
 block_migration_flag=VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE,VIR_MIGRATE_NON_SHARED_INC
 live_migration_flag=VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE,VIR_MIGRATE_PERSIST_DEST
+{%- if compute.libvirt.migration_inbound_addr is defined %}
+live_migration_inbound_addr = {{ compute.libvirt.migration_inbound_addr }}
+{%- endif %}
 libvirt_inject_key=True
 inject_key=False
 vif_driver=nova.virt.libvirt.vif.LibvirtGenericVIFDriver
