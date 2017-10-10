@@ -331,4 +331,16 @@ virsh net-undefine default:
 
 {# end temporary hack #}
 
+{%- if compute.network.dpdk.enabled %}
+/etc/tmpfiles.d/{{ compute.network.openvswitch.vhost_socket_dir.name }}.conf:
+  file.managed:
+  - contents: 'd {{ compute.network.openvswitch.vhost_socket_dir.path }} 0755 libvirt-qemu kvm'
+  - require:
+    - pkg: nova_compute_packages
+
+nova_update_tmp_files_{{ compute.network.openvswitch.vhost_socket_dir.name }}:
+  cmd.run:
+  - name: 'systemd-tmpfiles --create'
+{%- endif %}
+
 {%- endif %}

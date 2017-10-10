@@ -33,7 +33,6 @@
     },
 }, merge=pillar.nova.get('controller', {})) %}
 
-
 {% set client = salt['grains.filter_by']({
     'Debian': {
         'pkgs': ['python-novaclient']
@@ -42,6 +41,21 @@
         'pkgs': ['python-novaclient']
     },
 }, merge=pillar.nova.get('client', {})) %}
+
+{% set compute_network = salt['grains.filter_by']({
+    'default': {
+        'dpdk': {
+            'enabled': false,
+        },
+        'openvswitch': {
+            'vhost_socket_dir': {
+                'name': 'openvswitch-vhost',
+                'path': '/run/openvswitch-vhost',
+            },
+        },
+        'region': 'RegionOne',
+    },
+}, merge=salt['pillar.get']('linux:network'), base='default') %}
 
 {%- load_yaml as compute_defaults %}
 Debian:
@@ -74,8 +88,7 @@ Debian:
   aggregates: []
   identity:
     region: RegionOne
-  network:
-    region: RegionOne
+  network: {{ compute_network }}
   heal_instance_info_cache_interval: '60'
 RedHat:
   pkgs:
@@ -98,8 +111,7 @@ RedHat:
   availability_zone:
   identity:
     region: RegionOne
-  network:
-    region: RegionOne
+  network: {{ compute_network }}
   heal_instance_info_cache_interval: '60'
 {%- endload %}
 
