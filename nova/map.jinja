@@ -114,5 +114,9 @@ RedHat:
         'error_log_rate': {
               'warn': 0.2,
         },
+        'services_failed_warning_threshold_percent': 0.3,
+        'services_failed_critical_threshold_percent': 0.6,
+        'computes_failed_warning_threshold_percent': 0.25,
+        'computes_failed_critical_threshold_percent': 0.5,
     },
 }, grain='os_family', merge=salt['pillar.get']('nova:monitoring')) %}
