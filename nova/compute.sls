@@ -186,12 +186,41 @@ ceph_package:
   pkg.installed:
   - name: ceph-common
 
+{%- if compute.ceph.cinder_secret_uuid is defined and compute.ceph.cinder_volumes_key is defined %}
+
+{%- set cinder_volumes_key = salt['grains.get']("ceph:ceph_keyring:"+compute.ceph.cinder_volumes_key+":key", '') %}
+
+{%- if cinder_volumes_key != '' %}
+
+/etc/secret_cinder.xml:
+  file.managed:
+  - source: salt://nova/files/secret_cinder.xml
+  - template: jinja
+
+ceph_virsh_secret_define_cinder:
+  cmd.run:
+  - name: "virsh secret-define --file /etc/secret_cinder.xml"
+  - unless: "virsh secret-list | grep {{ compute.ceph.cinder_secret_uuid }}"
+  - require:
+    - file: /etc/secret_cinder.xml
+
+ceph_virsh_secret_set_value_cinder:
+  cmd.run:
+  - name: "virsh secret-set-value --secret {{ compute.ceph.cinder_secret_uuid }} --base64 {{ cinder_volumes_key }} "
+  - unless: "virsh secret-get-value {{ compute.ceph.cinder_secret_uuid }} | grep {{ cinder_volumes_key }}"
+  - require:
+    - cmd: ceph_virsh_secret_define_cinder
+
+{% endif %}
+
+{% endif %}
+
 /etc/secret.xml:
   file.managed:
   - source: salt://nova/files/secret.xml
   - template: jinja
 
-ceph_virsh_secret_define:
+ceph_virsh_secret_define_nova:
   cmd.run:
   - name: "virsh secret-define --file /etc/secret.xml"
   - unless: "virsh secret-list | grep {{ compute.ceph.secret_uuid }}"
@@ -202,21 +231,21 @@ ceph_virsh_secret_define:
 
 {%- if client_cinder_key != '' %}
 
-ceph_virsh_secret_set_value:
+ceph_virsh_secret_set_value_nova:
   cmd.run:
   - name: "virsh secret-set-value --secret {{ compute.ceph.secret_uuid }} --base64 {{ client_cinder_key }} "
   - unless: "virsh secret-get-value {{ compute.ceph.secret_uuid }} | grep {{ client_cinder_key }}"
   - require:
-    - cmd: ceph_virsh_secret_define
+    - cmd: ceph_virsh_secret_define_nova
 
 {% else %}
 
-ceph_virsh_secret_set_value:
+ceph_virsh_secret_set_value_nova:
   cmd.run:
   - name: "virsh secret-set-value --secret {{ compute.ceph.secret_uuid }} --base64 {{ compute.ceph.client_cinder_key }} "
   - unless: "virsh secret-get-value {{ compute.ceph.secret_uuid }} | grep {{ compute.ceph.client_cinder_key }}"
   - require:
-    - cmd: ceph_virsh_secret_define
+    - cmd: ceph_virsh_secret_define_nova
 
 {% endif %}
 
