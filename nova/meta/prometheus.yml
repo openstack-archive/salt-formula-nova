@@ -41,7 +41,7 @@ server:
       annotations:
         summary: "Endpoint check for '{{ $labels.service }}' is down"
         description: >-
-            Endpoint check for '{{ $labels.service }}' is down for 2 minutes
+            Endpoint check for '{{ $labels.service }}' is down for the last 2 minutes
     NovaAPIServiceDown:
       if: >-
         http_response_status{service=~"nova-api"} == 0
@@ -52,30 +52,30 @@ server:
       annotations:
         summary: "HTTP check for '{{ $labels.service }}' down"
         description: >-
-            The HTTP check for '{{ $labels.service }}' is down on {{ $labels.host }} for 2 minutes.
-    NovaSomeServicesDown:
+            The HTTP check for '{{ $labels.service }}' is down on {{ $labels.host }} for the last 2 minutes.
+    NovaServicesWarning:
       if: >-
-        openstack_nova_services{state="down",service=~"nova-cert|nova-conductor|nova-consoleauth|nova-scheduler"} > 0 and ignoring(state) openstack_nova_services{state="up",service=~"nova-cert|nova-conductor|nova-consoleauth|nova-scheduler"} >= 2
+        openstack_nova_services{state="down",service=~"nova-cert|nova-conductor|nova-consoleauth|nova-scheduler"} >= on (service) sum(openstack_nova_services{service=~"nova-cert|nova-conductor|nova-consoleauth|nova-scheduler"}) by (service) * {%- endraw %} {{monitoring.services_failed_warning_threshold_percent}} {%- raw %}
       for: 2m
       labels:
         severity: warning
         service: "{{ $labels.service }}"
       annotations:
-        summary: "Some {{ $labels.service }} services down"
+        summary: "More than {%- endraw %} {{monitoring.services_failed_warning_threshold_percent*100}}%{%- raw %} of {{ $labels.service }} services are down"
         description: >-
-            {{ $value }} '{{ $labels.service }}' service(s) is/are down for 2 minutes
-    NovaOnlyOneServiceUp:
+            More than {%- endraw %} {{monitoring.services_failed_warning_threshold_percent*100}}%{%- raw %} of {{ $labels.service }} services are down for the last 2 minutes
+    NovaServicesCritical:
       if: >-
-        openstack_nova_services{state="up",service=~"nova-cert|nova-conductor|nova-consoleauth|nova-scheduler"} == 1 and ignoring(state) openstack_nova_services{state=~"down|disabled",service=~"nova-cert|nova-conductor|nova-consoleauth|nova-scheduler"} > 0
+        openstack_nova_services{state="down",service=~"nova-cert|nova-conductor|nova-consoleauth|nova-scheduler"} >= on (service) sum(openstack_nova_services{service=~"nova-cert|nova-conductor|nova-consoleauth|nova-scheduler"}) by (service) * {%- endraw %} {{monitoring.services_failed_critical_threshold_percent}} {%- raw %}
       for: 2m
       labels:
         severity: critical
         service: "{{ $labels.service }}"
       annotations:
-        summary: "Only one {{ $labels.service }} service up"
+        summary: "More than {%- endraw %} {{monitoring.services_failed_critical_threshold_percent*100}}%{%- raw %} of {{ $labels.service }} services are down"
         description: >-
-            Only one '{{ $labels.service }}' service is up for 2 minutes
-    NovaAllServicesDown:
+            More than {%- endraw %} {{monitoring.services_failed_critical_threshold_percent*100}}%{%- raw %} of {{ $labels.service }} services are down for the last 2 minutes
+    NovaServicesDown:
       if: >-
         openstack_nova_services{state="up",service=~"nova-cert|nova-conductor|nova-consoleauth|nova-scheduler"} == 0
       for: 2m
@@ -85,30 +85,30 @@ server:
       annotations:
         summary: "All {{ $labels.service }} services down"
         description: >-
-            All '{{ $labels.service }}' services are down for 2 minutes
-    NovaSomeComputesDown:
+            All '{{ $labels.service }}' services are down for the last 2 minutes
+    NovaComputesWarning:
       if: >-
-        openstack_nova_services{state="down",service=~"nova-compute"} > 0
+        openstack_nova_services{state="down",service=~"nova-compute"} >= on (service) sum(openstack_nova_services{service=~"nova-compute"}) by (service) * {%- endraw %} {{monitoring.computes_failed_warning_threshold_percent}} {%- raw %}
       for: 2m
       labels:
         severity: warning
         service: "{{ $labels.service }}"
       annotations:
-        summary: "Some {{ $labels.service }} services down"
+        summary: "More than {%- endraw %} {{monitoring.computes_failed_warning_threshold_percent*100}}%{%- raw %} of {{ $labels.service }} services are down"
         description: >-
-            {{ $value }} '{{ $labels.service }}' service(s) is/are down for 2 minutes
-    NovaMajorityComputesDown:
+            More than {%- endraw %} {{monitoring.computes_failed_warning_threshold_percent*100}}%{%- raw %} of {{ $labels.service }} services are down for the last 2 minutes
+    NovaComputesCritical:
       if: >-
-        openstack_nova_services_percent{state="down",service=~"nova-compute"} > 50
+        openstack_nova_services_percent{state="down",service=~"nova-compute"} >= on (service) sum(openstack_nova_services{service=~"nova-compute"}) by (service) * {%- endraw %} {{monitoring.computes_failed_critical_threshold_percent}} {%- raw %}
       for: 2m
       labels:
         severity: critical
         service: "{{ $labels.service }}"
       annotations:
-        summary: "Only one {{ $labels.service }} service up"
+        summary: "More than {%- endraw %} {{monitoring.computes_failed_critical_threshold_percent*100}}%{%- raw %} of {{ $labels.service }} services are down"
         description: >-
-            Only one '{{ $labels.service }}' service is up for 2 minutes
-    NovaAllComputesDown:
+            More than {%- endraw %} {{monitoring.computes_failed_critical_threshold_percent*100}}%{%- raw %} of {{ $labels.service }} services are down for the last 2 minutes
+    NovaComputesDown:
       if: >-
         openstack_nova_services{state="up",service=~"nova-compute"} == 0
       for: 2m
@@ -116,9 +116,9 @@ server:
         severity: down
         service: "{{ $labels.service }}"
       annotations:
-        summary: "All {{ $labels.service }} services down"
+        summary: "All {{ $labels.service }} services are down"
         description: >-
-            All '{{ $labels.service }}' services are down for 2 minutes
+            All '{{ $labels.service }}' services are down for the last 2 minutes
     NovaTotalFreeVCPUsLow:
       if: >-
         (100.0 * openstack_nova_total_free_vcpus) / (openstack_nova_total_free_vcpus + openstack_nova_total_used_vcpus) < 10.0
