@@ -3477,7 +3477,7 @@ connection=sqlite:////var/lib/nova/nova.sqlite
 # If set, use this value for pool_timeout with SQLAlchemy. (integer value)
 #pool_timeout=<None>
 
-
+{%- if compute.get('barbican', {}).get('enabled', False) %}
 [barbican]
 
 #
@@ -3492,7 +3492,7 @@ connection=sqlite:////var/lib/nova/nova.sqlite
 #barbican_api_version=<None>
 
 # Use this endpoint to connect to Keystone (string value)
-#auth_endpoint=http://localhost:5000/v3
+auth_endpoint={{ compute.identity.get('protocol', 'http') }}://{{ compute.identity.get('host', 'localhost') }}:{{ compute.identity.get('port', '5000') }}/v3
 
 # Number of seconds to wait before retrying poll for key creation completion
 # (integer value)
@@ -3500,7 +3500,7 @@ connection=sqlite:////var/lib/nova/nova.sqlite
 
 # Number of times to retry poll for key creation completion (integer value)
 #number_of_retries=60
-
+{%- endif %}
 
 [cache]
 
@@ -5069,7 +5069,11 @@ api_servers=http://{{ compute.image.host }}:9292
 # * The options in the `key_manager` group, as the key_manager is used
 #   for the signature validation.
 #  (boolean value)
+{%- if compute.get('barbican', {}).get('enabled', False) %}
+verify_glance_signatures=true
+{%- else %}
 #verify_glance_signatures=false
+{%- endif %}
 
 # Enable or disable debug logging with glanceclient. (boolean value)
 #debug=false
@@ -5601,7 +5605,9 @@ password={{ compute.ironic.password }}
 #fixed_key=<None>
 
 # The full class name of the key manager API class (string value)
-#api_class=castellan.key_manager.barbican_key_manager.BarbicanKeyManager
+{%- if compute.get('barbican', {}).get('enabled', False) %}
+api_class=castellan.key_manager.barbican_key_manager.BarbicanKeyManager
+{%- endif %}
 
 # The type of authentication credential to create. Possible values are 'token',
 # 'password', 'keystone_token', and 'keystone_password'. Required if no context

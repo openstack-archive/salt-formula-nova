@@ -3477,7 +3477,9 @@ connection = {{ controller.database.engine }}+pymysql://{{ controller.database.u
 #barbican_api_version=<None>
 
 # Use this endpoint to connect to Keystone (string value)
-#auth_endpoint=http://localhost:5000/v3
+{%- if controller.get('barbican', {}).get('enabled', False) %}
+auth_endpoint={{ controller.identity.get('protocol', 'http') }}://{{ controller.identity.get('host', 'localhost') }}:{{ controller.identity.get('port', '5000') }}/v3
+{%- endif %}
 
 # Number of seconds to wait before retrying poll for key creation completion
 # (integer value)
@@ -5090,7 +5092,11 @@ api_servers = {{ controller.glance.host }}:9292
 # * The options in the `key_manager` group, as the key_manager is used
 #   for the signature validation.
 #  (boolean value)
+{%- if controller.get('barbican', {}).get('enabled', False) %}
+verify_glance_signatures=true
+{%- else %}
 #verify_glance_signatures=false
+{%- endif %}
 
 # Enable or disable debug logging with glanceclient. (boolean value)
 #debug=false
@@ -5618,7 +5624,9 @@ api_servers = {{ controller.glance.host }}:9292
 #fixed_key=<None>
 
 # The full class name of the key manager API class (string value)
-#api_class=castellan.key_manager.barbican_key_manager.BarbicanKeyManager
+{%- if controller.get('barbican', {}).get('enabled', False) %}
+api_class=castellan.key_manager.barbican_key_manager.BarbicanKeyManager
+{%- endif %}
 
 # The type of authentication credential to create. Possible values are 'token',
 # 'password', 'keystone_token', and 'keystone_password'. Required if no context

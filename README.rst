@@ -71,6 +71,8 @@ Nova services on the controller node
         audit:
           enabled: false
         osapi_max_limit: 500
+        barbican:
+          enabled: true
 
 
 Nova services from custom package repository
@@ -145,6 +147,16 @@ Configuration of policy.json file
           'compute:create': 'rule:admin_or_owner'
           # Add key without value to remove line from policy.json
           'compute:create:attach_network':
+
+Enable Barbican integration
+
+.. code-block:: yaml
+
+    nova:
+      controller:
+        ....
+        barbican:
+          enabled: true
 
 
 Client-side RabbitMQ TLS configuration:
@@ -366,6 +378,17 @@ Nova with ephemeral configured with LVM
               - /dev/sdc
               - /dev/sdj
               - /dev/sdh
+
+Enable Barbican integration
+
+.. code-block:: yaml
+
+    nova:
+      compute:
+        ....
+        barbican:
+          enabled: true
+
 
 Client role
 -----------

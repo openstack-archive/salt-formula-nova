@@ -75,4 +75,5 @@ nova:
       images_volume_group: nova_vg
       volume_clear: zero
       volume_clear_size: 0
-
+    barbican:
+      enabled: true
