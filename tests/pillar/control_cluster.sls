@@ -64,3 +64,5 @@ nova:
       'compute:create:attach_network':
     upgrade_levels:
       compute: liberty
+    barbican:
+      enabled: true
