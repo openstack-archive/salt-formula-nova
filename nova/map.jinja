@@ -10,10 +10,28 @@
     'vnc_protocol': 'http',
 } %}
 
+{%- if grains.os_family == "Debian" %}
+{%- set pkgs_list = [ 'nova-common', 'nova-consoleproxy', 'novnc', 'nova-api', 'nova-conductor', 'nova-consoleauth', 'nova-doc', 'nova-scheduler', 'python-novaclient', 'python-memcache', 'gettext-base', 'python-pycadf'] %}
+{%- set services_list = ['nova-api', 'nova-consoleauth', 'nova-scheduler', 'nova-conductor', 'nova-novncproxy'] %}
+{%- if pillar.nova.controller is defined and pillar.nova.controller.get('version',{}) in ["juno", "kilo", "liberty", "mitaka", "newton", "ocata"] %}
+{%- do pkgs_list.append('nova-cert') %}
+{%- do services_list.append('nova-cert') %}
+{%- endif %}
+{%- endif %}
+
+{%- if grains.os_family == "RedHat" %}
+{%- set pkgs_list = ['openstack-nova-novncproxy', 'python-nova', 'openstack-nova-api', 'openstack-nova-console', 'openstack-nova-scheduler', 'python-novaclient', 'openstack-nova-common', 'openstack-nova-conductor', 'python-pycadf'] %}
+{%- set services_list = ['openstack-nova-api', 'openstack-nova-consoleauth', 'openstack-nova-scheduler', 'openstack-nova-conductor', 'openstack-nova-novncproxy'] %}
+{%- if pillar.nova.controller is defined and pillar.nova.controller.get('version',{}) in ["juno", "kilo", "liberty", "mitaka", "newton", "ocata"] %}
+{%- do pkgs_list.append('openstack-nova-cert') %}
+{%- do services_list.append('openstack-nova-cert') %}
+{%- endif %}
+{%- endif %}
+
 {% set controller = salt['grains.filter_by']({
     'Debian': {
-        'pkgs': ['nova-common', 'nova-consoleproxy', 'novnc', 'nova-api', 'nova-cert', 'nova-conductor', 'nova-consoleauth', 'nova-doc', 'nova-scheduler', 'python-novaclient', 'python-memcache', 'gettext-base', 'python-pycadf'],
-        'services': ['nova-api', 'nova-cert', 'nova-consoleauth', 'nova-scheduler', 'nova-conductor', 'nova-novncproxy'],
+        'pkgs': pkgs_list,
+        'services': services_list,
         'debug': false,
         'notification': false,
         'cors': {},
@@ -22,8 +40,8 @@
         },
     },
     'RedHat': {
-        'pkgs': ['openstack-nova-novncproxy', 'python-nova', 'openstack-nova-api', 'openstack-nova-console', 'openstack-nova-scheduler', 'python-novaclient', 'openstack-nova-common', 'openstack-nova-conductor', 'openstack-nova-cert', 'python-pycadf'],
-        'services': ['openstack-nova-api', 'openstack-nova-cert', 'openstack-nova-consoleauth', 'openstack-nova-scheduler', 'openstack-nova-conductor', 'openstack-nova-novncproxy'],
+        'pkgs': pkgs_list,
+        'services': services_list,
         'debug': false,
         'notification': false,
         'cors': {},

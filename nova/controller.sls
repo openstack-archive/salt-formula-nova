@@ -129,7 +129,7 @@ rule_{{ name }}_absent:
 
 {%- endfor %}
 
-{%- if controller.version in ["ocata"] %}
+{%- if controller.version not in ["juno", "kilo", "liberty", "mitaka", "newton"] %}
 
 {#- the following api_db sync --version 20 happens only if the current api_db version is < 20 #}
 
@@ -227,7 +227,7 @@ nova_controller_map_instances:
 
 {%- endif %}
 
-{%- if controller.version in ["mitaka", "newton", "ocata"] %}
+{%- if controller.version not in ["juno", "kilo", "liberty"] %}
 nova_controller_sync_apidb:
   cmd.run:
   - name: nova-manage api_db sync
@@ -249,7 +249,7 @@ nova_controller_syncdb:
   - require:
     - file: /etc/nova/nova.conf
 
-{%- if controller.version in ["mitaka", "newton", "ocata"] %}
+{%- if controller.version not in ["juno", "kilo", "liberty"] %}
 
 nova_controller_online_data_migrations:
   cmd.run:
@@ -262,7 +262,7 @@ nova_controller_online_data_migrations:
 
 {%- endif %}
 
-{%- if controller.version in ["ocata"] %}
+{%- if controller.version not in ["juno", "kilo", "liberty", "mitaka", "newton"] %}
 
 nova_apache_restart:
   service.running:
