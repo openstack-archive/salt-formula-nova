@@ -1597,30 +1597,30 @@ def _auth(profile=None):
     return SaltNova(**kwargs)
 
 
-def boot(name, flavor_id=0, image_id=0, profile=None, timeout=300):
-    '''
-    Boot (create) a new instance
-    name
-        Name of the new instance (must be first)
-    flavor_id
-        Unique integer ID for the flavor
-    image_id
-        Unique integer ID for the image
-    timeout
-        How long to wait, after creating the instance, for the provider to
-        return information about it (default 300 seconds).
-        .. versionadded:: 2014.1.0
-    CLI Example:
-    .. code-block:: bash
-        salt '*' nova.boot myinstance flavor_id=4596 image_id=2
-    The flavor_id and image_id are obtained from nova.flavor_list and
-    nova.image_list
-    .. code-block:: bash
-        salt '*' nova.flavor_list
-        salt '*' nova.image_list
-    '''
-    conn = _auth(profile)
-    return conn.boot(name, flavor_id, image_id, timeout)
+#def boot(name, flavor_id=0, image_id=0, profile=None, timeout=300):
+#    '''
+#    Boot (create) a new instance
+#    name
+#        Name of the new instance (must be first)
+#    flavor_id
+#        Unique integer ID for the flavor
+#    image_id
+#        Unique integer ID for the image
+#    timeout
+#        How long to wait, after creating the instance, for the provider to
+#        return information about it (default 300 seconds).
+#        .. versionadded:: 2014.1.0
+#    CLI Example:
+#    .. code-block:: bash
+#        salt '*' nova.boot myinstance flavor_id=4596 image_id=2
+#    The flavor_id and image_id are obtained from nova.flavor_list and
+#    nova.image_list
+#    .. code-block:: bash
+#        salt '*' nova.flavor_list
+#        salt '*' nova.image_list
+#    '''
+#    conn = _auth(profile)
+#    return conn.boot(name, flavor_id, image_id, timeout)
 
 
 def volume_list(search_opts=None, profile=None):
@@ -1960,15 +1960,15 @@ def list_(profile=None):
     return server_list(profile=profile)
 
 
-def server_list(profile=None):
-    '''
-    Return list of active servers
-    CLI Example:
-    .. code-block:: bash
-        salt '*' nova.server_list
-    '''
-    conn = _auth(profile)
-    return conn.server_list()
+#def server_list(profile=None):
+#    '''
+#    Return list of active servers
+#    CLI Example:
+#    .. code-block:: bash
+#        salt '*' nova.server_list
+#    '''
+#    conn = _auth(profile)
+#    return conn.server_list()
 
 
 def show(server_id, profile=None):
@@ -2004,37 +2004,37 @@ def server_show(server_id, profile=None):
     return conn.server_show(server_id)
 
 
-def secgroup_create(name, description, profile=None):
-    '''
-    Add a secgroup to nova (nova secgroup-create)
-    CLI Example:
-    .. code-block:: bash
-        salt '*' nova.secgroup_create mygroup 'This is my security group'
-    '''
-    conn = _auth(profile)
-    return conn.secgroup_create(name, description)
-
-
-def secgroup_delete(name, profile=None):
-    '''
-    Delete a secgroup to nova (nova secgroup-delete)
-    CLI Example:
-    .. code-block:: bash
-        salt '*' nova.secgroup_delete mygroup
-    '''
-    conn = _auth(profile)
-    return conn.secgroup_delete(name)
-
-
-def secgroup_list(profile=None):
-    '''
-    Return a list of available security groups (nova items-list)
-    CLI Example:
-    .. code-block:: bash
-        salt '*' nova.secgroup_list
-    '''
-    conn = _auth(profile)
-    return conn.secgroup_list()
+#def secgroup_create(name, description, profile=None):
+#    '''
+#    Add a secgroup to nova (nova secgroup-create)
+#    CLI Example:
+#    .. code-block:: bash
+#        salt '*' nova.secgroup_create mygroup 'This is my security group'
+#    '''
+#    conn = _auth(profile)
+#    return conn.secgroup_create(name, description)
+#
+#
+#def secgroup_delete(name, profile=None):
+#    '''
+#    Delete a secgroup to nova (nova secgroup-delete)
+#    CLI Example:
+#    .. code-block:: bash
+#        salt '*' nova.secgroup_delete mygroup
+#    '''
+#    conn = _auth(profile)
+#    return conn.secgroup_delete(name)
+#
+#
+#def secgroup_list(profile=None):
+#    '''
+#    Return a list of available security groups (nova items-list)
+#    CLI Example:
+#    .. code-block:: bash
+#        salt '*' nova.secgroup_list
+#    '''
+#    conn = _auth(profile)
+#    return conn.secgroup_list()
 
 
 def server_by_name(name, profile=None):
