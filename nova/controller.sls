@@ -172,6 +172,8 @@ nova_controller_map_cell0:
   {%- if grains.get('noservices') %}
   - onlyif: /bin/false
   {%- endif %}
+  - require:
+    - cmd: nova_controller_syncdb
 
 nova_cell1_create:
   cmd.run:
@@ -180,6 +182,8 @@ nova_cell1_create:
   - onlyif: /bin/false
   {%- endif %}
   - unless: 'nova-manage cell_v2 list_cells | grep cell1'
+  - require:
+    - cmd: nova_controller_syncdb
 
 nova_placement_service_mask:
   file.symlink:
@@ -214,6 +218,7 @@ nova_controller_discover_hosts:
   - require:
     - cmd: nova_controller_map_cell0
     - cmd: nova_cell1_create
+    - cmd: nova_controller_syncdb
 
 nova_controller_map_instances:
   novang.map_instances:
