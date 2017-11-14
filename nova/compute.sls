@@ -75,9 +75,10 @@ user_nova_bash:
   - template: jinja
   - require:
     - pkg: nova_compute_packages
+{%- endif %}
 
 {%- if compute.message_queue.get('ssl',{}).get('enabled',False)  %}
-rabbitmq_ca:
+rabbitmq_ca_nova_compute:
 {%- if compute.message_queue.ssl.cacert is defined %}
   file.managed:
     - name: {{ compute.message_queue.ssl.cacert_file }}
@@ -90,8 +91,6 @@ rabbitmq_ca:
 {%- endif %}
 {%- endif %}
 
-{%- endif %}
-
 nova_compute_services:
   service.running:
   - enable: true
@@ -99,7 +98,7 @@ nova_compute_services:
   - watch:
     - file: /etc/nova/nova.conf
   {%- if compute.message_queue.get('ssl',{}).get('enabled',False) %}
-    - file: rabbitmq_ca
+    - file: rabbitmq_ca_nova_compute
   {%- endif %}
 
 {%- set ident = compute.identity %}

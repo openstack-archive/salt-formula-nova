@@ -25,7 +25,7 @@ nova_controller_packages:
   - names: {{ controller.pkgs }}
 
 {%- if controller.message_queue.get('ssl',{}).get('enabled',False)  %}
-rabbitmq_ca:
+rabbitmq_ca_nova_controller:
 {%- if controller.message_queue.ssl.cacert is defined %}
   file.managed:
     - name: {{ controller.message_queue.ssl.cacert_file }}
@@ -278,7 +278,7 @@ nova_apache_restart:
     - file: /etc/nova/api-paste.ini
     - file: /etc/apache2/sites-available/nova-placement-api.conf
     {%- if controller.database.get('ssl',{}).get('enabled',False)  %}
-    - file: mysql_ca
+    - file: mysql_ca_nova_controller
     {% endif %}
 
 {%- endif %}
@@ -296,10 +296,10 @@ nova_controller_services:
     - file: /etc/nova/nova.conf
     - file: /etc/nova/api-paste.ini
     {%- if controller.message_queue.get('ssl',{}).get('enabled',False) %}
-    - file: rabbitmq_ca
+    - file: rabbitmq_ca_nova_controller
     {%- endif %}
     {%- if controller.database.get('ssl',{}).get('enabled',False)  %}
-    - file: mysql_ca
+    - file: mysql_ca_nova_controller
     {% endif %}
 
 {%- if grains.get('virtual_subtype', None) == "Docker" %}
@@ -314,7 +314,7 @@ nova_entrypoint:
 {%- endif %}
 
 {%- if controller.database.get('ssl',{}).get('enabled',False)  %}
-mysql_ca:
+mysql_ca_nova_controller:
 {%- if controller.database.ssl.cacert is defined %}
   file.managed:
     - name: {{ controller.database.ssl.cacert_file }}
