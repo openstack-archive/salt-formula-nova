@@ -618,6 +618,32 @@ See example below on how to configure the options for the config drive.
         format: iso9660  # Default: vfat
         inject_password: False  # Default: False
 
+Number of concurrent live migrates
+----------------------------------
+
+Default is to have no concurrent live migrations (so 1 live-migration at a time).
+
+Excerpt from config options page (https://docs.openstack.org/ocata/config-reference/compute/config-options.html):
+
+  Maximum number of live migrations to run concurrently. This limit is
+  enforced to avoid outbound live migrations overwhelming the host/network
+  and causing failures. It is not recommended that you change this unless
+  you are very sure that doing so is safe and stable in your environment.
+
+  Possible values:
+
+  - 0 : treated as unlimited.
+  - Negative value defaults to 0.
+  - Any positive integer representing maximum number of live migrations to run concurrently.
+
+To configure this option:
+
+.. code-block:: yaml
+
+  nova:
+    compute:
+      max_concurrent_live_migrations: 1  # (1 is the default)
+
 
 Documentation and Bugs
 ======================
