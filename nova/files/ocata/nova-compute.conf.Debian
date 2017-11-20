@@ -3496,6 +3496,9 @@ connection=sqlite:////var/lib/nova/nova.sqlite
 
 # Use this endpoint to connect to Keystone (string value)
 auth_endpoint={{ compute.identity.get('protocol', 'http') }}://{{ compute.identity.get('host', 'localhost') }}:{{ compute.identity.get('port', '5000') }}/v3
+{%- if compute.identity.get('protocol', 'http') == 'https' %}
+cafile={{ compute.identity.get('cacert_file', compute.cacert_file) }}
+{%- endif %}
 
 # Number of seconds to wait before retrying poll for key creation completion
 # (integer value)
@@ -4050,6 +4053,9 @@ enable=False
 #
 os_region_name = {{ compute.identity.region }}
 catalog_info=volumev2:cinderv2:internalURL
+{%- if compute.image.get('protocol', 'http') == 'https' %}
+cafile={{ compute.identity.get('cacert_file', compute.cacert_file) }}
+{%- endif %}
 #
 # Info to match when looking for cinder in the service catalog.
 #
@@ -5022,7 +5028,7 @@ cross_az_attach={{ compute.cross_az_attach }}
 #  (list value)
 #api_servers=<None>
 {%- if compute.image is defined %}
-api_servers=http://{{ compute.image.host }}:9292
+api_servers = {{ compute.image.get('protocol', 'http') }}://{{ compute.image.host }}:{{ compute.image.get('port', 9292) }}
 {% endif %}
 
 #
@@ -5498,7 +5504,7 @@ config_drive_inject_password={{ compute.get('config_drive', {}).get('inject_pass
 #
 
 # URL override for the Ironic API endpoint. (string value)
-api_endpoint=http://{{ compute.ironic.host }}:{{ compute.ironic.port }}
+api_endpoint={{ compute.ironic.get('protocol', 'http') }}://{{ compute.ironic.host }}:{{ compute.ironic.port }}
 
 #
 # The number of times to retry when a request conflicts.
@@ -5528,10 +5534,9 @@ api_endpoint=http://{{ compute.ironic.host }}:{{ compute.ironic.port }}
 
 # PEM encoded Certificate Authority to use when verifying HTTPs connections.
 # (string value)
-#cafile=<None>
-
-# PEM encoded client certificate cert file (string value)
-#certfile=<None>
+{%- if compute.ironic.get('protocol', 'http') == 'https' %}
+cafile={{ compute.identity.get('cacert_file', compute.cacert_file) }}
+{%- endif %}
 
 # PEM encoded client certificate key file (string value)
 #keyfile=<None>
@@ -5550,7 +5555,7 @@ auth_type={{ compute.ironic.auth_type }}
 #auth_section=<None>
 
 # Authentication URL (string value)
-auth_url=http://{{ compute.identity.host }}:{{ compute.identity.port }}/v3
+auth_url={{ compute.identity.get('protocol', 'http') }}://{{ compute.identity.host }}:{{ compute.identity.port }}/v3
 
 # Domain ID to scope to (string value)
 #domain_id=<None>
@@ -5687,8 +5692,11 @@ project_domain_id = {{ compute.identity.get('domain', 'default') }}
 project_name = {{ compute.identity.tenant }}
 username = {{ compute.identity.user }}
 password = {{ compute.identity.password }}
-auth_uri=http://{{ compute.identity.host }}:5000
-auth_url=http://{{ compute.identity.host }}:35357
+auth_uri={{ compute.identity.get('protocol', 'http') }}://{{ compute.identity.host }}:5000
+auth_url={{ compute.identity.get('protocol', 'http') }}://{{ compute.identity.host }}:35357
+{%- if compute.identity.get('protocol', 'http') == 'https' %}
+cafile={{ compute.identity.get('cacert_file', compute.cacert_file) }}
+{%- endif %}
 {%- if compute.cache is defined %}
 memcached_servers={%- for member in compute.cache.members %}{{ member.host }}:11211{% if not loop.last %},{% endif %}{%- endfor %}
 {%- endif %}
@@ -7101,8 +7109,11 @@ hw_disk_discard={{ compute.libvirt.hw_disk_discard }}
 username={{ compute.network.user }}
 password={{ compute.network.password }}
 project_name={{ compute.identity.tenant }}
-auth_url=http://{{ compute.identity.host }}:{{ compute.identity.port }}/v3
-url=http://{{ compute.network.host }}:{{ compute.network.port }}
+auth_url = {{ compute.identity.get('protocol', 'http') }}://{{ compute.identity.host }}:{{ compute.identity.port }}/v3
+url={{ compute.network.get('protocol', 'http') }}://{{ compute.network.host }}:{{ compute.network.port }}
+{%- if compute.network.get('protocol', 'http') == 'https' %}
+cafile={{ compute.network.get('cacert_file', compute.cacert_file) }}
+{%- endif %}
 region_name= {{ compute.network.region }}
 extension_sync_interval={{ compute.network.get('extension_sync_interval', '600') }}
 auth_type = v3password
@@ -8293,7 +8304,10 @@ project_domain_id = {{ compute.identity.get('domain', 'default') }}
 project_name = {{ compute.identity.tenant }}
 username = {{ compute.identity.user }}
 password = {{ compute.identity.password }}
-auth_url=http://{{ compute.identity.host }}:35357/v3
+{%- if compute.identity.get('protocol', 'http') == 'https' %}
+cafile={{ compute.identity.get('cacert_file', compute.cacert_file) }}
+{%- endif %}
+auth_url={{ compute.identity.get('protocol', 'http') }}://{{ compute.identity.host }}:35357/v3
 os_interface = internal
 
 #
@@ -9231,8 +9245,9 @@ html5proxy_base_url = {{ compute.vncproxy_url }}/spice_auto.html
 
 # CA certificate file to use to verify connecting clients. (string value)
 # Deprecated group/name - [DEFAULT]/ssl_ca_file
-#ca_file=<None>
-
+{%- if compute.identity.get('protocol', 'http') == 'htpps' %}
+ca_file={{ compute.image.get('cacert_file', compute.cacert_file) }}
+{%- endif %}
 # Certificate file to use when starting the server securely. (string value)
 # Deprecated group/name - [DEFAULT]/ssl_cert_file
 #cert_file=<None>

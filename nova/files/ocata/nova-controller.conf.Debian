@@ -3479,6 +3479,9 @@ connection = {{ controller.database.engine }}+pymysql://{{ controller.database.u
 # Use this endpoint to connect to Keystone (string value)
 {%- if controller.get('barbican', {}).get('enabled', False) %}
 auth_endpoint={{ controller.identity.get('protocol', 'http') }}://{{ controller.identity.get('host', 'localhost') }}:{{ controller.identity.get('port', '5000') }}/v3
+{%- if controller.identity.get('protocol', 'http') == 'https' %}
+cafile={{ controller.identity.get('cacert_file', controller.cacert_file) }}
+{%- endif %}
 {%- endif %}
 
 # Number of seconds to wait before retrying poll for key creation completion
@@ -4050,7 +4053,9 @@ enable=False
 #  (string value)
 #catalog_info=volumev2:cinderv2:publicURL
 catalog_info=volumev2:cinderv2:internalURL
-
+{%- if controller.glance.get('protocol', 'http') == 'https' %}
+cafile={{ controller.identity.get('cacert_file', controller.cacert_file) }}
+{%- endif %}
 #
 # If this option is set then it will override service catalog lookup with
 # this template for cinder endpoint
@@ -5043,7 +5048,7 @@ use_baremetal_filters=false
 #   (i.e. "http://10.0.1.0:9292" or "https://my.glance.server/image").
 #  (list value)
 #api_servers=<None>
-api_servers = {{ controller.glance.host }}:9292
+api_servers = {{ controller.glance.get('protocol', 'http') }}://{{ controller.glance.host }}:{{ controller.glance.get('port', 9292) }}
 
 #
 # Enable insecure SSL (https) requests to glance.
@@ -5703,8 +5708,11 @@ project_domain_id = {{ controller.identity.get('domain', 'default') }}
 project_name = {{ controller.identity.tenant }}
 username = {{ controller.identity.user }}
 password = {{ controller.identity.password }}
-auth_uri=http://{{ controller.identity.host }}:5000
-auth_url=http://{{ controller.identity.host }}:35357
+auth_uri={{ controller.identity.get('protocol', 'http') }}://{{ controller.identity.host }}:5000
+auth_url={{ controller.identity.get('protocol', 'http') }}://{{ controller.identity.host }}:35357
+{%- if controller.identity.get('protocol', 'http') == 'https' %}
+cafile={{ controller.identity.get('cacert_file', controller.cacert_file) }}
+{%- endif %}
 {%- if controller.cache is defined %}
 memcached_servers={%- for member in controller.cache.members %}{{ member.host }}:11211{% if not loop.last %},{% endif %}{%- endfor %}
 {%- endif %}
@@ -7082,7 +7090,7 @@ use_virtio_for_bridges=true
 auth_type=v3password
 project_domain_name = Default
 user_domain_name = Default
-auth_url = http://{{ controller.identity.host }}:35357/v3
+auth_url = {{ controller.identity.get('protocol', 'http') }}://{{ controller.identity.host }}:35357/v3
 {% if pillar.neutron is defined and pillar.neutron.server is defined %}
 password={{ pillar.neutron.server.identity.password }}
 project_name={{ pillar.neutron.server.identity.tenant }}
@@ -7094,8 +7102,10 @@ project_name={{ controller.network.tenant }}
 username={{ controller.network.user }}
 region_name= {{ controller.network.region }}
 {%- endif %}
-url=http://{{ controller.network.host }}:{{ controller.network.port }}
-
+url={{ controller.network.get('protocol', 'http') }}://{{ controller.network.host }}:{{ controller.network.port }}
+{%- if controller.network.get('protocol', 'http') == 'https' %}
+cafile={{ controller.network.get('cacert_file', controller.cacert_file) }}
+{%- endif %}
 {%- if controller.get('networking', 'default') != "contrail" %}
 metadata_proxy_shared_secret={{ controller.metadata.password }}
 {%- endif %}
@@ -8284,7 +8294,10 @@ project_domain_id = {{ controller.identity.get('domain', 'default') }}
 project_name = {{ controller.identity.tenant }}
 username = {{ controller.identity.user }}
 password = {{ controller.identity.password }}
-auth_url=http://{{ controller.identity.host }}:35357/v3
+auth_url={{ controller.identity.get('protocol', 'http') }}://{{ controller.identity.host }}:35357/v3
+{%- if controller.identity.get('protocol', 'http') == 'https' %}
+cafile={{ controller.identity.get('cacert_file', controller.cacert_file) }}
+{%- endif %}
 os_interface = internal
 
 #
@@ -9215,7 +9228,9 @@ html5proxy_base_url = {{ controller.vncproxy_url }}/spice_auto.html
 
 # CA certificate file to use to verify connecting clients. (string value)
 # Deprecated group/name - [DEFAULT]/ssl_ca_file
-#ca_file=<None>
+{%- if controller.identity.get('protocol', 'http') == 'https' %}
+ca_file={{ controller.glance.get('cacert_file', controller.cacert_file) }}
+{%- endif %}
 
 # Certificate file to use when starting the server securely. (string value)
 # Deprecated group/name - [DEFAULT]/ssl_cert_file
