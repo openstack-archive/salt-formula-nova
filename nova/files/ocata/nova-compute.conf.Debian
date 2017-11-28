@@ -716,6 +716,9 @@ resume_guests_state_on_host_boot={{ compute.get('resume_guests_state_on_host_boo
 #   to run concurrently.
 #  (integer value)
 #max_concurrent_live_migrations=1
+{%- if compute.max_concurrent_live_migrations is defined %}
+max_concurrent_live_migrations = {{ compute.max_concurrent_live_migrations }}
+{%- endif %}
 
 #
 # Number of times to retry block device allocation on failures. Starting with
