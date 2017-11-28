@@ -67,6 +67,7 @@ nova:
         port: 11211
     libvirt:
       hw_disk_discard: unmap
+      live_migration_tunnelled: False
     upgrade_levels:
       compute: liberty
     libvirt_service_group: libvirtd

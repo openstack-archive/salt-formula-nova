@@ -6228,7 +6228,9 @@ live_migration_inbound_addr = {{ compute.libvirt.migration_inbound_addr }}
 #   'block_migration_flag' to enable tunneled migration.
 #  (boolean value)
 #live_migration_tunnelled=false
-live_migration_tunnelled=true
+{%- if compute.libvirt.live_migration_tunnelled is defined %}
+live_migration_tunnelled = {{ compute.libvirt.live_migration_tunnelled }}
+{%- endif %}
 
 #
 # Maximum bandwidth(in MiB/s) to be used during migration.
