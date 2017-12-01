@@ -85,6 +85,86 @@ contrail_nova_packages:
   - require:
     - pkg: nova_controller_packages
 
+{% for service_name in controller.services %}
+{{ service_name }}_default:
+  file.managed:
+    - name: /etc/default/{{ service_name }}
+    - source: salt://nova/files/default
+    - template: jinja
+    - require:
+      - pkg: nova_controller_packages
+    - defaults:
+        service_name: {{ service_name }}
+        values: {{ controller }}
+    - require:
+      - pkg: nova_controller_packages
+    - watch_in:
+      - service: nova_controller_services
+{% endfor %}
+
+{% if controller.logging.log_appender %}
+
+{%- if controller.logging.log_handlers.get('fluentd').get('enabled', False) %}
+nova_controller_fluentd_logger_package:
+  pkg.installed:
+    - name: python-fluent-logger
+{%- endif %}
+
+nova_general_logging_conf:
+  file.managed:
+    - name: /etc/nova/logging.conf
+    - source: salt://nova/files/logging.conf
+    - template: jinja
+    - user: nova
+    - group: nova
+    - require:
+      - pkg: nova_controller_packages
+{%- if controller.logging.log_handlers.get('fluentd').get('enabled', False) %}
+      - pkg: nova_controller_fluentd_logger_package
+{%- endif %}
+    - defaults:
+        service_name: nova
+        values: {{ controller }}
+    - watch_in:
+      - service: nova_controller_services
+
+/var/log/nova/nova.log:
+  file.managed:
+    - user: nova
+    - group: nova
+    - watch_in:
+      - service: nova_controller_services
+{%- if controller.version not in ["juno", "kilo", "liberty", "mitaka", "newton"] %}
+      - service: nova_apache_restart
+{%- endif %}
+
+{% for service_name in controller.services %}
+
+{{ service_name }}_logging_conf:
+  file.managed:
+    - name: /etc/nova/logging/logging-{{ service_name }}.conf
+    - source: salt://nova/files/logging.conf
+    - template: jinja
+    - user: nova
+    - group: nova
+    - require:
+      - pkg: nova_controller_packages
+{%- if controller.logging.log_handlers.get('fluentd').get('enabled', False) %}
+      - pkg: nova_controller_fluentd_logger_package
+{%- endif %}
+    - makedirs: True
+    - defaults:
+        service_name: {{ service_name }}
+        values: {{ controller }}
+    - watch_in:
+      - service: nova_controller_services
+{%- if controller.version not in ["juno", "kilo", "liberty", "mitaka", "newton"] %}
+      - service: nova_apache_restart
+{%- endif %}
+
+{% endfor %}
+{% endif %}
+
 {% if controller.get('policy', {}) and controller.version not in ['liberty', 'mitaka', 'newton'] %}
 {# nova no longer ships with a default policy.json #}
 

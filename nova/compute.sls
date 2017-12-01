@@ -77,6 +77,53 @@ user_nova_bash:
     - pkg: nova_compute_packages
 {%- endif %}
 
+{% for service_name in compute.services %}
+{{ service_name }}_default:
+  file.managed:
+    - name: /etc/default/{{ service_name }}
+    - source: salt://nova/files/default
+    - template: jinja
+    - require:
+      - pkg: nova_compute_packages
+    - defaults:
+        service_name: {{ service_name }}
+        values: {{ compute }}
+    - watch_in:
+      - service: nova_compute_services
+{% endfor %}
+
+{% if compute.logging.log_appender -%}
+
+{% if compute.logging.log_handlers.get('fluentd').get('enabled', False) -%}
+nova_compute_fluentd_logger_package:
+  pkg.installed:
+    - name: python-fluent-logger
+{% endif %}
+
+{% for service_name in compute.get('services', []) %}
+
+{{ service_name }}_logging_conf:
+  file.managed:
+    - name: /etc/nova/logging/logging-{{ service_name }}.conf
+    - source: salt://nova/files/logging.conf
+    - template: jinja
+    - user: nova
+    - group: nova
+    - require:
+      - pkg: nova_compute_packages
+{%- if compute.logging.log_handlers.get('fluentd').get('enabled', False) %}
+      - pkg: nova_compute_fluentd_logger_package
+{%- endif %}
+    - makedirs: True
+    - defaults:
+        service_name: {{ service_name }}
+        values: {{ compute }}
+    - watch_in:
+      - service: nova_compute_services
+
+{% endfor %}
+{% endif %}
+
 {%- if compute.message_queue.get('ssl',{}).get('enabled',False)  %}
 rabbitmq_ca_nova_compute:
 {%- if compute.message_queue.ssl.cacert is defined %}

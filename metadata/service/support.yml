@@ -3,6 +3,8 @@ parameters:
     _support:
       collectd:
         enabled: true
+      fluentd:
+        enabled: true
       heka:
         enabled: true
       sensu:

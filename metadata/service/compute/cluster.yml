@@ -5,6 +5,8 @@ classes:
 parameters:
   _param:
     nova_compute_virtualization: kvm
+    openstack_log_appender: false
+    openstack_fluentd_handler_enabled: false
   nova:
     compute:
       version: ${_param:nova_version}
@@ -31,6 +33,13 @@ parameters:
         user: nova
         password: ${_param:keystone_nova_password}
         tenant: service
+      logging:
+        log_appender: ${_param:openstack_log_appender}
+        log_handlers:
+          watchedfile:
+            enabled: true
+          fluentd:
+            enabled: ${_param:openstack_fluentd_handler_enabled}
       message_queue:
         engine: rabbitmq
         port: 5672

@@ -644,6 +644,39 @@ To configure this option:
     compute:
       max_concurrent_live_migrations: 1  # (1 is the default)
 
+Enhanced logging with logging.conf
+----------------------------------
+
+By default logging.conf is disabled.
+
+That is possible to enable per-binary logging.conf with new variables:
+  * openstack_log_appender - set it to true to enable log_config_append for all OpenStack services;
+  * openstack_fluentd_handler_enabled - set to true to enable FluentHandler for all Openstack services.
+
+Only WatchedFileHandler and FluentHandler is available.
+
+Also it is able to configure this with pillar:
+
+.. code-block:: yaml
+
+  nova:
+    controller:
+        logging:
+          log_appender: true
+          log_handlers:
+            watchedfile:
+              enabled: true
+            fluentd:
+              enabled: true
+
+    compute:
+        logging:
+          log_appender: true
+          log_handlers:
+            watchedfile:
+              enabled: true
+            fluentd:
+              enabled: true
 
 Documentation and Bugs
 ======================

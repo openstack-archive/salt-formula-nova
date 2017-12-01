@@ -38,6 +38,14 @@
         'audit': {
           'enabled': false
         },
+        'logging': {
+          'log_appender': false,
+          'log_handlers': {
+            'watchedfile': {
+              'enabled': true
+            }
+          }
+        },
     },
     'RedHat': {
         'pkgs': pkgs_list,
@@ -47,6 +55,14 @@
         'cors': {},
         'audit': {
           'enabled': false
+        },
+        'logging': {
+          'log_appender': false,
+          'log_handlers': {
+            'watchedfile': {
+              'enabled': true
+            }
+          }
         },
     },
 }, merge=pillar.nova.get('controller', {})) %}
@@ -108,6 +124,11 @@ Debian:
     region: RegionOne
   network: {{ compute_network }}
   heal_instance_info_cache_interval: '60'
+  logging:
+    log_appender: false
+    log_handlers:
+      watchedfile:
+        enabled: true
 RedHat:
   pkgs:
   - openstack-nova-compute
@@ -131,6 +152,11 @@ RedHat:
     region: RegionOne
   network: {{ compute_network }}
   heal_instance_info_cache_interval: '60'
+  logging:
+    log_appender: false
+    log_handlers:
+      watchedfile:
+        enabled: true
 {%- endload %}
 
 {% set compute = salt["grains.filter_by"](compute_defaults, merge=pillar.nova.get("compute", {})) %}
