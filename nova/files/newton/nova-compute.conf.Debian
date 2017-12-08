@@ -1,4 +1,4 @@
-{%- from "nova/map.jinja" import compute, system_cacerts_file with context %}
+{%- from "nova/map.jinja" import compute with context %}
 
 [DEFAULT]
 logdir=/var/log/nova
@@ -112,11 +112,7 @@ kombu_ssl_version = {{ compute.message_queue.ssl.version }}
 kombu_ssl_version = TLSv1_2
 {%- endif %}
 
-{%- if compute.message_queue.ssl.cacert_file is defined %}
-kombu_ssl_ca_certs = {{ compute.message_queue.ssl.cacert_file }}
-{%- else %}
-kombu_ssl_ca_certs={{ system_cacerts_file }}
-{%- endif %}
+kombu_ssl_ca_certs = {{ compute.message_queue.ssl.get('cacert_file', compute.cacert_file) }}
 {%- endif %}
 
 [oslo_concurrency]

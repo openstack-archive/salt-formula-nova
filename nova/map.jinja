@@ -1,7 +1,9 @@
-{%- set system_cacerts_file = salt['grains.filter_by']({
-    'Debian': '/etc/ssl/certs/ca-certificates.crt',
-    'RedHat': '/etc/pki/tls/certs/ca-bundle.crt'
-})%}
+{%- set default_params = {
+    'cacert_file': salt['grains.filter_by']({
+        'Debian': '/etc/ssl/certs/ca-certificates.crt',
+        'RedHat': '/etc/pki/tls/certs/ca-bundle.crt'
+    })}
+%}
 
 {% set compute_bind_defaults = {
     'vnc_address': '10.0.0.10',
@@ -29,6 +31,7 @@
 {%- endif %}
 
 {% set controller = salt['grains.filter_by']({
+    'BaseDefaults': default_params,
     'Debian': {
         'pkgs': pkgs_list,
         'services': services_list,
@@ -49,7 +52,7 @@
           'enabled': false
         },
     },
-}, merge=pillar.nova.get('controller', {})) %}
+}, merge=pillar.nova.get('controller', {}), base='BaseDefaults') %}
 
 {% set client = salt['grains.filter_by']({
     'Debian': {
@@ -76,6 +79,7 @@
 }, merge=salt['pillar.get']('linux:network'), base='default') %}
 
 {%- load_yaml as compute_defaults %}
+BaseDefaults: {{ default_params }}
 Debian:
   pkgs:
   - nova-common
@@ -132,8 +136,7 @@ RedHat:
   network: {{ compute_network }}
   heal_instance_info_cache_interval: '60'
 {%- endload %}
-
-{% set compute = salt["grains.filter_by"](compute_defaults, merge=pillar.nova.get("compute", {})) %}
+{% set compute = salt["grains.filter_by"](compute_defaults, merge=pillar.nova.get("compute", {}), base='BaseDefaults') %}
 
 {% set monitoring = salt['grains.filter_by']({
     'default': {

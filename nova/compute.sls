@@ -1,4 +1,4 @@
-{%- from "nova/map.jinja" import compute, system_cacerts_file with context %}
+{%- from "nova/map.jinja" import compute with context %}
 
 {%- if compute.get('enabled') %}
 
@@ -87,7 +87,7 @@ rabbitmq_ca_nova_compute:
     - makedirs: true
 {%- else %}
   file.exists:
-   - name: {{ compute.message_queue.ssl.get('cacert_file', system_cacerts_file) }}
+   - name: {{ compute.message_queue.ssl.get('cacert_file', compute.cacert_file) }}
 {%- endif %}
 {%- endif %}
 

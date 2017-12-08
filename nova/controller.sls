@@ -1,4 +1,4 @@
-{% from "nova/map.jinja" import controller, system_cacerts_file with context %}
+{% from "nova/map.jinja" import controller with context %}
 
 {%- if controller.get('enabled') %}
 
@@ -34,7 +34,7 @@ rabbitmq_ca_nova_controller:
     - makedirs: true
 {%- else %}
   file.exists:
-   - name: {{ controller.message_queue.ssl.get('cacert_file', system_cacerts_file) }}
+   - name: {{ controller.message_queue.ssl.get('cacert_file', controller.cacert_file) }}
 {%- endif %}
 {%- endif %}
 
@@ -330,7 +330,7 @@ mysql_ca_nova_controller:
       - file: /etc/nova/nova.conf
 {%- else %}
   file.exists:
-   - name: {{ controller.database.ssl.get('cacert_file', system_cacerts_file) }}
+   - name: {{ controller.database.ssl.get('cacert_file', controller.cacert_file) }}
    - require_in:
      - file: /etc/nova/nova.conf
 {%- endif %}
