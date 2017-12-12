@@ -78,3 +78,7 @@ nova:
       volume_clear_size: 0
     barbican:
       enabled: true
+    qemu:
+      user: nova
+      group: cinder
+      dynamic_ownership: 1

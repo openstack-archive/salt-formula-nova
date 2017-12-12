@@ -238,6 +238,19 @@
 # Set to 0 to disable file ownership changes.
 #dynamic_ownership = 1
 
+{%- if compute.qemu is defined %}
+{%- if compute.qemu.user is defined %}
+user = "{{ compute.qemu.user }}"
+{%- endif %}
+
+{%- if compute.qemu.group is defined %}
+group = "{{ compute.qemu.group }}"
+{%- endif %}
+
+{%- if compute.qemu.dynamic_ownership is defined %}
+dynamic_ownership = "{{ compute.qemu.dynamic_ownership }}"
+{%- endif %}
+{%- endif %}
 
 # What cgroup controllers to make use of with QEMU guests
 #

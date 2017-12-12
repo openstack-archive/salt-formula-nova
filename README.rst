@@ -280,6 +280,19 @@ Nova controller services on compute node
           max_processes: 4096
         host: node-12.domain.tld
 
+Group and user to be used for QEMU processes run by the system instance
+
+.. code-block:: yaml
+
+    nova:
+      compute:
+        enabled: true
+        ...
+        qemu:
+          user: nova
+          group: cinder
+          dynamic_ownership: 1
+
 Group membership for user nova (upgrade related)
 
 .. code-block:: yaml

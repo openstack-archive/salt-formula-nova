@@ -48,3 +48,7 @@ nova:
       members:
       - host: 127.0.0.1
         port: 11211
+    qemu:
+      user: nova
+      group: cinder
+      dynamic_ownership: 1
