@@ -4,3 +4,8 @@ suites:
     provisioner:
       pillars-from-files:
         nova.sls: tests/pillar/<%= ENV['SUITE'] %>.sls
+      pillars:
+        release.sls:
+          nova:
+            controller:
+              version: <%= ENV['OS_VERSION'] || 'ocata' %>
