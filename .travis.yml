@@ -17,21 +17,22 @@ install:
   - bundle install
 
 env:
-  - PLATFORM=trevorj/salty-whales:trusty OS_VERSION=mitaka SUITE=compute_cluster
-  - PLATFORM=trevorj/salty-whales:trusty OS_VERSION=mitaka SUITE=control_cluster
-  - PLATFORM=trevorj/salty-whales:xenial OS_VERSION=mitaka SUITE=compute_cluster
-  - PLATFORM=trevorj/salty-whales:xenial OS_VERSION=mitaka SUITE=control_cluster
-  - PLATFORM=trevorj/salty-whales:xenial OS_VERSION=newton SUITE=compute_cluster
-  - PLATFORM=trevorj/salty-whales:xenial OS_VERSION=newton SUITE=control_cluster
-  - PLATFORM=trevorj/salty-whales:xenial OS_VERSION=ocata SUITE=compute_cluster
-  - PLATFORM=trevorj/salty-whales:xenial OS_VERSION=ocata SUITE=control_cluster
+  - PLATFORM=trevorj/salty-whales:trusty OS_VERSION=mitaka SUITE=compute-cluster
+  - PLATFORM=trevorj/salty-whales:trusty OS_VERSION=mitaka SUITE=control-cluster
+  - PLATFORM=trevorj/salty-whales:xenial OS_VERSION=mitaka SUITE=compute-cluster
+  - PLATFORM=trevorj/salty-whales:xenial OS_VERSION=mitaka SUITE=control-cluster
+  - PLATFORM=trevorj/salty-whales:xenial OS_VERSION=newton SUITE=compute-cluster
+  - PLATFORM=trevorj/salty-whales:xenial OS_VERSION=newton SUITE=control-cluster
+  - PLATFORM=trevorj/salty-whales:xenial OS_VERSION=ocata SUITE=compute-cluster
+  - PLATFORM=trevorj/salty-whales:xenial OS_VERSION=ocata SUITE=control-cluster
 
 before_script:
   - set -o pipefail
   - make test | tail
 
 script:
-  -  KITCHEN_LOCAL_YAML=.kitchen.travis.yml bundle exec kitchen test -t tests/integration
+  - test ! -e .kitchen.yml || bundle exec kitchen converge ${SUITE} || true
+  - test ! -e .kitchen.yml || bundle exec kitchen verify ${SUITE} -t tests/integration
 
 notifications:
   webhooks:
