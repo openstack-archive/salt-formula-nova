@@ -33,6 +33,14 @@ my_ip={{ compute.my_ip }}
 host={{ compute.host }}
 {%- endif %}
 
+{%- if compute.ram_allocation_ratio is defined %}
+ram_allocation_ratio = {{ compute.ram_allocation_ratio }}
+{%- endif %}
+
+{%- if compute.cpu_allocation_ratio is defined %}
+cpu_allocation_ratio = {{ compute.cpu_allocation_ratio }}
+{%- endif %}
+
 remove_unused_original_minimum_age_seconds=86400
 image_service=nova.image.glance.GlanceImageService
 

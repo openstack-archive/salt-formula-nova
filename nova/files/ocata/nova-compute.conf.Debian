@@ -550,7 +550,11 @@ reserved_host_memory_mb = {{ compute.get('reserved_host_memory_mb', '512') }}
 # * Any valid positive integer or float value
 #  (floating point value)
 # Minimum value: 0
+{%- if compute.cpu_allocation_ratio is defined %}
+cpu_allocation_ratio = {{ compute.cpu_allocation_ratio }}
+{%- else  %}
 #cpu_allocation_ratio=0.0
+{%- endif %}
 
 #
 # This option helps you specify virtual RAM to physical RAM
@@ -578,6 +582,25 @@ reserved_host_memory_mb = {{ compute.get('reserved_host_memory_mb', '512') }}
 ram_allocation_ratio = {{ compute.ram_allocation_ratio }}
 {%- else  %}
 #ram_allocation_ratio=0.0
+{%- endif %}
+
+#
+# Defines which physical CPUs (pCPUs) can be used by instance
+# virtual CPUs (vCPUs).
+#
+# Possible values:
+#
+# * A comma-separated list of physical CPU numbers that virtual CPUs can be
+#   allocated to by default. Each element should be either a single CPU number,
+#   a range of CPU numbers, or a caret followed by a CPU number to be
+#   excluded from a previous range. For example:
+#
+#     vcpu_pin_set = "4-12,^8,15"
+#  (string value)
+{%- if compute.vcpu_pin_set is defined %}
+vcpu_pin_set = {{ compute.vcpu_pin_set }}
+{%- else  %}
+#vcpu_pin_set=<None>
 {%- endif %}
 
 #
