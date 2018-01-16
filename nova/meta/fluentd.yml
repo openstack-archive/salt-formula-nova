@@ -1,0 +1,88 @@
+{%- if pillar.get('fluentd', {}).get('agent', {}).get('enabled', False) %}
+{%- from "nova/map.jinja" import controller with context %}
+{%- set positiondb = pillar.fluentd.agent.dir.positiondb %}
+{%- set apache_wsgi = controller.get('enabled') and controller.version not in ('juno', 'kilo', 'liberty', 'mitaka', 'newton') %}
+agent:
+  config:
+    label:
+      forward_input:
+        input:
+          generic_forward_inpit:
+            type: forward
+            bind: 0.0.0.0
+            port: 24224
+        match:
+          route_openstack_nova:
+            tag: openstack.nova.**
+            type: relabel
+            label: openstack_nova
+{%- if apache_wsgi %}
+      openstack_nova_wsgi:
+        input:
+          nova_placement_api_wsgi_in_tail:
+            type: tail
+            path: /var/log/apache2/nova_placement_access.log
+            tag: openstack.nova
+            pos_file: {{ positiondb }}/nova_placement.wsgi.pos
+            parser:
+              type: regexp
+              time_key: Timestamp
+              time_format: '%d/%b/%Y:%H:%M:%S %z'
+              keep_time_key: false
+              # Apache access log custom format: https://regex101.com/r/WeCT7s/5
+              format: '/(?<hostname>[\w\.\-]+)\:(?<port>\d+)\s(?<http_client_ip_address>[\d\.]+)\s\-\s\-\s\[(?<Timestamp>.*)\]\s(?<Payload>\"(?<http_method>[A-Z]+)\s(?<http_url>\S+)\s(?<http_version>[.\/\dHTFSP]+)\"\s(?<http_status>\d{3})\s(?<http_response_time>\d+)\s(?<http_response_size>\d+)\s\"(?<http_referer>.*)\"\s\"(?<user_agent>.*)\")/'
+        filter:
+          add_nova_palcement_wsgi_record_fields:
+            tag: openstack.nova
+            type: record_transformer
+            enable_ruby: true
+            record:
+              - name: Severity
+                value: 6
+              - name: severity_label
+                value: INFO
+              - name: programname
+                value: nova-placement-wsgi
+        match:
+          send_to_default:
+            tag: openstack.nova
+            type: relabel
+            label: default_output
+{%- endif %}
+      openstack_nova:
+        filter:
+          set_nova_programname:
+            tag: openstack.nova.*
+            type: record_transformer
+            enable_ruby: true
+            record:
+              - name: programname
+                value: nova-${ tag_parts[2] }
+          set_nova_fields:
+            tag: openstack.nova
+            type: record_transformer
+            enable_ruby: true
+            record:
+              - name: Severity
+                value: ${ {'TRACE'=>7,'DEBUG'=>7,'INFO'=>6,'AUDIT'=>6,'WARNING'=>4,'ERROR'=>3,'CRITICAL'=>2}[record['level']].to_i }
+              - name: severity_label
+                value: ${ record['level'] }
+              - name: Payload
+                value: ${ record['message'] }
+              - name: python_module
+                value: ${ record['name'] }
+              - name: programname
+                value: '${ record["programname"] ? record["programname"] : "nova" }'
+        match:
+          unify_tag:
+            tag: openstack.nova.*
+            type: rewrite_tag_filter
+            rule:
+              - name: level
+                regexp: '.*'
+                result: openstack.nova
+          send_to_default:
+            tag: openstack.nova
+            type: relabel
+            label: default_output
+{% endif %}

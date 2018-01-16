@@ -6,6 +6,8 @@ parameters:
   _param:
     nova_vncproxy_url: http://${_param:single_address}:6080
     nova_networking: default
+    openstack_log_appender: false
+    openstack_fluentd_handler_enabled: false
   nova:
     controller:
       enabled: true
@@ -19,11 +21,6 @@ parameters:
       ram_allocation_ratio: 1.5
       disk_allocation_ratio: 1.0
       workers: 1
-      logging:
-      - engine: syslog
-        facility: local0
-        heka:
-          enabled: true
       bind:
         private_address: ${_param:single_address}
         public_address: ${_param:single_address}
@@ -44,6 +41,13 @@ parameters:
         user: nova
         password: ${_param:keystone_nova_password}
         tenant: service
+      logging:
+        log_appender: ${_param:openstack_log_appender}
+        log_handlers:
+          watchedfile:
+            enabled: true
+          fluentd:
+            enabled: ${_param:openstack_fluentd_handler_enabled}
       message_queue:
         engine: rabbitmq
         host: ${_param:single_address}

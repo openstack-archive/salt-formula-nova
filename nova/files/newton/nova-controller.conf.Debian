@@ -7,6 +7,9 @@ debug = True
 {%- else %}
 debug = False
 {%- endif %}
+{%- if controller.logging.log_appender %}
+log_config_append=/etc/nova/logging.conf
+{%- endif %}
 state_path = /var/lib/nova
 volumes_dir = /etc/nova/volumes
 dhcpbridge = /usr/bin/nova-dhcpbridge
