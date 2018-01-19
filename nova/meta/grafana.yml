@@ -1,8 +1,15 @@
 dashboard:
+{%- if pillar.get('fluentd', {}).get('agent', {}).get('enabled', False) %}
+  nova_prometheus:
+    datasource: prometheus
+    format: json
+    template: nova/files/grafana_dashboards/nova_prometheus_fluentd.json
+{%- else %}
   nova_prometheus:
     datasource: prometheus
     format: json
     template: nova/files/grafana_dashboards/nova_prometheus.json
+{%- endif %}
   hypervisor_prometheus:
     datasource: prometheus
     format: json
