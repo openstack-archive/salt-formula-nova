@@ -54,7 +54,7 @@ doc:
           value: |
             {%- for pkg in compute.pkgs %}
             {%- set pkg_version = "dpkg -l "+pkg+" | grep "+pkg+" | awk '{print $3}'" %}
-            * {{ pkg }}: {{ salt['cmd.run'](pkg_version) }}
+            * {{ pkg }}: {{ salt['cmd.shell'](pkg_version) }}
             {%- endfor %}
   {%- endif %}
   {%- if pillar.nova.controller is defined %}
@@ -126,6 +126,6 @@ doc:
           value: |
             {%- for pkg in controller.pkgs %}
             {%- set pkg_version = "dpkg -l "+pkg+" | grep "+pkg+" | awk '{print $3}'" %}
-            * {{ pkg }}: {{ salt['cmd.run'](pkg_version) }}
+            * {{ pkg }}: {{ salt['cmd.shell'](pkg_version) }}
             {%- endfor %}
   {%- endif %}
