@@ -7,7 +7,7 @@ agent:
     label:
       forward_input:
         input:
-          generic_forward_inpit:
+          generic_forward_input:
             type: forward
             bind: 0.0.0.0
             port: 24224
@@ -43,11 +43,29 @@ agent:
                 value: INFO
               - name: programname
                 value: nova-placement-wsgi
+              - name: http_response_time
+                value: ${ record['http_response_time'].to_i/100000.to_f }
         match:
           send_to_default:
             tag: openstack.nova
+            type: copy
+            store:
+              - type: relabel
+                label: default_output
+              - type: rewrite_tag_filter
+                rule:
+                  - name: severity_label
+                    regexp: '.'
+                    result: metric.nova_log_messages
+              - type: rewrite_tag_filter
+                rule:
+                  - name: http_status
+                    regexp: '.'
+                    result: metric.nova_openstack_http_response
+          push_to_metric:
+            tag: 'metric.**'
             type: relabel
-            label: default_output
+            label: default_metric
 {%- endif %}
       openstack_nova:
         filter:
@@ -73,6 +91,17 @@ agent:
                 value: ${ record['name'] }
               - name: programname
                 value: '${ record["programname"] ? record["programname"] : "nova" }'
+          parse_http_stats:
+            tag: openstack.nova
+            type: parser
+            key_name: Payload
+            reserve_data: true
+            emit_invalid_record_to_error: false
+            parser:
+              type: regexp
+              # Parse openstack http stats: https://regex101.com/r/Tf0XUK/1/
+              format: '\"(?<http_method>GET|POST|OPTIONS|DELETE|PUT|HEAD|TRACE|CONNECT|PATCH)\s(?<http_url>\S+)\s(?<http_version>[.\/\dHTFSP]+)\"\sstatus:\s(?<http_status>\d{3})\slen:\s(?<http_response_size>\d+)\stime:\s(?<http_response_time>\d+\.\d+)'
+              types: http_response_time:float
         match:
           unify_tag:
             tag: openstack.nova.*
@@ -83,6 +112,59 @@ agent:
                 result: openstack.nova
           send_to_default:
             tag: openstack.nova
+            type: copy
+            store:
+              - type: relabel
+                label: default_output
+              - type: rewrite_tag_filter
+                rule:
+                  - name: severity_label
+                    regexp: '.'
+                    result: metric.nova_log_messages
+              - type: rewrite_tag_filter
+                rule:
+                  - name: http_status
+                    regexp: '.'
+                    result: metric.nova_openstack_http_response
+          push_to_metric:
+            tag: 'metric.**'
             type: relabel
-            label: default_output
+            label: default_metric
+      default_metric:
+        filter:
+          nova_logs_per_severity:
+            tag: metric.nova_log_messages
+            require:
+              - add_general_fields
+            type: prometheus
+            metric:
+              - name: log_messages
+                type: counter
+                desc: Total number of log lines by severity
+            label:
+              - name: service
+                value: nova
+              - name: level
+                value: ${severity_label}
+              - name: host
+                value: ${Hostname}
+          nova_openstack_http_response_times:
+            tag: metric.nova_openstack_http_response
+            require:
+              - add_general_fields
+            type: prometheus
+            metric:
+              - name: openstack_http_response_times
+                type: summary
+                desc: Total number of requests per method and status
+                key: http_response_time
+            label:
+              - name: http_method
+                value: ${http_method}
+              - name: http_status
+                value: ${http_status}
+              - name: service
+                value: nova
+              - name: host
+                value: ${Hostname}
 {% endif %}
