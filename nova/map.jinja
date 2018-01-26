@@ -115,7 +115,12 @@ Debian:
   services:
   - nova-compute
   libvirt_config: libvirtd.conf
+  {# Since Openstack Pike Libvirt 3.6 package is installed, it requires different file name for environment file #}
+  {%- if pillar.nova.compute is defined and pillar.nova.compute.version not in ["juno", "kilo", "liberty", "mitaka", "newton", "ocata"] %}
+  libvirt_bin: "/etc/default/libvirtd"
+  {%- else %}
   libvirt_bin: "/etc/default/libvirt-bin"
+  {%- endif %}
   libvirt_service: libvirt-bin
   bind: compute_bind_defaults
   debug: false
