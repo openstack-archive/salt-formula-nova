@@ -2267,6 +2267,7 @@ force_dhcp_release=true
 # Reason:
 # nova-network is deprecated, as are any related configuration options.
 #dhcp_domain=novalocal
+dhcp_domain={{ controller.dhcp_domain }}
 
 # DEPRECATED:
 # This option allows you to specify the L3 management library to be used.
